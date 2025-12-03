@@ -2,12 +2,15 @@
 classDiagram
     class Receipt{
 	    +Uuid id
-	    +UserID reimbursee
-	    
+	    +datetime creation_datetime
+	    +str name 
+
+	    +UserID creditor
 	    +list[UserID] debtors
-	    +list[LineItems] unassigned_items
+
+	    +set[LineItems] unassigned_items
 	    +dict[User, list[LineItems]] assignees
-	    
+
 	    +assign_item(item: LineItem, user: User): None
 	    +disassign_item(item: LineItem, user: User): None
 	    +make_up_bill(user: UserID): Bill
@@ -18,8 +21,8 @@ classDiagram
 
 
     class User {
-    	+id UserID
-        +name // First + last name how you called in real life
+    	+UserID id
+        +str name // First + last name how you called in real life
     }
     User *-- DummyUser
     User *-- TelegramUser
@@ -29,19 +32,20 @@ classDiagram
 
 
 	class TelegramUser{
-        +telegram_id int
+        +int telegram_id
     }
 
 
-    class LineItem{ // Value obj
-	    +name str
-	    +price Decimal
+    class LineItem{
+	    +str name
+	    +Decimal amount
+	    +Decimal price
     }
 
 
-    class Bill{ // Value obj
-	    +items dict[LineItem, amount]
-	    +total Decimal
+    class Bill{
+	    +dict[LineItem, amount] items
+	    +Decimal total
     }
 ```
 
@@ -52,6 +56,6 @@ classDiagram
 
 **DummyUser** (Пугало) - Заглушка пользователя, которую можно добавить к чеку, чтобы назначать на неё товары, если данный человек не может вступить в группу
 
-**LineItem** (Товар) - Строчка в чеке. Презентует 1 конкретную единицу товара, если таких несколько - нужно создавать несколько дубликатов.
+**LineItem** (Товар) - Строчка в чеке. Презентует количество товара действительным числом, чтобы пользователи могли дробно делить товары между собой
 
 **Bill** (Счет) - Счёт за товары из чека для конкретного пользователя
