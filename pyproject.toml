@@ -4,4 +4,81 @@ version = "0.0.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "annotated-types>=0.7.0",
+    "langchain>=1.1.0",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
+]
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+    "polyfactory>=2.22.2",
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.13.1",
+]
+[tool.mypy]
+strict = true
+strict_bytes = true
+local_partial_types = true
+warn_unreachable = true
+explicit_package_bases = true
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "ERA", # eradicate
+    "YTT", # flake8-2020
+    "ANN", # flake8-annotations
+    "ASYNC", # flake8-async
+    "S", # flake8-bandit
+    "BLE", # flake8-blind-except
+    "FBT", # flake8-boolean-trap
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "COM", # flake8-commas
+    "C4", # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T10", # flake8-debugger
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "LOG", # flake8-logging
+    "G", # flake8-logging-format
+    "INP", # flake8-no-pep420
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "PYI", # flake8-pyi
+    "PT", # flake8-pytest-style
+    "Q", # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SLF", # flake8-self 
+    "SLF", # flake8-self
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+    "TD", # flake8-todos
+    "TC", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-use-pathlib
+    "I", # isort
+    "C90", # mccabe    
+    "N", # pep8-naming
+    "PERF", # perflint
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "PGH", # pygrep-hooks
+    "PL", # pylint
+    "UP", # pyupgrade
+    "FURB", # refurb
+    "RUF", # ruff
+    "TRY", # tryceratops
+]
+ignore = [
+    "COM812", # ruff warn on it
+    "S101", # triggers on asserts in tests
+]

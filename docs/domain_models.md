@@ -1,9 +1,9 @@
 ```mermaid
 classDiagram
     class Receipt{
-	    +Uuid id
-	    +datetime creation_datetime
-	    +str name 
+	    +ReceiptID id
+	    +datetime created_ia
+	    +str title 
 
 	    +UserID creditor
 	    +list[UserID] debtors
@@ -13,11 +13,12 @@ classDiagram
 
 	    +assign_item(item: LineItem, user: User): None
 	    +disassign_item(item: LineItem, user: User): None
-	    +make_up_bill(user: UserID): Bill
+	    +append_item(item: LineItem): None
+	    +remove_item(item:LineItem): None
     }
     Receipt --> User
     Receipt --> LineItem
-    Receipt --> Bill
+    Receipt ..> Bill
 
 
     class User {
@@ -25,13 +26,13 @@ classDiagram
         +str name // First + last name how you called in real life
     }
     User *-- DummyUser
-    User *-- TelegramUser
+    User *-- RealUser
 
 
 	class DummyUser
 
 
-	class TelegramUser{
+	class RealUser{
         +int telegram_id
     }
 
@@ -44,7 +45,7 @@ classDiagram
 
 
     class Bill{
-	    +dict[LineItem, amount] items
+	    +tuple[LineItem] items
 	    +Decimal total
     }
 ```

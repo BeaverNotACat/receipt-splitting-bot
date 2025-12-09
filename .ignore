@@ -1,0 +1,20 @@
+# Obsidian
+.obsidian
+.trash
+
+# Python generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Tooling cache
+.ruff_cache
+.mypy_cache
+.pytest_cache
+.coverage
+
+# Venv
+.venv
