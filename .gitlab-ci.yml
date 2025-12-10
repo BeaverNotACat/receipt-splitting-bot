@@ -1,5 +1,4 @@
 stages:
-  - secret-detection
   - lint
   - test
   - build
@@ -41,14 +40,19 @@ stages:
       paths:
         - .uv-cache
 
+
+secret-detection:
+  stage: lint
+  trigger:
+    include:
+    - component: gitlab.com/components/secret-detection/secret-detection@main
+
+
 sast:
-  stage: test
-include:
-- template: Security/Secret-Detection.gitlab-ci.yml
-variables:
-  SECRET_DETECTION_ENABLED: 'true'
-secret_detection:
-  stage: secret-detection
+  stage: lint
+  trigger:
+    include:
+    - component: gitlab.com/components/sast/sast@main
 
 
 mypy-lint:
