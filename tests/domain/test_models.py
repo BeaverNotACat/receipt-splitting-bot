@@ -2,10 +2,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from src.domain.exceptions import RemovedMoreThanExistError
+from src.domain.exceptions import (
+    AlreadyParticipantError,
+    RemovedMoreThanExistError,
+)
 
 if TYPE_CHECKING:
-    from tests.dataset.domain import (
+    from tests.mocks.domain import (
         LineItemFactory,
         RealUserFactory,
         ReceiptFactory,
@@ -188,6 +191,17 @@ def test_user_appending(
 
     assert len(receipt.debtors_ids) == 1
     assert receipt.assignees[user.id] == []
+
+
+def test_participant_user_appending(
+    receipt_factory: ReceiptFactory,
+    real_user_factory: RealUserFactory,
+) -> None:
+    user = real_user_factory.build()
+    receipt = receipt_factory.build(creditor_id=user.id)
+
+    with pytest.raises(AlreadyParticipantError):
+        receipt.append_debtor(user)
 
 
 def test_user_removing(

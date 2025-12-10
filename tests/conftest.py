@@ -1,6 +1,6 @@
 from polyfactory.pytest_plugin import register_fixture
 
-from tests.dataset.domain import (
+from tests.mocks.domain import (
     DummyUserFactory,
     LineItemFactory,
     RealUserFactory,

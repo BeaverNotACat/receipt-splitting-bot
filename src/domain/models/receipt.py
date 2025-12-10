@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pydantic import AwareDatetime  # noqa: TC002
 
 from src.domain.exceptions import (
+    AlreadyParticipantError,
     AssignNotToParticipantError,
     ItemNotInCollectionError,
     NotDebtorError,
@@ -25,7 +26,7 @@ class Receipt:
     assignees: dict[UserID, list[LineItem]]
 
     @property
-    def participants(self) -> list[UserID]:
+    def participants_ids(self) -> list[UserID]:
         return [*self.debtors_ids, self.creditor_id]
 
     def append_item(self, item: LineItem) -> None:
@@ -59,6 +60,8 @@ class Receipt:
         )
 
     def append_debtor(self, user: User) -> None:
+        if user.id in self.participants_ids:
+            raise AlreadyParticipantError
         self.debtors_ids.append(user.id)
         self.assignees[user.id] = []
 
@@ -110,7 +113,7 @@ class Receipt:
         return collection
 
     def _ensure_participant(self, user: User) -> None:
-        if user.id not in self.participants:
+        if user.id not in self.participants_ids:
             raise AssignNotToParticipantError
 
     def _ensure_debtor(self, user: User) -> None:

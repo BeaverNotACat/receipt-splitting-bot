@@ -39,5 +39,6 @@ class Bill:
         return Decimal(sum(item.price * item.amount for item in self.items))
 
 
+ChatID = NewType("ChatID", int)
 UserID = NewType("UserID", UUID)
 ReceiptID = NewType("ReceiptID", UUID)
