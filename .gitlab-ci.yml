@@ -1,13 +1,46 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-- test
-- secret-detection
+  - secret-detection
+  - lint
+  - test
+  - build
+  - deploy
+
+
+.standart-rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH    
+    - if: $CI_COMMIT_TAG
+
+
+.on-master-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH    
+    - if: $CI_COMMIT_TAG
+
+
+.on-release-rules:
+  rules:
+    - if: $CI_COMMIT_TAG
+
+
+.uv-template: # Not using UV image because of pytest crashes
+  image: python:3.13-alpine
+  interruptible: true
+  variables:
+    UV_CACHE_DIR: .uv-cache
+  before_script:
+    - pip install uv
+    - uv sync --frozen --dev
+  after_script:
+    - uv cache prune --ci
+  cache:
+    - key:
+        files:
+          - uv.lock
+      paths:
+        - .uv-cache
+
 sast:
   stage: test
 include:
@@ -16,3 +49,50 @@ variables:
   SECRET_DETECTION_ENABLED: 'true'
 secret_detection:
   stage: secret-detection
+
+
+mypy-lint:
+  stage: lint
+  extends:
+    - .uv-template
+    - .standart-rules
+  script:
+    - uv run mypy .
+
+
+ruff-lint:
+  stage: lint
+  image: registry.gitlab.com/pipeline-components/ruff:latest
+  extends:
+    - .standart-rules
+  script:
+    - ruff check --output-format=gitlab
+
+
+test:
+  stage: test
+  extends:
+    - .uv-template
+    - .standart-rules
+  script:
+    - uv run pytest
+
+
+build-staging:
+  stage: build
+  extends:
+    - .buildkit-template
+    - .on-master-rules
+  variables:
+    BUILD_TARGET: prod
+    TAG: latest-staging
+
+
+build-production:
+  stage: build
+  extends:
+    - .buildkit-template
+    - .on-release-rules
+  variables:
+    BUILD_TARGET: prod
+    TAG: latest
