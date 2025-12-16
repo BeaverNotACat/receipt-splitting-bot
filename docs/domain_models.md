@@ -2,11 +2,11 @@
 classDiagram
     class Receipt{
 	    +ReceiptID id
-	    +datetime created_ia
+	    +datetime created_at
 	    +str title 
 
-	    +UserID creditor
-	    +list[UserID] debtors
+	    +UserID creditor_id
+	    +list[UserID] debtor_ids
 
 	    +set[LineItems] unassigned_items
 	    +dict[User, list[LineItems]] assignees
@@ -15,6 +15,8 @@ classDiagram
 	    +disassign_item(item: LineItem, user: User): None
 	    +append_item(item: LineItem): None
 	    +remove_item(item:LineItem): None
+	    +append_debtor(user: User)
+	    +remove_debtor(user: User)
     }
     Receipt --> User
     Receipt --> LineItem
@@ -33,7 +35,7 @@ classDiagram
 
 
 	class RealUser{
-        +int telegram_id
+        +int chat_id
     }
 
 
@@ -53,7 +55,7 @@ classDiagram
 **Receipt** (Чек) - Группа объединяющая пользователей и товары из чека
 Пользователь заводит Receipt, и опционально рассылает ссылку приглашение друзьям, чтобы они могли вместе параллельно делить чек.
 
-**TelegramUser** (Пользак) - Живой пользователь, может создавать чеки, назначать товары из чека себе и другим
+**RealUser** (Пользак) - Живой пользователь, может создавать чеки, назначать товары из чека себе и другим
 
 **DummyUser** (Пугало) - Заглушка пользователя, которую можно добавить к чеку, чтобы назначать на неё товары, если данный человек не может вступить в группу
 
