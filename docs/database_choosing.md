@@ -10,11 +10,11 @@ Our mentor agitated for relational database instead of No-SQL, so lets do some 1
 
 **PostgreSQL**
 
-| ❌   | unintuitive way to implement aggregates       | <br><br>                                         |
-| --- | --------------------------------------------- | ------------------------------------------------ |
-| ✅   | Easy to maintain potential complex structures | - Relational queries<br>- Many-to-many relations |
-| ✅   | Enforses data                                 | Constrains, schema, FK                           |
-| ✅   | OLAP is better                                | **IF** there will be any OLAP (NO)               |
+| ❌   | unintuitive way to implement aggregates       | <br><br>                                                                      |
+| --- | --------------------------------------------- | ----------------------------------------------------------------------------- |
+| ✅   | Easy to maintain potential complex structures | - Relational queries<br>- Many-to-many relations<br>But we **don't have any** |
+| ✅   | Enforses data                                 | Constrains, schema, FK                                                        |
+| ✅   | OLAP is better                                | **IF** there will be any OLAP (NO)                                            |
 
 Quick Receipt conсept:
 ```mermaid
