@@ -7,6 +7,7 @@ from src.application.common.interactor import Interactor
 from src.domain.value_objects import ChatID, ReceiptID
 
 if TYPE_CHECKING:
+    from src.application.user_provider import UserProvider
     from src.domain.services.receipt import ReceiptService
 
 
@@ -27,12 +28,10 @@ class CreateReceiptDTO:
 class CreateReceipt(Interactor[CreateReceiptDTO, ReceiptID]):
     receipt_service: ReceiptService
     receipt_db_gateway: ReceiptDBGateway
-    user_db_gateway: UserDBGateway
+    user_provider: UserProvider
 
     async def __call__(self, context: CreateReceiptDTO) -> ReceiptID:
-        creditor = await self.user_db_gateway.fetch_real_user(
-            chat_id=context.chat_id
-        )
+        creditor = await self.user_provider.fetch_current_user()
         receipt = self.receipt_service.create_receipt(
             creditor, context.receipt_title
         )

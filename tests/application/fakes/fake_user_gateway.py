@@ -38,13 +38,5 @@ class FakeUserGateway(UserReader, UserSaver):
 
         raise NotImplementedError
 
-    async def fetch_real_user(
-        self, **filters: Unpack[UserFilters]
-    ) -> RealUser:
-        user = await self.fetch_user(**filters)
-        if not isinstance(user, RealUser):
-            raise TypeError("Dummy got")
-        return user
-
     async def save_user(self, user: User) -> None:
         self.users_storage[user.id] = user
