@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, ClassVar, Unpack
+from typing import TYPE_CHECKING, Unpack
 
 from src.application.common.database.user_gateway import (
     UserFilters,
@@ -6,10 +6,11 @@ from src.application.common.database.user_gateway import (
     UserSaver,
 )
 from src.domain.models.user import RealUser, User
-from src.domain.value_objects import UserID
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from src.domain.value_objects import UserID
 
 
 class FakeUserGateway(UserReader, UserSaver):
@@ -36,6 +37,14 @@ class FakeUserGateway(UserReader, UserSaver):
                     return user
 
         raise NotImplementedError
+
+    async def fetch_real_user(
+        self, **filters: Unpack[UserFilters]
+    ) -> RealUser:
+        user = await self.fetch_user(**filters)
+        if not isinstance(user, RealUser):
+            raise TypeError("Dummy got")
+        return user
 
     async def save_user(self, user: User) -> None:
         self.users_storage[user.id] = user
