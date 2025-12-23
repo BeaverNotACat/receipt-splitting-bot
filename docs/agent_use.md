@@ -40,3 +40,5 @@ or
 > - What can we do with two people with the same name
 > - Any risks with requiring complex objects like `LineItem`
 > -  What  input scheme is better to work with assignees
+> - What if instead of tools and atomic operation we will listen all people to the and than then will give llm all texts summary
+> - 
