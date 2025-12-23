@@ -1,12 +1,16 @@
 from dataclasses import dataclass
 
-from src.domain.value_objects import ChatID, UserID  # noqa: TC001
+from src.domain.value_objects import (  # noqa: TC001
+    ChatID,
+    UserID,
+    UserNickname,
+)
 
 
 @dataclass
 class _BaseUser:
     id: UserID
-    name: str
+    nickname: UserNickname
 
 
 @dataclass

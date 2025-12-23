@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from src.domain.value_objects import ReceiptTitle
 from tests.domain.asserts import assert_new_receipt_creation
 
 if TYPE_CHECKING:
@@ -15,11 +16,11 @@ def test_new_real_user_creation(
     mock_user = real_user_factory.build()
 
     user = user_service.create_real_user(
-        chat_id=mock_user.chat_id, name=mock_user.name
+        chat_id=mock_user.chat_id, nickname=mock_user.nickname
     )
 
     assert user.id
-    assert user.name == mock_user.name
+    assert user.nickname == mock_user.nickname
     assert user.chat_id == mock_user.chat_id
 
 
@@ -28,10 +29,10 @@ def test_new_dummy_user_creation(
 ) -> None:
     mock_user = dummy_user_factory.build()
 
-    user = user_service.create_dummy_user(name=mock_user.name)
+    user = user_service.create_dummy_user(nickname=mock_user.nickname)
 
     assert user.id
-    assert user.name == mock_user.name
+    assert user.nickname == mock_user.nickname
 
 
 def test_new_receipt_creation(
@@ -40,7 +41,7 @@ def test_new_receipt_creation(
     receipt_service: ReceiptService,
 ) -> None:
     creditor = real_user_factory.build()
-    title = faker.pystr(max_chars=50)
+    title = ReceiptTitle(faker.pystr(max_chars=50))
 
     receipt = receipt_service.create_receipt(creditor=creditor, title=title)
 

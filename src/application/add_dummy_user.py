@@ -10,7 +10,7 @@ from src.application.common.interactor import Interactor
 
 if TYPE_CHECKING:
     from src.domain.services.user import UserService
-    from src.domain.value_objects import ReceiptID
+    from src.domain.value_objects import ReceiptID, UserNickname
 
 
 class UserDBGateway(UserSaver, Protocol): ...
@@ -21,7 +21,7 @@ class ReceiptDBGateway(ReceiptSaver, ReceiptReader, Protocol): ...
 
 class AddDummyUserDTO:
     receipt_id: ReceiptID
-    name: str
+    nickname: UserNickname
 
 
 @final
@@ -32,7 +32,7 @@ class AddDummyUser(Interactor[AddDummyUserDTO, None]):
     user_db_gateway: UserDBGateway
 
     async def __call__(self, context: AddDummyUserDTO) -> None:
-        dummy = self.user_service.create_dummy_user(context.name)
+        dummy = self.user_service.create_dummy_user(context.nickname)
         receipt = await self.receipt_db_gateway.fetch_receipt(
             receipt_id=context.receipt_id
         )

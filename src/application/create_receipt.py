@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Protocol, final
 from src.application.common.database.receipt_gateway import ReceiptSaver
 from src.application.common.database.user_gateway import UserReader
 from src.application.common.interactor import Interactor
-from src.domain.value_objects import ReceiptID
+from src.domain.value_objects import ReceiptID, ReceiptTitle
 
 if TYPE_CHECKING:
     from src.application.common.user_provider import UserProvider
@@ -19,7 +19,7 @@ class UserDBGateway(UserReader, Protocol): ...
 
 @dataclass
 class CreateReceiptDTO:
-    receipt_title: str
+    receipt_title: ReceiptTitle
 
 
 @final

@@ -8,11 +8,12 @@ from src.application.onboard import (
     OnboardUser,
     OnboardUserDTO,
 )
+from src.domain.services.user import UserService
+from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
+from tests.application.fakes.fake_user_gateway import FakeUserGateway
 
 if TYPE_CHECKING:
     from src.domain.models.receipt import Receipt
-    from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
-    from tests.application.fakes.fake_user_gateway import FakeUserGateway
 
 
 @register_fixture
@@ -26,6 +27,24 @@ def onboard_user_dto(
     return onboard_user_dto_factory.build(receipt_id=receipt.id)
 
 
+@pytest.fixture
+def fake_user_gateway() -> FakeUserGateway:
+    return FakeUserGateway()
+
+
+@pytest.fixture
+def fake_receipt_gateway(receipt: Receipt) -> FakeReceiptGateway:
+    return FakeReceiptGateway([receipt])
+
+
+@pytest.fixture
+def onboard_user_interactor(
+    fake_receipt_gateway: FakeReceiptGateway,
+    fake_user_gateway: FakeUserGateway,
+) -> OnboardUser:
+    return OnboardUser(UserService(), fake_user_gateway, fake_receipt_gateway)
+
+
 @pytest.mark.asyncio
 async def test_onboard_user(
     onboard_user_dto: OnboardUserDTO,
@@ -37,5 +56,5 @@ async def test_onboard_user(
 
     saved_user = next(iter(fake_user_gateway.users_storage.values()))
     saved_receipt = next(iter(fake_receipt_gateway.receipts_storage.values()))
-    assert saved_user.name == onboard_user_dto.name
+    assert saved_user.nickname == onboard_user_dto.nickname
     assert saved_user.id in saved_receipt.debtors_ids

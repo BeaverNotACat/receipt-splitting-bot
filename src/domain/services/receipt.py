@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from uuid import uuid7
 
 from src.domain.models.receipt import Receipt
-from src.domain.value_objects import ReceiptID
+from src.domain.value_objects import ReceiptID, ReceiptTitle
 
 if TYPE_CHECKING:
     from src.domain.models.user import RealUser
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class ReceiptService:
     @staticmethod
-    def create_receipt(creditor: RealUser, title: str) -> Receipt:
+    def create_receipt(creditor: RealUser, title: ReceiptTitle) -> Receipt:
         return Receipt(
             id=ReceiptID(uuid7()),
             created_at=datetime.now(tz=UTC),

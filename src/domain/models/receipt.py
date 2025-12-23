@@ -10,14 +10,14 @@ from src.domain.exceptions import (
     RemovedMoreThanExistError,
 )
 from src.domain.models.user import User  # noqa: TC001
-from src.domain.value_objects import LineItem, ReceiptID, UserID
+from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
 
 
 @dataclass
 class Receipt:
     id: ReceiptID
     created_at: AwareDatetime
-    title: str
+    title: ReceiptTitle
 
     creditor_id: UserID
     debtors_ids: list[UserID]

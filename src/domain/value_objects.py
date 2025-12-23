@@ -42,3 +42,5 @@ class Bill:
 ChatID = NewType("ChatID", int)
 UserID = NewType("UserID", UUID)
 ReceiptID = NewType("ReceiptID", UUID)
+UserNickname = NewType("UserNickname", str)
+ReceiptTitle = NewType("ReceiptTitle", str)
