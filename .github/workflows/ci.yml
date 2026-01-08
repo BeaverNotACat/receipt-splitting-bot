@@ -12,6 +12,7 @@ env:
 
 jobs:
   ruff:
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -21,6 +22,7 @@ jobs:
       - run: uv run ruff check
 
   mypy:
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -31,6 +33,7 @@ jobs:
 
 
   pytest:
+    runs-on: ubuntu-slim
     needs: [ruff, mypy]
     steps:
       - uses: actions/checkout@v6
@@ -45,6 +48,7 @@ jobs:
           path: coverage.md
 
   bandit:
+    runs-on: ubuntu-slim
     needs: [ruff, mypy]
     steps:
       - uses: actions/checkout@v6
