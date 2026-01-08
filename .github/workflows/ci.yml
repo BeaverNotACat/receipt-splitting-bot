@@ -7,6 +7,8 @@ on:
     branches:
       - main
 
+permissions: read-all
+
 env:
   UV_LOCKED: 1
 
