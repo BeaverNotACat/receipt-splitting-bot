@@ -1,0 +1,59 @@
+name: Linting and tests
+
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches:
+      - main
+
+env:
+  UV_LOCKED: 1
+
+jobs:
+  ruff:
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+            enable-cache: true
+      - run: uv run ruff check
+
+  mypy:
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+            enable-cache: true
+      - run: uv run mypy .
+
+
+  pytest:
+    needs: [ruff, mypy]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+            enable-cache: true
+      - run: uv run pytest --cov=src --cov-report markdown:coverage.md
+      - uses: actions/upload-artifact@v6
+        with:
+          name: coverage.md
+          path: coverage.md
+
+  bandit:
+    needs: [ruff, mypy]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+            enable-cache: true
+      - run: uv run bandit src -f yaml -o bandit.yaml
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bandit.yaml
+          path: bandit.yaml
