@@ -38,11 +38,6 @@ erDiagram
         UUID receipt_id FK
         NUMERIC price
         NUMERIC amount
-    }
-    line_items ||--|| assgnments: connects
-    
-    assgnments {
-    UUID line_item_id FK
-    UUID user_id FK
+        UUID assigned_to FK
     }
 ```
