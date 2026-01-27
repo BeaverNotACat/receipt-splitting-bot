@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 assignments = Table(
     "debtors",
     orm_registry.metadata,
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("receipt_id", ForeignKey("receipts.id"), primary_key=True),
+    Column("users_id", ForeignKey("users.id"), primary_key=True),
+    Column("receipts_id", ForeignKey("receipts.id"), primary_key=True),
 )
 
 
@@ -33,14 +33,16 @@ class ReceiptORM(UUIDAuditBase):
     debtors: Mapped[list[UserORM]] = relationship(
         secondary="debtors", back_populates="receipts", lazy="selectin"
     )
-    line_items: Mapped[list[LineItemsORM]] = relationship(lazy="joined")
+    line_items: Mapped[list[LineItemORM]] = relationship(
+        lazy="joined", cascade="all, delete-orphan"
+    )
 
 
-class LineItemsORM(UUIDAuditBase):
+class LineItemORM(UUIDAuditBase):
     __tablename__ = "line_items"
 
     receipt_id: Mapped[UUID] = mapped_column(ForeignKey(ReceiptORM.id))
     name: Mapped[str]
     price: Mapped[Decimal] = mapped_column(Numeric(2, 8))
     amount: Mapped[Decimal] = mapped_column(Numeric(2, 8))
-    assigned_to: Mapped[UUID] = mapped_column(ForeignKey(UserORM.id))
+    assigned_to: Mapped[UUID | None] = mapped_column(ForeignKey(UserORM.id))
