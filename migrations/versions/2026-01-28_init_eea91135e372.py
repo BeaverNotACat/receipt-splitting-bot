@@ -7,36 +7,32 @@ Create Date: 2026-01-28 07:03:26.245599
 """
 
 import warnings
-from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
-from alembic import op
 from advanced_alchemy.types import (
-    EncryptedString,
-    EncryptedText,
     GUID,
     ORA_JSONB,
     DateTimeUTC,
-    StoredObject,
-    PasswordHash,
+    EncryptedString,
+    EncryptedText,
     FernetBackend,
+    PasswordHash,
+    StoredObject,
 )
 from advanced_alchemy.types.encrypted_string import PGCryptoBackend
 from advanced_alchemy.types.password_hash.argon2 import Argon2Hasher
 from advanced_alchemy.types.password_hash.passlib import PasslibHasher
 from advanced_alchemy.types.password_hash.pwdlib import PwdlibHasher
+from alembic import op
 from sqlalchemy import Text  # noqa: F401
 
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
 __all__ = [
-    "downgrade",
-    "upgrade",
-    "schema_upgrades",
-    "schema_downgrades",
-    "data_upgrades",
     "data_downgrades",
+    "data_upgrades",
+    "downgrade",
+    "schema_downgrades",
+    "schema_upgrades",
+    "upgrade",
 ]
 
 sa.GUID = GUID

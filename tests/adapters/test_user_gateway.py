@@ -2,13 +2,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from tests.mocks.domain import (
-    RealUserFactory,
-)
-
 if TYPE_CHECKING:
     from src.adapters.database.user_gateway import UserGateway
     from src.domain.models.user import RealUser
+    from tests.mocks.domain import RealUserFactory
 
 
 @pytest.mark.asyncio

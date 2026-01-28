@@ -1,24 +1,26 @@
 import asyncio
 from typing import TYPE_CHECKING, cast
 
+from advanced_alchemy.base import metadata_registry
+from alembic import context
 from alembic.autogenerate import rewriter
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncEngine, async_engine_from_config
 
-from advanced_alchemy.base import metadata_registry
-from alembic import context
-
 if TYPE_CHECKING:
+    from advanced_alchemy.alembic.commands import AlembicCommandConfig
     from sqlalchemy.engine import Connection
 
-    from advanced_alchemy.alembic.commands import AlembicCommandConfig
-
-__all__ = ("do_run_migrations", "run_migrations_offline", "run_migrations_online")
+__all__ = (
+    "do_run_migrations",
+    "run_migrations_offline",
+    "run_migrations_online",
+)
 
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-config: "AlembicCommandConfig" = context.config  # type: ignore
+config: AlembicCommandConfig = context.config  # type: ignore
 writer = rewriter.Rewriter()
 
 
@@ -50,7 +52,7 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def do_run_migrations(connection: "Connection") -> None:
+def do_run_migrations(connection: Connection) -> None:
     """Run migrations."""
     context.configure(
         connection=connection,

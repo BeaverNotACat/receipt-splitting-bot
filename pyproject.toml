@@ -29,10 +29,12 @@ strict_bytes = true
 local_partial_types = true
 warn_unreachable = true
 explicit_package_bases = true
-plugins = ['pydantic.mypy']
+plugins = ["pydantic.mypy"]
+exclude = "migrations"
 
 [tool.ruff]
 line-length = 79
+extend-exclude = ["migrations"]
 
 [tool.ruff.lint]
 preview = true
