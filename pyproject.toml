@@ -7,6 +7,7 @@ requires-python = ">=3.14"
 dependencies = [
     "advanced-alchemy[cli]>=1.8.2",
     "annotated-types>=0.7.0",
+    "argon2-cffi>=25.1.0",
     "langchain>=1.1.0",
     "psycopg[binary]>=3.3.2",
     "pydantic>=2.12.5",
@@ -28,6 +29,7 @@ strict_bytes = true
 local_partial_types = true
 warn_unreachable = true
 explicit_package_bases = true
+plugins = ['pydantic.mypy']
 
 [tool.ruff]
 line-length = 79

@@ -1,12 +1,9 @@
-from typing import TYPE_CHECKING
+from decimal import Decimal  # noqa: TC003
+from uuid import UUID  # noqa: TC003
 
 from advanced_alchemy.base import UUIDAuditBase, orm_registry
 from sqlalchemy import BIGINT, Column, ForeignKey, Numeric, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-if TYPE_CHECKING:
-    from decimal import Decimal
-    from uuid import UUID
 
 assignments = Table(
     "debtors",
@@ -31,10 +28,10 @@ class ReceiptORM(UUIDAuditBase):
     title: Mapped[str]
     creditor_id: Mapped[UUID] = mapped_column(ForeignKey(UserORM.id))
     debtors: Mapped[list[UserORM]] = relationship(
-        secondary="debtors", back_populates="receipts", lazy="selectin"
+        secondary="debtors", lazy="selectin"
     )
     line_items: Mapped[list[LineItemORM]] = relationship(
-        lazy="joined", cascade="all, delete-orphan"
+        lazy="selectin", cascade="all, delete-orphan"
     )
 
 
