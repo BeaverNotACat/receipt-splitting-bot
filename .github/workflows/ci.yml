@@ -38,7 +38,7 @@ jobs:
     needs: [ruff, mypy]
     runs-on: ubuntu-latest
     env:
-        DATABASE_DSN: postgresql+psycopg://postgres:postgres@postgres:5432/receipt-splitting-bot
+        DATABASE_DSN: postgresql+psycopg://postgres:localhost@postgres:5432/receipt-splitting-bot
     services:
       postgres:
         image: postgres:alpine
