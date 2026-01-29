@@ -35,8 +35,15 @@ jobs:
 
 
   pytest:
-    runs-on: ubuntu-slim
     needs: [ruff, mypy]
+    services:
+      postgres:
+        image: postgres:alpine
+        ports:
+          - 5432:5432
+        env:
+            POSTGRES_PASSWORD: postgres
+    runs-on: ubuntu-slim
     env:
         DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
     steps:
@@ -50,15 +57,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: coverage.md
-          path: coverage.md
-    services:
-      postgres:
-        image: postgres:alpine
-        ports:
-          - 5432:5432
-        env:
-            POSTGRES_PASSWORD: postgres
-        
+          path: coverage.md        
 
   bandit:
     runs-on: ubuntu-slim
