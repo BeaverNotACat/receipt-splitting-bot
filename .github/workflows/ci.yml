@@ -53,8 +53,8 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
             enable-cache: true
-      - run: uv run pytest --cov=src --cov-report markdown:coverage.md
       - run: uv run alchemy --config src.adapters.database.cli_config.config upgrade
+      - run: uv run pytest --cov=src --cov-report markdown:coverage.md
       - uses: actions/upload-artifact@v6
         with:
           name: coverage.md
