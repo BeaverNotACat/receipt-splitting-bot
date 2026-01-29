@@ -58,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: coverage.md
-          path: coverage.md        
+          path: coverage.md
 
   bandit:
     runs-on: ubuntu-slim
