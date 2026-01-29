@@ -40,7 +40,7 @@ class ReceiptGateway(ReceiptReader, ReceiptSaver):
 
     async def save_receipt(self, receipt: Receipt) -> None:
         receipt_orm = await self._map_to_orm(receipt)
-        self.session.add(receipt_orm)
+        await self.session.merge(receipt_orm)
 
     async def _map_to_orm(self, receipt: Receipt) -> ReceiptORM:
         return ReceiptORM(

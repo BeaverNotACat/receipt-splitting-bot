@@ -27,7 +27,7 @@ class UserGateway(UserReader, UserSaver):
 
     async def save_user(self, user: User) -> None:
         user_orm = self._map_to_orm(user)
-        self.session.add(user_orm)
+        await self.session.merge(user_orm)
 
     @staticmethod
     def _map_to_domain(orm: UserORM) -> User:
