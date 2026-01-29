@@ -28,8 +28,8 @@ class FakeReceiptGateway(ReceiptReader, ReceiptSaver):
     async def fetch_receipt(
         self, **filters: Unpack[SingleReceiptFilters]
     ) -> Receipt:
-        if filters.get("receipt_id") is not None:
-            return self.receipts_storage[filters["receipt_id"]]
+        if filters.get("id") is not None:
+            return self.receipts_storage[filters["id"]]
 
         raise NotImplementedError
 

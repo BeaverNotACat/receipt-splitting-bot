@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class SingleReceiptFilters(TypedDict, total=False):
-    receipt_id: ReceiptID
+    id: ReceiptID
 
 
 class MultipleReceiptsFilters(TypedDict, total=False):

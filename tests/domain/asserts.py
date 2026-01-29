@@ -12,5 +12,4 @@ def assert_new_receipt_creation(
     assert receipt.created_at
     assert receipt.title == receipt_title
     assert receipt.creditor_id == creditor_id
-    assert receipt.debtors_ids == []
-    assert receipt.assignees == {}
+    assert receipt.assignees == {creditor_id: []}

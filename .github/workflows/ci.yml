@@ -48,6 +48,11 @@ jobs:
         with:
           name: coverage.md
           path: coverage.md
+    services:
+      postgres: postgres:alpine
+      ports:
+        - 5432:5432
+        
 
   bandit:
     runs-on: ubuntu-slim

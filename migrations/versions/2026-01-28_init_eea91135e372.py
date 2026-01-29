@@ -120,8 +120,8 @@ def schema_upgrades() -> None:
         sa.Column("id", sa.GUID(length=16), nullable=False),
         sa.Column("receipt_id", sa.GUID(length=16), nullable=False),
         sa.Column("name", sa.String(), nullable=False),
-        sa.Column("price", sa.Numeric(precision=2, scale=8), nullable=False),
-        sa.Column("amount", sa.Numeric(precision=2, scale=8), nullable=False),
+        sa.Column("price", sa.Numeric(precision=10, scale=2), nullable=False),
+        sa.Column("amount", sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column("assigned_to", sa.GUID(length=16), nullable=True),
         sa.Column("sa_orm_sentinel", sa.Integer(), nullable=True),
         sa.Column("created_at", sa.DateTimeUTC(timezone=True), nullable=False),
@@ -129,7 +129,7 @@ def schema_upgrades() -> None:
         sa.ForeignKeyConstraint(
             ["assigned_to"],
             ["users.id"],
-            name=op.f("fk_line_items_assigned_to_users"),
+            name=op.f("fk_linalchemy --config src.adapters.database.cli_config.config upgradee_items_assigned_to_users"),
         ),
         sa.ForeignKeyConstraint(
             ["receipt_id"],

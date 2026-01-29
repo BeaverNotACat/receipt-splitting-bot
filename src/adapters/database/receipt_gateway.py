@@ -39,21 +39,17 @@ class ReceiptGateway(ReceiptReader, ReceiptSaver):
         return self._bulk_map_to_domain(receipt_orm.scalars())
 
     async def save_receipt(self, receipt: Receipt) -> None:
-        receipt_orm = self._map_to_orm(receipt)
+        receipt_orm = await self._map_to_orm(receipt)
         self.session.add(receipt_orm)
 
     async def _map_to_orm(self, receipt: Receipt) -> ReceiptORM:
         return ReceiptORM(
+            id=receipt.id,
             title=receipt.title,
             creditor_id=receipt.creditor_id,
-            debtors=await self._map_debtors_to_orm(receipt),
+            created_at=receipt.created_at,
             line_items=self._map_line_items_to_orm(receipt),
         )
-
-    async def _map_debtors_to_orm(self, receipt: Receipt) -> list[UserORM]:
-        query = select(UserORM).filter(UserORM.id.in_(receipt.debtors_ids))
-        debtors = await self.session.execute(query)
-        return list(debtors.scalars())
 
     @staticmethod
     def _map_line_items_to_orm(receipt: Receipt) -> list[LineItemORM]:
@@ -96,7 +92,6 @@ class ReceiptGateway(ReceiptReader, ReceiptSaver):
             created_at=orm.created_at,
             title=ReceiptTitle(orm.title),
             creditor_id=UserID(orm.creditor_id),
-            debtors_ids=[UserID(debtor.id) for debtor in orm.debtors],
             unassigned_items=unassigned_items,
             assignees=assignees,
         )

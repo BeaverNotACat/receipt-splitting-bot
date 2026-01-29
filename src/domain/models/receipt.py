@@ -20,14 +20,13 @@ class Receipt:
     title: ReceiptTitle
 
     creditor_id: UserID
-    debtors_ids: list[UserID]
 
     unassigned_items: list[LineItem]
     assignees: dict[UserID, list[LineItem]]
 
     @property
     def participants_ids(self) -> list[UserID]:
-        return [*self.debtors_ids, self.creditor_id]
+        return [*self.assignees]
 
     def append_item(self, item: LineItem) -> None:
         self.unassigned_items = self._add_to_collection(
@@ -62,7 +61,6 @@ class Receipt:
     def append_debtor(self, user: User) -> None:
         if user.id in self.participants_ids:
             raise AlreadyParticipantError
-        self.debtors_ids.append(user.id)
         self.assignees[user.id] = []
 
     def remove_debtor(self, user: User) -> None:
@@ -72,7 +70,6 @@ class Receipt:
                 self.unassigned_items, item
             )
         del self.assignees[user.id]
-        self.debtors_ids.remove(user.id)
 
     @staticmethod
     def _remove_from_collection(
@@ -82,15 +79,13 @@ class Receipt:
             raise ItemNotInCollectionError
         collection = collection.copy()
 
-        collection[collection.index(item)], collection[-1] = (
-            collection[-1],
-            collection[collection.index(item)],
-        )
-        free_item = collection.pop()
+        free_item = collection[collection.index(item)]
 
         free_amount = free_item.amount - item.amount
-        if free_amount > 0:
-            collection.append(LineItem(item.name, free_amount, item.price))
+        if free_amount >= 0:
+            collection.remove(item)
+            if free_amount > 0:
+                collection.append(LineItem(item.name, free_amount, item.price))
         elif free_amount < 0:
             raise RemovedMoreThanExistError
 
@@ -117,5 +112,5 @@ class Receipt:
             raise AssignNotToParticipantError
 
     def _ensure_debtor(self, user: User) -> None:
-        if user.id not in self.debtors_ids:
+        if user.id not in self.participants_ids:
             raise NotDebtorError

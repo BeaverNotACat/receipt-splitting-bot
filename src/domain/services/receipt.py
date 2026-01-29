@@ -17,7 +17,6 @@ class ReceiptService:
             created_at=datetime.now(tz=UTC),
             title=title,
             creditor_id=creditor.id,
-            debtors_ids=[],
             unassigned_items=[],
-            assignees={},
+            assignees={creditor.id: []},
         )

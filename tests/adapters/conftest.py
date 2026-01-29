@@ -34,7 +34,7 @@ def sqlalchemy_sessionmaker(
     return async_sessionmaker(sqlalchemy_engine)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def sqlalchemy_session(
     sqlalchemy_sessionmaker: async_sessionmaker[AsyncSession],
 ) -> Generator[AsyncSession]:
