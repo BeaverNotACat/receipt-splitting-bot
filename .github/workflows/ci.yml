@@ -37,6 +37,8 @@ jobs:
   pytest:
     runs-on: ubuntu-slim
     needs: [ruff, mypy]
+    env:
+        DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -49,12 +51,11 @@ jobs:
         with:
           name: coverage.md
           path: coverage.md
-    env:
-        DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
     services:
-      postgres: postgres:alpine
-      env:
-          POSTGRES_PASSWORD: postgres
+      postgres:
+        image: postgres:alpine
+        env:
+            POSTGRES_PASSWORD: postgres
         
 
   bandit:
