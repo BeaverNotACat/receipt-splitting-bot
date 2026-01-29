@@ -44,14 +44,17 @@ jobs:
         with:
             enable-cache: true
       - run: uv run pytest --cov=src --cov-report markdown:coverage.md
+      - run: uv run alchemy --config src.adapters.database.cli_config.config upgrade
       - uses: actions/upload-artifact@v6
         with:
           name: coverage.md
           path: coverage.md
+    env:
+        DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
     services:
       postgres: postgres:alpine
-      ports:
-        - 5432:5432
+      env:
+          POSTGRES_PASSWORD: postgres
         
 
   bandit:
