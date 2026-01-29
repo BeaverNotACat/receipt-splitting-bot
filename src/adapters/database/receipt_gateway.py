@@ -12,7 +12,7 @@ from src.application.common.database.receipt_gateway import (
 from src.domain.models.receipt import Receipt
 from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
 
-from .orm import LineItemORM, ReceiptORM, UserORM
+from .orm import LineItemORM, ReceiptORM
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

@@ -1,10 +1,13 @@
+from typing import TYPE_CHECKING
+
 import pytest
 
-from src.adapters.database.receipt_gateway import ReceiptGateway
-from src.adapters.database.user_gateway import UserGateway
-from src.domain.models.receipt import Receipt
-from src.domain.value_objects import UserID
-from tests.mocks.domain import RealUserFactory
+if TYPE_CHECKING:
+    from src.adapters.database.receipt_gateway import ReceiptGateway
+    from src.adapters.database.user_gateway import UserGateway
+    from src.domain.models.receipt import Receipt
+    from src.domain.value_objects import UserID
+    from tests.mocks.domain import RealUserFactory
 
 
 async def set_up_users(
