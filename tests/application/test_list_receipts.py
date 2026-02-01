@@ -17,7 +17,7 @@ def fake_receipt_db_gateway(
     real_user: RealUser,
 ) -> FakeReceiptGateway:
     creditor_receipts = receipt_factory.batch(2, creditor_id=real_user.id)
-    debtors_receipts = receipt_factory.batch(2, debtors_ids=[real_user.id])
+    debtors_receipts = receipt_factory.batch(2, assignees={real_user.id: []})
     other_receipts = receipt_factory.batch(10)
     return FakeReceiptGateway(
         [*creditor_receipts, *debtors_receipts, *other_receipts]

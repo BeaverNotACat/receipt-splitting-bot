@@ -35,14 +35,25 @@ jobs:
 
 
   pytest:
-    runs-on: ubuntu-slim
     needs: [ruff, mypy]
+    runs-on: ubuntu-latest
+    env:
+        DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
+    services:
+      postgres:
+        image: postgres:alpine
+        ports:
+          - 5432:5432
+        env:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: receipt-splitting-bot
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
       - uses: astral-sh/setup-uv@v7
         with:
             enable-cache: true
+      - run: uv run alchemy --config src.adapters.database.cli_config.config upgrade --no-prompt
       - run: uv run pytest --cov=src --cov-report markdown:coverage.md
       - uses: actions/upload-artifact@v6
         with:

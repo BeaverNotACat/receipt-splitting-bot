@@ -26,7 +26,7 @@ class FakeUserGateway(UserReader, UserSaver):
 
     async def fetch_user(self, **filters: Unpack[UserFilters]) -> User:
         if filters.get("user_id") is not None:
-            return self.users_storage[filters["user_id"]]
+            return self.users_storage[filters["id"]]
 
         if filters.get("chat_id") is not None:
             for user in self.users_storage.values():

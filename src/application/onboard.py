@@ -56,8 +56,6 @@ class OnboardUser(Interactor[OnboardUserDTO, None]):
     async def add_to_receipt(
         self, user: RealUser, receipt_id: ReceiptID
     ) -> None:
-        receipt = await self.receipt_db_gateway.fetch_receipt(
-            receipt_id=receipt_id
-        )
+        receipt = await self.receipt_db_gateway.fetch_receipt(id=receipt_id)
         receipt.append_debtor(user)
         await self.receipt_db_gateway.save_receipt(receipt)

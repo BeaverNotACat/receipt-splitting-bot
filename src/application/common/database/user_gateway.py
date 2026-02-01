@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 
 
 class UserFilters(TypedDict, total=False):
-    user_id: UserID
+    id: UserID
     chat_id: ChatID
 
 

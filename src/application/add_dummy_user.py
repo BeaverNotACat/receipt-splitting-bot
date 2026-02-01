@@ -37,7 +37,7 @@ class AddDummyUser(Interactor[AddDummyUserDTO, UserID]):
     async def __call__(self, context: AddDummyUserDTO) -> UserID:
         dummy = self.user_service.create_dummy_user(context.nickname)
         receipt = await self.receipt_db_gateway.fetch_receipt(
-            receipt_id=context.receipt_id
+            id=context.receipt_id
         )
         receipt.append_debtor(dummy)
 

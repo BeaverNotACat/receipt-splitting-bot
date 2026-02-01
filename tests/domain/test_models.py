@@ -46,7 +46,6 @@ def test_receipt_item_removing(
 ) -> None:
     item = line_item_factory.build()
     receipt = receipt_factory.build(unassigned_items=[item])
-
     receipt.remove_item(item)
 
     assert len(receipt.unassigned_items) == 0
@@ -92,7 +91,7 @@ def test_new_receipt_item_assigning(
     user = real_user_factory.build()
     item = line_item_factory.build()
     receipt = receipt_factory.build(
-        unassigned_items=[item], creditor_id=user.id, assignees={}
+        unassigned_items=[item], creditor_id=user.id, assignees={user.id: []}
     )
 
     receipt.assign_item(item=item, user=user)
@@ -185,11 +184,11 @@ def test_user_appending(
     real_user_factory: RealUserFactory,
 ) -> None:
     user = real_user_factory.build()
-    receipt = receipt_factory.build(debtors_ids=[])
+    receipt = receipt_factory.build(assignees={})
 
     receipt.append_debtor(user)
 
-    assert len(receipt.debtors_ids) == 1
+    assert len(receipt.assignees) == 1
     assert receipt.assignees[user.id] == []
 
 
@@ -198,7 +197,9 @@ def test_participant_user_appending(
     real_user_factory: RealUserFactory,
 ) -> None:
     user = real_user_factory.build()
-    receipt = receipt_factory.build(creditor_id=user.id)
+    receipt = receipt_factory.build(
+        creditor_id=user.id, assignees={user.id: []}
+    )
 
     with pytest.raises(AlreadyParticipantError):
         receipt.append_debtor(user)
@@ -209,11 +210,9 @@ def test_user_removing(
     real_user_factory: RealUserFactory,
 ) -> None:
     user = real_user_factory.build()
-    receipt = receipt_factory.build(
-        debtors_ids=[user.id], assignees={user.id: []}
-    )
+    receipt = receipt_factory.build(assignees={user.id: []})
 
     receipt.remove_debtor(user)
 
-    assert len(receipt.debtors_ids) == 0
+    assert len(receipt.assignees) == 0
     assert receipt.assignees.get(user.id, None) is None

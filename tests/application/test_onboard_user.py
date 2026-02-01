@@ -57,4 +57,5 @@ async def test_onboard_user(
     saved_user = next(iter(fake_user_gateway.users_storage.values()))
     saved_receipt = next(iter(fake_receipt_gateway.receipts_storage.values()))
     assert saved_user.nickname == onboard_user_dto.nickname
-    assert saved_user.id in saved_receipt.debtors_ids
+    assert saved_user.id in saved_receipt.participants_ids
+    assert saved_user.id in saved_receipt.assignees
