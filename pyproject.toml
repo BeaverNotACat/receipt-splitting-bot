@@ -6,8 +6,10 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "advanced-alchemy[cli]>=1.8.2",
+    "aiogram>=3.24.0",
     "annotated-types>=0.7.0",
     "argon2-cffi>=25.1.0",
+    "dishka>=1.7.2",
     "langchain>=1.1.0",
     "psycopg[binary]>=3.3.2",
     "pydantic>=2.12.5",
@@ -23,6 +25,7 @@ dev = [
     "pytest-cov>=7.0.0",
     "ruff>=0.13.1",
 ]
+
 [tool.mypy]
 strict = true
 strict_bytes = true
@@ -65,7 +68,6 @@ select = [
     "RSE", # flake8-raise
     "RET", # flake8-return
     "SLF", # flake8-self 
-    "SLF", # flake8-self
     "SIM", # flake8-simplify
     "TID", # flake8-tidy-imports
     "TD", # flake8-todos
@@ -88,6 +90,5 @@ select = [
 ]
 ignore = [
     "COM812", # ruff warn on it
-    "S101", # triggers on asserts in tests
-    "TRY003", # imho  adding factories to some exceptions is too much
+    "S101", # triggers on asserts in tests, bandit hadles assers in src anyway 
 ]

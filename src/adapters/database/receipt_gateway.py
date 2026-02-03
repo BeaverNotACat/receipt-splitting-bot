@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.receipt_gateway import (
     MultipleReceiptsFilters,
@@ -16,8 +17,6 @@ from .orm import LineItemORM, ReceiptORM
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-
-    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ReceiptGateway(ReceiptReader, ReceiptSaver):

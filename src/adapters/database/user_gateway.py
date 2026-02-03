@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Unpack
+from typing import Unpack
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.user_gateway import (
     UserFilters,
@@ -11,9 +12,6 @@ from src.domain.models.user import DummyUser, RealUser, User
 from src.domain.value_objects import ChatID, UserID, UserNickname
 
 from .orm import UserORM
-
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserGateway(UserReader, UserSaver):

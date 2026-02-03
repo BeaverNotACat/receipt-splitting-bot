@@ -7,6 +7,7 @@ from src.application.common.database.receipt_gateway import (
     ReceiptReader,
     ReceiptSaver,
 )
+from src.domain.services import UserService  # noqa: TC001
 from src.domain.value_objects import (  # noqa: TC001
     ChatID,
     ReceiptID,
@@ -15,7 +16,6 @@ from src.domain.value_objects import (  # noqa: TC001
 
 if TYPE_CHECKING:
     from src.domain.models import RealUser
-    from src.domain.services import UserService
 
 
 class UserDBGateway(UserSaver, Protocol): ...
