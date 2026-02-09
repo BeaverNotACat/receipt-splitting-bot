@@ -1,23 +1,15 @@
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol, final
+from dataclasses import dataclass  # noqa: I001
+from typing import final
 
 from src.application.common.database.receipt_gateway import (
-    ReceiptReader,
-    ReceiptSaver,
+    ReceiptGatewayI,  # noqa: TC001
 )
-from src.application.common.database.user_gateway import UserSaver
+from src.application.common.database.user_gateway import UserSaverI  # noqa: TC001
 from src.application.common.interactor import Interactor
 from src.domain.value_objects import ReceiptID, UserID, UserNickname
 
-if TYPE_CHECKING:
-    from src.application.common.user_provider import UserProvider
-    from src.domain.services.user import UserService
-
-
-class UserDBGateway(UserSaver, Protocol): ...
-
-
-class ReceiptDBGateway(ReceiptSaver, ReceiptReader, Protocol): ...
+from src.application.common.user_provider import UserProviderI  # noqa: TC001
+from src.domain.services.user import UserService  # noqa: TC001
 
 
 @dataclass
@@ -29,10 +21,10 @@ class AddDummyUserDTO:
 @final
 @dataclass(frozen=True)
 class AddDummyUser(Interactor[AddDummyUserDTO, UserID]):
-    user_provider: UserProvider
+    user_provider: UserProviderI
     user_service: UserService
-    receipt_db_gateway: ReceiptDBGateway
-    user_db_gateway: UserDBGateway
+    receipt_db_gateway: ReceiptGatewayI
+    user_db_gateway: UserSaverI
 
     async def __call__(self, context: AddDummyUserDTO) -> UserID:
         dummy = self.user_service.create_dummy_user(context.nickname)

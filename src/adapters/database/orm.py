@@ -19,7 +19,9 @@ class UserORM(UUIDAuditBase):
     __tablename__ = "users"
 
     nickname: Mapped[str]
-    chat_id: Mapped[int | None] = mapped_column(BIGINT, nullable=True)
+    chat_id: Mapped[int | None] = mapped_column(
+        BIGINT, nullable=True, unique=True
+    )
 
 
 class ReceiptORM(UUIDAuditBase):

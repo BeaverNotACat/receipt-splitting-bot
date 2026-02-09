@@ -1,6 +1,4 @@
-from typing import TYPE_CHECKING
-
-from pydantic import PostgresDsn, SecretStr
+from pydantic import PostgresDsn, SecretStr  # noqa: TC002
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

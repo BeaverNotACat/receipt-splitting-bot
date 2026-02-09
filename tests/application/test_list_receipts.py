@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 import pytest
-
 from src.application.list_receipts import ListReceipts
+
 from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
 
 if TYPE_CHECKING:

@@ -15,7 +15,7 @@ class MultipleReceiptsFilters(TypedDict, total=False):
     participant_id: UserID
 
 
-class ReceiptReader(Protocol):
+class ReceiptReaderI(Protocol):
     @abstractmethod
     async def fetch_receipt(
         self, **filters: Unpack[SingleReceiptFilters]
@@ -29,7 +29,10 @@ class ReceiptReader(Protocol):
         raise NotImplementedError
 
 
-class ReceiptSaver(Protocol):
+class ReceiptSaverI(Protocol):
     @abstractmethod
     async def save_receipt(self, receipt: Receipt) -> None:
         raise NotImplementedError
+
+
+class ReceiptGatewayI(ReceiptReaderI, ReceiptSaverI, Protocol): ...

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pydantic import AwareDatetime
+from pydantic import AwareDatetime  # noqa: TC002
 
 from src.domain.exceptions import (
     AlreadyParticipantError,

@@ -1,12 +1,12 @@
 from typing import Unpack
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
 
 from src.application.common.database.user_gateway import (
     UserFilters,
-    UserReader,
-    UserSaver,
+    UserReaderI,
+    UserSaverI,
 )
 from src.domain.models.user import DummyUser, RealUser, User
 from src.domain.value_objects import ChatID, UserID, UserNickname
@@ -14,7 +14,7 @@ from src.domain.value_objects import ChatID, UserID, UserNickname
 from .orm import UserORM
 
 
-class UserGateway(UserReader, UserSaver):
+class UserGateway(UserReaderI, UserSaverI):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 

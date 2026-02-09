@@ -2,12 +2,12 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
 
 from src.application.common.database.receipt_gateway import (
     MultipleReceiptsFilters,
-    ReceiptReader,
-    ReceiptSaver,
+    ReceiptReaderI,
+    ReceiptSaverI,
     SingleReceiptFilters,
 )
 from src.domain.models.receipt import Receipt
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 
-class ReceiptGateway(ReceiptReader, ReceiptSaver):
+class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 

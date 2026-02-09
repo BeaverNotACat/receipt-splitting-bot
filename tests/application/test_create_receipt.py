@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 import pytest
 from polyfactory.factories import DataclassFactory
 from polyfactory.pytest_plugin import register_fixture
-
 from src.application.create_receipt import CreateReceipt, CreateReceiptDTO
+
 from src.domain.services.receipt import ReceiptService
 
 if TYPE_CHECKING:

@@ -4,6 +4,6 @@ if TYPE_CHECKING:
     from src.domain.models.user import RealUser
 
 
-class UserProvider(Protocol):
+class UserProviderI(Protocol):
     async def fetch_current_user(self) -> RealUser:
         raise NotImplementedError
