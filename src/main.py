@@ -1,6 +1,7 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+from aiogram_dialog import setup_dialogs
 from dishka.integrations.aiogram import setup_dishka
 
 from src.presentation.commands.onboard import onboard_router
@@ -11,6 +12,7 @@ from src.settings import Settings
 def get_dispatcher() -> Dispatcher:
     dp = Dispatcher()
     setup_dishka(container, dp)
+    setup_dialogs(dp)
     dp.include_router(onboard_router)
     return dp
 

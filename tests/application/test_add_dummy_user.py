@@ -4,7 +4,10 @@ import pytest
 from polyfactory.factories import DataclassFactory
 from polyfactory.pytest_plugin import register_fixture
 
-from src.application.add_dummy_user import AddDummyUser, AddDummyUserDTO
+from src.application.receipt.add_dummy_user import (
+    AddDummyUser,
+    AddDummyUserDTO,
+)
 from src.domain.services.user import UserService
 from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
 from tests.application.fakes.fake_user_gateway import FakeUserGateway
