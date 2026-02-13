@@ -39,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
         DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
+        TELEGRAM_TOKEN: ...
     services:
       postgres:
         image: postgres:alpine
