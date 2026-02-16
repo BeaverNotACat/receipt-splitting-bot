@@ -4,8 +4,8 @@
 stateDiagram-v2
     state is_user_registered
 	
-    [*] --> /start=uuid
-    /start=uuid --> is_user_registered
+    [*] --> /start
+    /start --> is_user_registered
     is_user_registered --> AskNickname: False
     AskNickname --> RegisterUser
     RegisterUser --> ProfileScreen

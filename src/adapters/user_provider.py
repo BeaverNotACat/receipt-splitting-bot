@@ -1,9 +1,13 @@
 from typing import cast
 
 from src.application.common.database.user_gateway import (
+    UserNotFoundError,
     UserReaderI,  # noqa: TC001
 )
-from src.application.common.user_provider import UserProviderI
+from src.application.common.user_provider import (
+    UserIsNotRegisteredError,
+    UserProviderI,
+)
 from src.domain.models.user import RealUser  # noqa: TC001
 from src.domain.value_objects import ChatID  # noqa: TC001
 
@@ -17,7 +21,11 @@ class UserProvider(UserProviderI):
 
     async def fetch_current_user(self) -> RealUser:
         if self.chat_id is None:
-            raise ValueError("NotRegistered")
-        return cast(
-            "RealUser", await self.user_reader.fetch_user(chat_id=self.chat_id)
-        )
+            raise UserIsNotRegisteredError
+        try:
+            return cast(
+                "RealUser",
+                await self.user_reader.fetch_user(chat_id=self.chat_id),
+            )
+        except UserNotFoundError:
+            raise UserIsNotRegisteredError from UserNotFoundError

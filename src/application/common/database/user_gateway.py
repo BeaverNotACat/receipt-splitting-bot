@@ -17,6 +17,9 @@ class UserFilters(TypedDict, total=False):
     chat_id: ChatID
 
 
+class UserNotFoundError(Exception): ...
+
+
 class UserReaderI(Protocol):
     @abstractmethod
     async def fetch_user(self, **filters: Unpack[UserFilters]) -> User:

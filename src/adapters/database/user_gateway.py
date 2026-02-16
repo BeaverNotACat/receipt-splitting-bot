@@ -1,10 +1,12 @@
 from typing import Unpack
 
 from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
 
 from src.application.common.database.user_gateway import (
     UserFilters,
+    UserNotFoundError,
     UserReaderI,
     UserSaverI,
 )
@@ -21,7 +23,10 @@ class UserGateway(UserReaderI, UserSaverI):
     async def fetch_user(self, **filters: Unpack[UserFilters]) -> User:
         query = select(UserORM).filter_by(**filters)
         user_orm = await self.session.execute(query)
-        return self._map_to_domain(user_orm.scalar_one())
+        try:
+            return self._map_to_domain(user_orm.scalar_one())
+        except NoResultFound:
+            raise UserNotFoundError from NoResultFound
 
     async def save_user(self, user: User) -> None:
         user_orm = self._map_to_orm(user)

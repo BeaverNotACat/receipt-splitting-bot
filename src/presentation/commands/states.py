@@ -2,12 +2,11 @@ from aiogram.fsm.state import State, StatesGroup
 
 
 class RegisterState(StatesGroup):
-    get_nickname = State()
+    nickname = State()
 
 
 class JoinReceiptState(StatesGroup):
-    show_receipt = State()
-    get_approved = State()
+    preview = State()
 
 
 class ProfileState(StatesGroup):

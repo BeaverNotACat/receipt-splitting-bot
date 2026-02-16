@@ -1,19 +1,24 @@
 import asyncio
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram_dialog import setup_dialogs
 from dishka.integrations.aiogram import setup_dishka
 
-from src.presentation.commands.onboard import onboard_router
+from src.presentation.commands.profile import profile_dialog
+from src.presentation.commands.register import register_dialog
+from src.presentation.commands.start import start_router
 from src.presentation.dependencies import container
 from src.settings import Settings
 
 
 def get_dispatcher() -> Dispatcher:
-    dp = Dispatcher()
+    dp = Dispatcher(storage=MemoryStorage())
+    dp.include_router(profile_dialog)
+    dp.include_router(register_dialog)
+    dp.include_router(start_router)
     setup_dishka(container, dp)
     setup_dialogs(dp)
-    dp.include_router(onboard_router)
     return dp
 
 
