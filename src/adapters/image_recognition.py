@@ -2,7 +2,7 @@ from typing import cast
 
 from openai import AsyncOpenAI
 
-from src.application.common.image_recognition import ImageRecognitionI
+from src.application.image_recognition import ImageRecognitionI
 
 
 class ImageRecognition(ImageRecognitionI):
