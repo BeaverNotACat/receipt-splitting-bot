@@ -1,4 +1,4 @@
-from collections.abc import AsyncIterable  # noqa: TC003
+from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
 from sqlalchemy.ext.asyncio import (
@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.settings import Settings  # noqa: TC001
+from src.settings import Settings
 
 
 class AlchemyProvider(Provider):

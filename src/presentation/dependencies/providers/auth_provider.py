@@ -1,9 +1,9 @@
-from dishka import Provider, Scope, provide  # noqa: I001
-from dishka.integrations.aiogram import AiogramMiddlewareData  # noqa: TC002
+from dishka import Provider, Scope, provide
+from dishka.integrations.aiogram import AiogramMiddlewareData
 
 from src.adapters.user_provider import UserProvider
-from src.application.common.database.user_gateway import UserReaderI  # noqa: TC001
-from src.application.common.user_provider import UserProviderI  # noqa: TC001
+from src.application.common.database.user_gateway import UserReaderI
+from src.application.common.user_provider import UserProviderI
 from src.domain.value_objects import ChatID
 
 

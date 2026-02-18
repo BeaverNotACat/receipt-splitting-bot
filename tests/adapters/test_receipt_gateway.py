@@ -24,7 +24,7 @@ async def test_receipt_saving(
 
     await receipt_gateway.save_receipt(receipt)
 
-    assert_receipt(receipt, await receipt_gateway.fetch_receipt())
+    assert_receipt(receipt, await receipt_gateway.fetch_receipt(id=receipt.id))
 
 
 @pytest.mark.asyncio
@@ -48,4 +48,7 @@ async def test_receipt_updating(
 
     await receipt_gateway.save_receipt(updated_receipt)
 
-    assert_receipt(updated_receipt, await receipt_gateway.fetch_receipt())
+    assert_receipt(
+        updated_receipt,
+        await receipt_gateway.fetch_receipt(id=initial_receipt.id),
+    )

@@ -1,13 +1,22 @@
 from aiogram.fsm.state import State, StatesGroup
 
 
-class RegisterState(StatesGroup):
+class RegisterSG(StatesGroup):
     nickname = State()
 
 
-class JoinReceiptState(StatesGroup):
+class JoinReceiptSG(StatesGroup):
     preview = State()
 
 
-class ProfileState(StatesGroup):
+class ProfileSG(StatesGroup):
     view = State()
+
+
+class CreateReceiptSG(StatesGroup):
+    title = State()
+
+
+class ReceiptChatSG(StatesGroup):
+    greeting = State()
+    chat = State()

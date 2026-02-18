@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Self
 
-from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.transaction_manager import (
     TransactionManagerI,

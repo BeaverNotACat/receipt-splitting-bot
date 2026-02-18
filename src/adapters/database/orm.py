@@ -1,5 +1,5 @@
-from decimal import Decimal  # noqa: TC003
-from uuid import UUID  # noqa: TC003
+from decimal import Decimal
+from uuid import UUID
 
 from advanced_alchemy.base import UUIDAuditBase, orm_registry
 from sqlalchemy import BIGINT, Column, ForeignKey, Numeric, Table

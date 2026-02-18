@@ -19,25 +19,25 @@ start_router = Router()
 @start_router.message(CommandStart)
 @inject
 async def start(
-    message: Message,
+    _message: Message,
     user_provider: FromDishka[UserProviderI],
     dialog_manager: DialogManager,
 ) -> None:
     try:
         await user_provider.fetch_current_user()
         await dialog_manager.start(
-            states.ProfileState.view, mode=StartMode.RESET_STACK
+            states.ProfileSG.view, mode=StartMode.RESET_STACK
         )
     except UserIsNotRegisteredError:
         await dialog_manager.start(
-            states.RegisterState.nickname, mode=StartMode.RESET_STACK
+            states.RegisterSG.nickname, mode=StartMode.RESET_STACK
         )
 
 
 @start_router.message(CommandStart(deep_link=True))
 @inject
 async def deeplink_start(
-    message: Message,
+    _message: Message,
     command: CommandObject,
     user_provider: FromDishka[UserProviderI],
     dialog_manager: DialogManager,
@@ -46,9 +46,9 @@ async def deeplink_start(
     try:
         await user_provider.fetch_current_user()
         await dialog_manager.start(
-            states.JoinReceiptState.preview, mode=StartMode.RESET_STACK
+            states.JoinReceiptSG.preview, mode=StartMode.RESET_STACK
         )
     except UserIsNotRegisteredError:
         await dialog_manager.start(
-            states.RegisterState.nickname, mode=StartMode.RESET_STACK
+            states.RegisterSG.nickname, mode=StartMode.RESET_STACK
         )

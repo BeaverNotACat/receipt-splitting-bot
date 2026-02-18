@@ -1,8 +1,8 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.receipt_gateway import (
     MultipleReceiptsFilters,
@@ -33,7 +33,14 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
     async def fetch_receipts(
         self, **filters: Unpack[MultipleReceiptsFilters]
     ) -> list[Receipt]:
-        query = select(ReceiptORM).filter_by(**filters)
+        query = select(ReceiptORM)
+        if "participant_id" in filters:
+            query = query.filter(
+                or_(
+                    ReceiptORM.creditor_id == filters["participant_id"],
+                    ReceiptORM.debtors.any(id=filters["participant_id"]),
+                )
+            )
         receipt_orm = await self.session.execute(query)
         return self._bulk_map_to_domain(receipt_orm.scalars())
 

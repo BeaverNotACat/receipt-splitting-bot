@@ -5,7 +5,9 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram_dialog import setup_dialogs
 from dishka.integrations.aiogram import setup_dishka
 
+from src.presentation.commands.create_receipt import create_receipt_dialog
 from src.presentation.commands.profile import profile_dialog
+from src.presentation.commands.receipt_chat import receipt_chat_dialog
 from src.presentation.commands.register import register_dialog
 from src.presentation.commands.start import start_router
 from src.presentation.dependencies import container
@@ -16,6 +18,8 @@ def get_dispatcher() -> Dispatcher:
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(profile_dialog)
     dp.include_router(register_dialog)
+    dp.include_router(create_receipt_dialog)
+    dp.include_router(receipt_chat_dialog)
     dp.include_router(start_router)
     setup_dishka(container, dp)
     setup_dialogs(dp)

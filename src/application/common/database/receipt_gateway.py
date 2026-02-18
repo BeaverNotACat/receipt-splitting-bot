@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Protocol, TypedDict, Unpack
 
-from src.domain.value_objects import ReceiptID, UserID  # noqa: TC001
+from src.domain.value_objects import ReceiptID, UserID
 
 if TYPE_CHECKING:
     from src.domain.models.receipt import Receipt

@@ -6,7 +6,7 @@ from typing import (
     Unpack,
 )
 
-from src.domain.value_objects import ChatID, UserID  # noqa: TC001
+from src.domain.value_objects import ChatID, UserID
 
 if TYPE_CHECKING:
     from src.domain.models.user import User

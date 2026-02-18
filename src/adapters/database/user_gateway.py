@@ -2,7 +2,7 @@ from typing import Unpack
 
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.ext.asyncio import AsyncSession  # noqa: TC002
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.user_gateway import (
     UserFilters,

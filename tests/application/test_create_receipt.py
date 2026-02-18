@@ -6,6 +6,9 @@ from polyfactory.pytest_plugin import register_fixture
 
 from src.application.receipt.create import CreateReceipt, CreateReceiptDTO
 from src.domain.services.receipt import ReceiptService
+from tests.application.fakes.fake_transaction_manager import (
+    FakeTransactionManager,
+)
 
 if TYPE_CHECKING:
     from src.application.common.user_provider import UserProviderI
@@ -29,7 +32,10 @@ def create_receipt_interactor(
     fake_user_provider: UserProviderI,
 ) -> CreateReceipt:
     return CreateReceipt(
-        ReceiptService(), fake_receipt_gateway, fake_user_provider
+        ReceiptService(),
+        fake_receipt_gateway,
+        fake_user_provider,
+        FakeTransactionManager(),
     )
 
 

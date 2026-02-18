@@ -2,14 +2,14 @@ from typing import cast
 
 from src.application.common.database.user_gateway import (
     UserNotFoundError,
-    UserReaderI,  # noqa: TC001
+    UserReaderI,
 )
 from src.application.common.user_provider import (
     UserIsNotRegisteredError,
     UserProviderI,
 )
-from src.domain.models.user import RealUser  # noqa: TC001
-from src.domain.value_objects import ChatID  # noqa: TC001
+from src.domain.models.user import RealUser
+from src.domain.value_objects import ChatID
 
 
 class UserProvider(UserProviderI):

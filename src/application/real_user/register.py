@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from typing import final
 
 from src.application.common import Interactor
-from src.application.common.database import UserSaverI  # noqa: TC001
+from src.application.common.database import UserSaverI
 from src.application.common.database.transaction_manager import (
-    TransactionManagerI,  # noqa: TC001
+    TransactionManagerI,
 )
-from src.domain.services import UserService  # noqa: TC001
+from src.domain.services import UserService
 from src.domain.value_objects import (
     ChatID,
     UserID,

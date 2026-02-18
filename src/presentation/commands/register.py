@@ -1,8 +1,5 @@
-from typing import Any
-
-from aiogram.fsm.state import State
 from aiogram.types import Message
-from aiogram_dialog import Data, Dialog, DialogManager, StartMode, Window
+from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
 from aiogram_dialog.widgets.text import Const
 from dishka.integrations.aiogram import FromDishka
@@ -19,7 +16,7 @@ NICKNAME_INPUT_ID = "nickname"
 @inject
 async def on_done(
     message: Message,
-    text_input: TextInput,
+    _text_input: ManagedTextInput[str],
     dialog_manager: DialogManager,
     nickname: str,
     register_user: FromDishka[RegisterUser],
@@ -31,9 +28,9 @@ async def on_done(
     await register_user(dto)
 
     if dialog_manager.dialog_data.get("receipt_id") is not None:
-        await dialog_manager.start(states.JoinReceiptState.preview)
+        await dialog_manager.start(states.JoinReceiptSG.preview)
     else:
-        await dialog_manager.start(states.ProfileState.view)
+        await dialog_manager.start(states.ProfileSG.view)
 
 
 register_dialog = Dialog(
@@ -42,6 +39,6 @@ register_dialog = Dialog(
             "Введите как вас называют друзья.\n Это необходимо для опознования"
         ),
         TextInput(id=NICKNAME_INPUT_ID, on_success=on_done),
-        state=states.RegisterState.nickname,
+        state=states.RegisterSG.nickname,
     ),
 )

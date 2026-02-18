@@ -72,7 +72,6 @@ select = [
     "SIM", # flake8-simplify
     "TID", # flake8-tidy-imports
     "TD", # flake8-todos
-    "TC", # flake8-type-checking
     "ARG", # flake8-unused-arguments
     "PTH", # flake8-use-pathlib
     "I", # isort
@@ -93,3 +92,6 @@ ignore = [
     "COM812", # ruff warn on it
     "S101", # triggers on asserts in tests, bandit hadles assers in src anyway 
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"src/presentation/commands/*" = ["RUF"]

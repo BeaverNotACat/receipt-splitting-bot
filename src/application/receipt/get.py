@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from typing import final
 
 from src.application.common.database.receipt_gateway import (
-    ReceiptReaderI,  # noqa: TC001
+    ReceiptReaderI,
 )
 from src.application.common.interactor import Interactor
 from src.domain.models.receipt import Receipt
-from src.domain.value_objects import ReceiptID  # noqa: TC001
+from src.domain.value_objects import ReceiptID
 
 
 @dataclass
