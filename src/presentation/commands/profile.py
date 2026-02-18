@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from aiogram import F
@@ -31,7 +31,7 @@ async def user_profile_getter(
     list_receipts: FromDishka[ListReceipts],
     **_kwargs: dict[str, Any],
 ) -> dict[str, Any]:
-    scroll: ManagedScroll = dialog_manager.find("scroll")
+    scroll: ManagedScroll = cast(ManagedScroll, dialog_manager.find("scroll"))
     page = await scroll.get_page()
     offset = page * PAGE_SIZE
     limit = offset + PAGE_SIZE
