@@ -1,4 +1,7 @@
 from aiogram.fsm.state import State, StatesGroup
+from aiogram_dialog import DialogManager
+
+from src.domain.value_objects import ReceiptID
 
 
 class RegisterSG(StatesGroup):
@@ -20,3 +23,11 @@ class CreateReceiptSG(StatesGroup):
 class ReceiptChatSG(StatesGroup):
     greeting = State()
     chat = State()
+
+
+async def start_receipt_chat(
+    dialog_manager: DialogManager, receipt_id: ReceiptID
+) -> None:
+    await dialog_manager.start(
+        ReceiptChatSG.greeting, data={"receipt_id": receipt_id}
+    )

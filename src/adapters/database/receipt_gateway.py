@@ -13,7 +13,7 @@ from src.application.common.database.receipt_gateway import (
 from src.domain.models.receipt import Receipt
 from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
 
-from .orm import LineItemORM, ReceiptORM
+from .orm import LineItemORM, ReceiptORM, UserORM
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -54,8 +54,14 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
             title=receipt.title,
             creditor_id=receipt.creditor_id,
             created_at=receipt.created_at,
+            debtors=await self._obtain_orm_users(receipt.assignees.keys()),
             line_items=self._map_line_items_to_orm(receipt),
         )
+
+    async def _obtain_orm_users(self, ids: Iterable[UserID]) -> list[UserORM]:
+        query = select(UserORM).filter(UserORM.id.in_(ids))
+        users_orm = await self.session.execute(query)
+        return list(users_orm.scalars())
 
     @staticmethod
     def _map_line_items_to_orm(receipt: Receipt) -> list[LineItemORM]:

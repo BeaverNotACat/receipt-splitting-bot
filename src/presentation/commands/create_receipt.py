@@ -25,9 +25,7 @@ async def on_done(
     dto = CreateReceiptDTO(receipt_title=ReceiptTitle(title))
     receipt_id = await create_receipt(dto)
 
-    await dialog_manager.start(
-        states.ReceiptChatSG.greeting, data={"receipt_id": receipt_id}
-    )
+    await states.start_receipt_chat(dialog_manager, receipt_id)
 
 
 create_receipt_dialog = Dialog(

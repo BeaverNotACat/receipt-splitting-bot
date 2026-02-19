@@ -10,28 +10,11 @@ from src.application.common.user_provider import (
     UserIsNotRegisteredError,
     UserProviderI,
 )
+from src.domain.value_objects import ReceiptID
 
 from . import states
 
 start_router = Router()
-
-
-@start_router.message(CommandStart)
-@inject
-async def start(
-    _message: Message,
-    user_provider: FromDishka[UserProviderI],
-    dialog_manager: DialogManager,
-) -> None:
-    try:
-        await user_provider.fetch_current_user()
-        await dialog_manager.start(
-            states.ProfileSG.view, mode=StartMode.RESET_STACK
-        )
-    except UserIsNotRegisteredError:
-        await dialog_manager.start(
-            states.RegisterSG.nickname, mode=StartMode.RESET_STACK
-        )
 
 
 @start_router.message(CommandStart(deep_link=True))
@@ -42,13 +25,30 @@ async def deeplink_start(
     user_provider: FromDishka[UserProviderI],
     dialog_manager: DialogManager,
 ) -> None:
-    dialog_manager.dialog_data["receipt_id"] = UUID(command.args)
     try:
+        initial_state = states.JoinReceiptSG.preview
         await user_provider.fetch_current_user()
-        await dialog_manager.start(
-            states.JoinReceiptSG.preview, mode=StartMode.RESET_STACK
-        )
     except UserIsNotRegisteredError:
-        await dialog_manager.start(
-            states.RegisterSG.nickname, mode=StartMode.RESET_STACK
-        )
+        initial_state = states.RegisterSG.nickname
+
+    await dialog_manager.start(
+        initial_state,
+        mode=StartMode.RESET_STACK,
+        data={"receipt_id": ReceiptID(UUID(command.args))},
+    )
+
+
+@start_router.message(CommandStart())
+@inject
+async def start(
+    _message: Message,
+    user_provider: FromDishka[UserProviderI],
+    dialog_manager: DialogManager,
+) -> None:
+    try:
+        initial_state = states.ProfileSG.view
+        await user_provider.fetch_current_user()
+    except UserIsNotRegisteredError:
+        initial_state = states.RegisterSG.nickname
+
+    await dialog_manager.start(initial_state, mode=StartMode.RESET_STACK)

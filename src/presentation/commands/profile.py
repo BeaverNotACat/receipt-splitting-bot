@@ -54,9 +54,7 @@ async def on_selected(
     dialog_manager: DialogManager,
     receipt_id: ReceiptID,
 ) -> None:
-    await dialog_manager.start(
-        states.ReceiptChatSG.greeting, data={"receipt_id": receipt_id}
-    )
+    await states.start_receipt_chat(dialog_manager, receipt_id)
 
 
 profile_dialog = Dialog(
@@ -73,7 +71,7 @@ profile_dialog = Dialog(
         StubScroll(id="scroll", pages=F["pages"]),
         Start(
             Const("➕ Создать чек"),
-            id="new",
+            id="create",
             state=states.CreateReceiptSG.title,
         ),
         Column(
@@ -89,5 +87,5 @@ profile_dialog = Dialog(
         NumberedPager(id="pager", scroll="scroll"),
         state=states.ProfileSG.view,
         getter=user_profile_getter,
-    )
+    ),
 )
