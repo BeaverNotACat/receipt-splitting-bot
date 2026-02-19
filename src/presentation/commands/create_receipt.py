@@ -23,9 +23,11 @@ async def on_done(
     create_receipt: FromDishka[CreateReceipt],
 ) -> None:
     dto = CreateReceiptDTO(receipt_title=ReceiptTitle(title))
-    await create_receipt(dto)
+    receipt_id = await create_receipt(dto)
 
-    await dialog_manager.start(states.ReceiptChatSG.greeting)
+    await dialog_manager.start(
+        states.ReceiptChatSG.greeting, data={"receipt_id": receipt_id}
+    )
 
 
 create_receipt_dialog = Dialog(

@@ -2,6 +2,7 @@ from typing import Any, cast
 from uuid import UUID
 
 from aiogram import F
+from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.common import ManagedScroll
 from aiogram_dialog.widgets.kbd import (
@@ -47,6 +48,17 @@ async def user_profile_getter(
     }
 
 
+async def on_selected(
+    _event: CallbackQuery,
+    _select: Select[Any],
+    dialog_manager: DialogManager,
+    receipt_id: ReceiptID,
+) -> None:
+    await dialog_manager.start(
+        states.ReceiptChatSG.greeting, data={"receipt_id": receipt_id}
+    )
+
+
 profile_dialog = Dialog(
     Window(
         Format("Добро пожаловать, {nickname}"),
@@ -71,6 +83,7 @@ profile_dialog = Dialog(
                 type_factory=lambda x: ReceiptID(UUID(x)),
                 items="receipts",
                 id="list",
+                on_click=on_selected,
             ),
         ),
         NumberedPager(id="pager", scroll="scroll"),
