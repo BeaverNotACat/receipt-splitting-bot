@@ -56,8 +56,8 @@ async def on_approve(
 join_dialog = Dialog(
     Window(
         Format("Вы собираетесь присоединиться к чеку c названием {title}\n"),
-        Start(Const("❌"), id="cancel", state=states.ProfileSG.view),
         Button(Const("✅"), id="approve", on_click=on_approve),
+        Start(Const("❌"), id="cancel", state=states.ProfileSG.view),
         state=states.JoinReceiptSG.preview,
         getter=user_profile_getter,
     )
