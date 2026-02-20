@@ -19,7 +19,7 @@ async def receipt_dialog_greeting_getter(
     return {"invite_link": invite_link}
 
 
-receipt_chat_dialog = Dialog(
+adjust_receipt_dialog = Dialog(
     Window(
         Format("Ваша ссылка на приглашение:\n{invite_link}"),
         Const("Остальное TBD"),

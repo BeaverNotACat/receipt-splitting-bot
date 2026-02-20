@@ -57,7 +57,7 @@ async def on_selected(
     await states.start_receipt_chat(dialog_manager, receipt_id)
 
 
-profile_dialog = Dialog(
+show_profile_dialog = Dialog(
     Window(
         Format("Добро пожаловать, {nickname}"),
         Format(

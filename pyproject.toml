@@ -94,4 +94,4 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"src/presentation/commands/*" = ["RUF"] # Commands containsRussian text and emojis causing false positive
+"src/presentation/telegram/*" = ["RUF"] # Commands containsRussian text and emojis causing false positive
