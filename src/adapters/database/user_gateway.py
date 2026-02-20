@@ -50,5 +50,5 @@ class UserGateway(UserReaderI, UserSaverI):
         return UserORM(
             id=model.id,
             nickname=model.nickname,
-            chat_id=getattr(model, "chat_id"),  # noqa: B009
+            chat_id=getattr(model, "chat_id"),  # noqa: B009 Dummy users don't have chat ID
         )

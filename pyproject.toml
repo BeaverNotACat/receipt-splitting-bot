@@ -5,11 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "advanced-alchemy[cli]>=1.8.2",
+    "advanced-alchemy[argon2,cli]>=1.8.2",
     "aiogram>=3.24.0",
     "aiogram-dialog>=2.4.0",
     "annotated-types>=0.7.0",
-    "argon2-cffi>=25.1.0",
     "dishka>=1.7.2",
     "langchain>=1.1.0",
     "psycopg[binary]>=3.3.2",
@@ -18,6 +17,7 @@ dependencies = [
 ]
 [dependency-groups]
 dev = [
+    "aiogram-dialog[tools]>=2.4.0",
     "bandit>=1.9.2",
     "mypy>=1.18.2",
     "polyfactory>=2.22.2",
