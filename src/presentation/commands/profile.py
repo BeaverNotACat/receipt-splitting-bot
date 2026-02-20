@@ -84,7 +84,11 @@ profile_dialog = Dialog(
                 on_click=on_selected,
             ),
         ),
-        NumberedPager(id="pager", scroll="scroll"),
+        NumberedPager(
+            id="pager",
+            scroll="scroll",
+            when=F["pages"] > 1,
+        ),
         state=states.ProfileSG.view,
         getter=user_profile_getter,
     ),

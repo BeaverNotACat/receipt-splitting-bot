@@ -27,9 +27,10 @@ async def on_done(
     )
     await register_user(dto)
 
-    if receipt_id := dialog_manager.start_data.get("receipt_id") is not None:  # type: ignore[union-attr]
+    if isinstance(dialog_manager.start_data, dict):
         await dialog_manager.start(
-            states.JoinReceiptSG.preview, data={"receipt_id": receipt_id}
+            states.JoinReceiptSG.preview,
+            data={"receipt_id": dialog_manager.start_data["receipt_id"]},
         )
     else:
         await dialog_manager.start(states.ProfileSG.view)
