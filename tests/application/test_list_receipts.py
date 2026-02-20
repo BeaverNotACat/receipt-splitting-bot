@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from src.application.list_receipts import ListReceipts
+from src.application.receipt.list import ListReceipts
 from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
 
 if TYPE_CHECKING:
-    from src.application.common.user_provider import UserProvider
+    from src.application.common.user_provider import UserProviderI
     from src.domain.models.user import RealUser
     from tests.mocks.domain import ReceiptFactory
 
@@ -27,7 +27,7 @@ def fake_receipt_db_gateway(
 @pytest.fixture
 def list_receipts_interactor(
     fake_receipt_db_gateway: FakeReceiptGateway,
-    fake_user_provider: UserProvider,
+    fake_user_provider: UserProviderI,
 ) -> ListReceipts:
     return ListReceipts(fake_user_provider, fake_receipt_db_gateway)
 
@@ -35,7 +35,7 @@ def list_receipts_interactor(
 @pytest.mark.asyncio
 async def test_list_receipts(
     list_receipts_interactor: ListReceipts,
-    fake_user_provider: UserProvider,
+    fake_user_provider: UserProviderI,
 ) -> None:
     receipts = await list_receipts_interactor(None)
 

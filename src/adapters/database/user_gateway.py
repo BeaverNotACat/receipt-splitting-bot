@@ -1,29 +1,32 @@
-from typing import TYPE_CHECKING, Unpack
+from typing import Unpack
 
 from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.user_gateway import (
     UserFilters,
-    UserReader,
-    UserSaver,
+    UserNotFoundError,
+    UserReaderI,
+    UserSaverI,
 )
 from src.domain.models.user import DummyUser, RealUser, User
 from src.domain.value_objects import ChatID, UserID, UserNickname
 
 from .orm import UserORM
 
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncSession
 
-
-class UserGateway(UserReader, UserSaver):
+class UserGateway(UserReaderI, UserSaverI):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
     async def fetch_user(self, **filters: Unpack[UserFilters]) -> User:
         query = select(UserORM).filter_by(**filters)
         user_orm = await self.session.execute(query)
-        return self._map_to_domain(user_orm.scalar_one())
+        try:
+            return self._map_to_domain(user_orm.scalar_one())
+        except NoResultFound:
+            raise UserNotFoundError from NoResultFound
 
     async def save_user(self, user: User) -> None:
         user_orm = self._map_to_orm(user)
@@ -47,5 +50,5 @@ class UserGateway(UserReader, UserSaver):
         return UserORM(
             id=model.id,
             nickname=model.nickname,
-            chat_id=getattr(model, "chat_id"),  # noqa: B009
+            chat_id=getattr(model, "chat_id"),  # noqa: B009 Dummy users don't have chat ID
         )

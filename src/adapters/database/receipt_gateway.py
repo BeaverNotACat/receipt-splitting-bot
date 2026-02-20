@@ -1,26 +1,25 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.receipt_gateway import (
     MultipleReceiptsFilters,
-    ReceiptReader,
-    ReceiptSaver,
+    ReceiptReaderI,
+    ReceiptSaverI,
     SingleReceiptFilters,
 )
 from src.domain.models.receipt import Receipt
 from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
 
-from .orm import LineItemORM, ReceiptORM
+from .orm import LineItemORM, ReceiptORM, UserORM
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from sqlalchemy.ext.asyncio import AsyncSession
 
-
-class ReceiptGateway(ReceiptReader, ReceiptSaver):
+class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
@@ -34,7 +33,14 @@ class ReceiptGateway(ReceiptReader, ReceiptSaver):
     async def fetch_receipts(
         self, **filters: Unpack[MultipleReceiptsFilters]
     ) -> list[Receipt]:
-        query = select(ReceiptORM).filter_by(**filters)
+        query = select(ReceiptORM)
+        if "participant_id" in filters:
+            query = query.filter(
+                or_(
+                    ReceiptORM.creditor_id == filters["participant_id"],
+                    ReceiptORM.debtors.any(id=filters["participant_id"]),
+                )
+            )
         receipt_orm = await self.session.execute(query)
         return self._bulk_map_to_domain(receipt_orm.scalars())
 
@@ -48,8 +54,14 @@ class ReceiptGateway(ReceiptReader, ReceiptSaver):
             title=receipt.title,
             creditor_id=receipt.creditor_id,
             created_at=receipt.created_at,
+            debtors=await self._obtain_orm_users(receipt.assignees.keys()),
             line_items=self._map_line_items_to_orm(receipt),
         )
+
+    async def _obtain_orm_users(self, ids: Iterable[UserID]) -> list[UserORM]:
+        query = select(UserORM).filter(UserORM.id.in_(ids))
+        users_orm = await self.session.execute(query)
+        return list(users_orm.scalars())
 
     @staticmethod
     def _map_line_items_to_orm(receipt: Receipt) -> list[LineItemORM]:

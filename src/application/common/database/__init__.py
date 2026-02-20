@@ -1,9 +1,11 @@
-from .receipt_gateway import ReceiptReader, ReceiptSaver
-from .user_gateway import UserReader, UserSaver
+from .receipt_gateway import ReceiptGatewayI, ReceiptReaderI, ReceiptSaverI
+from .user_gateway import UserGatewayI, UserReaderI, UserSaverI
 
 __all__ = [
-    "ReceiptReader",
-    "ReceiptSaver",
-    "UserReader",
-    "UserSaver",
+    "ReceiptGatewayI",
+    "ReceiptReaderI",
+    "ReceiptSaverI",
+    "UserGatewayI",
+    "UserReaderI",
+    "UserSaverI",
 ]

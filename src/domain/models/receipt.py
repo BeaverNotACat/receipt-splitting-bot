@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from pydantic import AwareDatetime  # noqa: TC002
+from pydantic import AwareDatetime
 
 from src.domain.exceptions import (
     AlreadyParticipantError,
@@ -9,7 +9,7 @@ from src.domain.exceptions import (
     NotDebtorError,
     RemovedMoreThanExistError,
 )
-from src.domain.models.user import User  # noqa: TC001
+from src.domain.models.user import User
 from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
 
 

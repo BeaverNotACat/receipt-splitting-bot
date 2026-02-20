@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
 
-from src.application.common.user_provider import UserProvider
+from src.application.common.user_provider import UserProviderI
 
 if TYPE_CHECKING:
     from src.domain.models.user import RealUser
 
 
-class FakeUserProvider(UserProvider):
+class FakeUserProvider(UserProviderI):
     def __init__(self, user: RealUser) -> None:
         self.user = user
 

@@ -8,7 +8,7 @@ from .fakes.fake_receipt_gateway import FakeReceiptGateway
 from .fakes.fake_user_gateway import FakeUserGateway
 
 if TYPE_CHECKING:
-    from src.application.common.user_provider import UserProvider
+    from src.application.common.user_provider import UserProviderI
     from src.domain.models.user import RealUser
 
 
@@ -23,5 +23,5 @@ def fake_receipt_gateway_factory() -> type[FakeReceiptGateway]:
 
 
 @pytest.fixture
-def fake_user_provider(real_user: RealUser) -> UserProvider:
+def fake_user_provider(real_user: RealUser) -> UserProviderI:
     return FakeUserProvider(real_user)

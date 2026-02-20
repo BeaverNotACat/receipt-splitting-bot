@@ -4,11 +4,14 @@ import pytest
 from polyfactory.factories import DataclassFactory
 from polyfactory.pytest_plugin import register_fixture
 
-from src.application.create_receipt import CreateReceipt, CreateReceiptDTO
+from src.application.receipt.create import CreateReceipt, CreateReceiptDTO
 from src.domain.services.receipt import ReceiptService
+from tests.application.fakes.fake_transaction_manager import (
+    FakeTransactionManager,
+)
 
 if TYPE_CHECKING:
-    from src.application.common.user_provider import UserProvider
+    from src.application.common.user_provider import UserProviderI
     from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
 
 
@@ -26,10 +29,13 @@ def fake_receipt_gateway(
 @pytest.fixture
 def create_receipt_interactor(
     fake_receipt_gateway: FakeReceiptGateway,
-    fake_user_provider: UserProvider,
+    fake_user_provider: UserProviderI,
 ) -> CreateReceipt:
     return CreateReceipt(
-        ReceiptService(), fake_receipt_gateway, fake_user_provider
+        ReceiptService(),
+        fake_receipt_gateway,
+        fake_user_provider,
+        FakeTransactionManager(),
     )
 
 
@@ -38,7 +44,7 @@ async def test_create_receipt(
     create_receipt_dto_factory: CreateReceiptDTOFactory,
     create_receipt_interactor: CreateReceipt,
     fake_receipt_gateway: FakeReceiptGateway,
-    fake_user_provider: UserProvider,
+    fake_user_provider: UserProviderI,
 ) -> None:
     context = create_receipt_dto_factory.build()
 
