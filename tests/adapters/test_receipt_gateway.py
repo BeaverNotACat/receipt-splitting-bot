@@ -36,12 +36,12 @@ async def test_receipt_updating(
 ) -> None:
     initial_receipt = receipt_factory.build()
     updated_receipt = receipt_factory.build(id=initial_receipt.id)
-    for user_id in [
+    for user_id in (
         *initial_receipt.participants_ids,
         *updated_receipt.participants_ids,
         initial_receipt.creditor_id,
         updated_receipt.creditor_id,
-    ]:
+    ):
         await user_gateway.save_user(real_user_factory.build(id=user_id))
         await user_gateway.session.flush()
     await receipt_gateway.save_receipt(initial_receipt)

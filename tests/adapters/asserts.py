@@ -14,7 +14,7 @@ def assert_receipt(initial_receipt: Receipt, new_receipt: Receipt) -> None:
     )
     for item in new_receipt.unassigned_items:
         assert item in initial_receipt.unassigned_items
-    assert len(new_receipt.assignees) == len(new_receipt.assignees)
+    assert new_receipt.assignees.keys() == initial_receipt.assignees.keys()
     for user_id in initial_receipt.assignees:
         for item in initial_receipt.assignees[user_id]:
             assert item in new_receipt.assignees[user_id]
