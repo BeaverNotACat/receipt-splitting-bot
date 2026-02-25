@@ -54,7 +54,8 @@ def line_item(line_item_factory: LineItemFactory) -> LineItem:
 
 @register_fixture
 class ReceiptFactory(DataclassFactory[Receipt]):
-    __min_collection_length__ = 1
+    __randomize_collection_length__ = True
+    __min_collection_length__ = 0
     __max_collection_length__ = 15
 
     @classmethod

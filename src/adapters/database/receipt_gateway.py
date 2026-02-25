@@ -98,6 +98,8 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
                 unassigned_items.append(item)
             else:
                 assignees[UserID(item_orm.assigned_to)].append(item)
+        for debtor in orm.debtors:
+            assignees[UserID(debtor.id)]
 
         return Receipt(
             id=ReceiptID(orm.id),
@@ -105,7 +107,7 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
             title=ReceiptTitle(orm.title),
             creditor_id=UserID(orm.creditor_id),
             unassigned_items=unassigned_items,
-            assignees=assignees,
+            assignees=dict(assignees),
         )
 
     @classmethod
