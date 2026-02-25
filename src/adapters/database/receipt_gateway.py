@@ -99,7 +99,7 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
             else:
                 assignees[UserID(item_orm.assigned_to)].append(item)
         for debtor in orm.debtors:
-            assignees[debtor.id]
+            assignees[UserID(debtor.id)]
 
         return Receipt(
             id=ReceiptID(orm.id),
