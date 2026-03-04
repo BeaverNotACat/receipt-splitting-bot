@@ -9,16 +9,13 @@ on:
 permissions: read-all
 
 env:
-  NAMESPACE: beavernotacat
-  IMAGE: receipt-splitting-bot
+  REGISTRY_NAMESPACE: beavernotacat
+  REGISTRY_IMAGE_NAME: receipt-splitting-bot
 
 jobs:
   buildx:
     runs-on: ubuntu-latest
-    env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
-    steps: 
+    steps:
       - uses: actions/checkout@v6
       - uses: docker/login-action@v3
         with:
@@ -31,4 +28,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{NAMESPACE}}/${{IMAGE}}:staging
+          tags: ghcr.io/$REGISTRY_NAMESPACE/$REGISTRY_IMAGE_NAME:staging
