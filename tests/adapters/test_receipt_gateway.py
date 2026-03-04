@@ -1,7 +1,5 @@
-from typing import TYPE_CHECKING, Iterable
-
-from faker import Faker
-import pytest
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from src.domain.value_objects import UserID
 from tests.adapters.asserts import assert_receipt

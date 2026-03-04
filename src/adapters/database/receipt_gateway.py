@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
-from sqlalchemy import Select, or_, select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.receipt_gateway import (
