@@ -28,4 +28,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/$REGISTRY_NAMESPACE/$REGISTRY_IMAGE_NAME:staging
+          tags: ghcr.io/${{REGISTRY_NAMESPACE}}/${{REGISTRY_IMAGE_NAME}}:staging
