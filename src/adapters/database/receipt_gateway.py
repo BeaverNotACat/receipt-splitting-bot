@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
-from sqlalchemy import or_, select
+from sqlalchemy import Select, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.receipt_gateway import (
@@ -33,7 +33,7 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
     async def fetch_receipts(
         self, **filters: Unpack[MultipleReceiptsFilters]
     ) -> list[Receipt]:
-        query = select(ReceiptORM)
+        query = select(ReceiptORM).order_by(ReceiptORM.id)
         if "participant_id" in filters:
             query = query.filter(
                 or_(

@@ -32,7 +32,6 @@ def list_receipts_interactor(
     return ListReceipts(fake_user_provider, fake_receipt_db_gateway)
 
 
-@pytest.mark.asyncio
 async def test_list_receipts(
     list_receipts_interactor: ListReceipts,
     fake_user_provider: UserProviderI,

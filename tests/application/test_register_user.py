@@ -38,7 +38,6 @@ def register_user_interactor(
     )
 
 
-@pytest.mark.asyncio
 async def test_register_user(
     register_user_dto: RegisterUserDTO,
     register_user_interactor: RegisterUser,

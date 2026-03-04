@@ -39,7 +39,6 @@ def create_receipt_interactor(
     )
 
 
-@pytest.mark.asyncio
 async def test_create_receipt(
     create_receipt_dto_factory: CreateReceiptDTOFactory,
     create_receipt_interactor: CreateReceipt,
