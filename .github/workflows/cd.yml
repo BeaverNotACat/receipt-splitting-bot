@@ -1,4 +1,4 @@
-name: Buildind and deployment
+name: Building and deployment
 
 on:
   push:
@@ -10,7 +10,6 @@ permissions: read-all
 
 jobs:
   buildx:
-    needs: [ruff, mypy, pytest]
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
