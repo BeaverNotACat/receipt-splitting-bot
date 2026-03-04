@@ -1,0 +1,31 @@
+name: Buildind and deployment
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: # on testing puroposes, DELETE THIS
+
+permissions: read-all
+
+jobs:
+  buildx:
+    needs: [ruff, mypy, pytest]
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+    steps: 
+      - uses: actions/checkout@v6
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}:staging
