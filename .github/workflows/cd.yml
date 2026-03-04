@@ -27,4 +27,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}:staging
+          tags: ghcr.io/${{ github.repository@L }}:staging
