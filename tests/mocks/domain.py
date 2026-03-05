@@ -7,14 +7,18 @@ from polyfactory.pytest_plugin import register_fixture
 
 from src.domain.models.receipt import Receipt
 from src.domain.models.user import DummyUser, RealUser
-from src.domain.value_objects import LineItem
+from src.domain.value_objects import ChatID, LineItem, UserNickname
 
 
 @register_fixture
 class RealUserFactory(DataclassFactory[RealUser]):
     @classmethod
-    def name(cls) -> str:
-        return cls.__faker__.name()
+    def name(cls) -> UserNickname:
+        return UserNickname(cls.__faker__.name())
+
+    @classmethod
+    def chat_id(cls) -> ChatID:
+        return ChatID(cls.__faker__.random_int(0, 2 << 52))
 
 
 @pytest.fixture
@@ -65,4 +69,9 @@ class ReceiptFactory(DataclassFactory[Receipt]):
 
 @pytest.fixture
 def receipt(receipt_factory: ReceiptFactory) -> Receipt:
-    return receipt_factory.build()
+    receipt = receipt_factory.build()
+
+    # TODO(beavernotat): No assignees for creditor
+    # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/33
+    receipt.assignees[receipt.creditor_id] = []
+    return receipt
