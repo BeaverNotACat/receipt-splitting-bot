@@ -121,7 +121,7 @@ def test_existing_receipt_item_assigning(
     assert item.amount * 2 == receipt.assignees[user.id][0].amount
 
 
-def test_line_item_disassigning(
+def test_line_item_unassigning(
     receipt_factory: ReceiptFactory,
     line_item_factory: LineItemFactory,
     real_user_factory: RealUserFactory,
@@ -132,12 +132,12 @@ def test_line_item_disassigning(
         creditor_id=user.id, assignees={user.id: [item]}
     )
 
-    receipt.disassign_item(item, user)
+    receipt.unassign_item(item, user)
 
     assert len(receipt.assignees[user.id]) == 0
 
 
-def test_more_than_exist_line_item_disassigning(
+def test_more_than_exist_line_item_unassigning(
     receipt_factory: ReceiptFactory,
     line_item_factory: LineItemFactory,
     real_user_factory: RealUserFactory,
@@ -152,10 +152,10 @@ def test_more_than_exist_line_item_disassigning(
     )
 
     with pytest.raises(RemovedMoreThanExistError):
-        receipt.disassign_item(item_to_delete, user)
+        receipt.unassign_item(item_to_delete, user)
 
 
-def test_less_than_exist_receipt_item_disassign(
+def test_less_than_exist_receipt_item_unassign(
     receipt_factory: ReceiptFactory,
     line_item_factory: LineItemFactory,
     real_user_factory: RealUserFactory,
@@ -169,7 +169,7 @@ def test_less_than_exist_receipt_item_disassign(
         creditor_id=user.id, assignees={user.id: [item]}
     )
 
-    receipt.disassign_item(item_to_delete, user)
+    receipt.unassign_item(item_to_delete, user)
 
     assert len(receipt.assignees[user.id]) == 1
     assert receipt.assignees[user.id][0] == item
