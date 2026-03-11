@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
-from src.domain.value_objects import UserID
+from src.domain.value_objects import LimitOffsetPagination, UserID
 from tests.adapters.asserts import assert_receipt
 
 if TYPE_CHECKING:
@@ -88,6 +88,8 @@ async def test_receipt_fetching_order(
         await receipt_gateway.save_receipt(receipt)
     await receipt_gateway.session.flush()
 
-    selected_receipts = await receipt_gateway.fetch_receipts()
+    selected_receipts = await receipt_gateway.fetch_receipts(
+        pagination=LimitOffsetPagination(RECEIPT_BATCH_SIZE, 0)
+    )
     for i in range(1, len(selected_receipts)):
         assert selected_receipts[i].id > selected_receipts[i - 1].id
