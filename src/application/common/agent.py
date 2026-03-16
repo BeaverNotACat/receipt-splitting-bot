@@ -13,5 +13,5 @@ class Response:
 
 class AgentI(Protocol):
     @abstractmethod
-    async def invoke(self, user_promp: str, receipt: Receipt) -> Response:
+    async def invoke(self, user_prompt: str, receipt: Receipt) -> Response:
         raise NotImplementedError
