@@ -1,4 +1,4 @@
-from langchain.agents import AgentState, create_agent
+from langchain.agents import create_agent
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import InMemorySaver
 
@@ -8,15 +8,11 @@ from src.adapters.agent.tools import (
     remove_item,
     unassign_item,
 )
+from src.adapters.agent.tools.base import ReceiptModificationState
 from src.application.common.agent import AgentI, Response
-from src.domain.models import Receipt
+from src.domain.models import ReceiptItemsData
 from src.domain.models.user import User
-
-
-class UpdatedState(AgentState):
-    receipt: Receipt
-    users: list[User]
-
+from src.domain.value_objects import ReceiptID
 
 system_prompt = """You are Rozhkov"""
 
@@ -39,15 +35,17 @@ class Agent(AgentI):
                 unassign_item,
             ],
             system_prompt=system_prompt,
-            state_schema=UpdatedState,
+            state_schema=ReceiptModificationState,
             checkpointer=InMemorySaver(),
         )
 
     def invoke(
-        self, user_prompt: str, receipt: Receipt, users: list[User]
+        self, user_prompt: str, receipt_items_data: ReceiptItemsData,
+        users: tuple[User, ...], tread_id: ReceiptID
     ) -> Response:
         return self.agent.invoke(
             {"messages": [{"role": "user", "content": user_prompt}]},
-            {"configurable": {"thread_id": receipt.id}},
-            context=UpdatedState(receipt=receipt, users=users),
+            {"configurable": {"thread_id": tread_id}},
+            context=ReceiptModificationState(receipt_items_data=receipt_items_data,
+                                            users=users),
         )

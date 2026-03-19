@@ -16,7 +16,7 @@ EmptyGoTo = tuple[()]
 
 
 class ReceiptModificationState(AgentState[NoStructuredResponse]):
-    receipt_item_info: ReceiptItemsData
+    receipt_items_data: ReceiptItemsData
     users: tuple[User, ...]
 
 
