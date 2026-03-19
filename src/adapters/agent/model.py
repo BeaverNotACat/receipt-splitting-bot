@@ -44,8 +44,8 @@ class Agent(AgentI):
         users: tuple[User, ...], tread_id: ReceiptID
     ) -> Response:
         return self.agent.invoke(
-            {"messages": [{"role": "user", "content": user_prompt}]},
+            {"messages": [{"role": "user", "content": user_prompt}],
+             "receipt_items_data": receipt_items_data,
+             "users": users},
             {"configurable": {"thread_id": tread_id}},
-            context=ReceiptModificationState(receipt_items_data=receipt_items_data,
-                                            users=users),
         )
