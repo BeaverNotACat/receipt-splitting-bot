@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from typing import BinaryIO, NewType, Protocol
 
-
 RecognizedImageText = NewType("RecognizedImageText", str)
 
 
@@ -13,5 +12,5 @@ class OpticalCharacterRecognizerI(Protocol):
     """
 
     @abstractmethod
-    async def recognize_text(self, image: BinaryIO) -> ReceiptText:
+    async def recognize_text(self, image: BinaryIO) -> RecognizedImageText:
         raise NotImplementedError

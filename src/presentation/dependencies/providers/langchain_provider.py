@@ -13,7 +13,7 @@ class LangChainProvider(Provider):
     @staticmethod
     def get_ocr_model_client(settings: Settings) -> OCRModelClient:
         return OCRModelClient(
-            ChatOpenRouter(
+            ChatOpenRouter(  # type: ignore[call-arg]
                 model="nvidia/nemotron-nano-12b-v2-vl:free",
                 temperature=0,
                 api_key=settings.OPENROUTER_API_KEY,
