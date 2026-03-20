@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Protocol, TypedDict, Unpack
 
-from src.domain.value_objects import ReceiptID, UserID  # noqa: TC001
+from src.domain.value_objects import ReceiptID, UserID
 
 if TYPE_CHECKING:
     from src.domain.models.receipt import Receipt
@@ -15,7 +15,7 @@ class MultipleReceiptsFilters(TypedDict, total=False):
     participant_id: UserID
 
 
-class ReceiptReader(Protocol):
+class ReceiptReaderI(Protocol):
     @abstractmethod
     async def fetch_receipt(
         self, **filters: Unpack[SingleReceiptFilters]
@@ -29,7 +29,10 @@ class ReceiptReader(Protocol):
         raise NotImplementedError
 
 
-class ReceiptSaver(Protocol):
+class ReceiptSaverI(Protocol):
     @abstractmethod
     async def save_receipt(self, receipt: Receipt) -> None:
         raise NotImplementedError
+
+
+class ReceiptGatewayI(ReceiptReaderI, ReceiptSaverI, Protocol): ...

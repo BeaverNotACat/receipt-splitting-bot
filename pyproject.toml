@@ -5,9 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "advanced-alchemy[cli]>=1.8.2",
+    "advanced-alchemy[argon2,cli]>=1.8.2",
+    "aiogram>=3.24.0",
+    "aiogram-dialog>=2.4.0",
     "annotated-types>=0.7.0",
-    "argon2-cffi>=25.1.0",
+    "dishka>=1.7.2",
     "langchain>=1.1.0",
     "psycopg[binary]>=3.3.2",
     "pydantic>=2.12.5",
@@ -17,14 +19,19 @@ dependencies = [
 ]
 [dependency-groups]
 dev = [
-    "bandit>=1.9.2",
+    "aiogram-dialog[tools]>=2.4.0",
     "mypy>=1.18.2",
     "polyfactory>=2.22.2",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.2.0",
     "pytest-cov>=7.0.0",
+    "pytest-randomly>=4.0.1",
     "ruff>=0.13.1",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [tool.mypy]
 strict = true
 strict_bytes = true
@@ -67,11 +74,9 @@ select = [
     "RSE", # flake8-raise
     "RET", # flake8-return
     "SLF", # flake8-self 
-    "SLF", # flake8-self
     "SIM", # flake8-simplify
     "TID", # flake8-tidy-imports
     "TD", # flake8-todos
-    "TC", # flake8-type-checking
     "ARG", # flake8-unused-arguments
     "PTH", # flake8-use-pathlib
     "I", # isort
@@ -90,6 +95,8 @@ select = [
 ]
 ignore = [
     "COM812", # ruff warn on it
-    "S101", # triggers on asserts in tests
-    "TRY003", # imho  adding factories to some exceptions is too much
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"src/presentation/telegram/*" = ["RUF"] # Commands containsRussian text and emojis causing false positive
+"tests/*" = ["S101"] # Do not trigger on asserts in tests

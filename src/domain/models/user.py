@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.domain.value_objects import (  # noqa: TC001
+from src.domain.value_objects import (
     ChatID,
     UserID,
     UserNickname,

@@ -1,5 +1,5 @@
-from decimal import Decimal  # noqa: TC003
-from uuid import UUID  # noqa: TC003
+from decimal import Decimal
+from uuid import UUID
 
 from advanced_alchemy.base import UUIDAuditBase, orm_registry
 from sqlalchemy import BIGINT, Column, ForeignKey, Numeric, Table
@@ -19,7 +19,9 @@ class UserORM(UUIDAuditBase):
     __tablename__ = "users"
 
     nickname: Mapped[str]
-    chat_id: Mapped[int | None] = mapped_column(BIGINT, nullable=True)
+    chat_id: Mapped[int | None] = mapped_column(
+        BIGINT, nullable=True, unique=True
+    )
 
 
 class ReceiptORM(UUIDAuditBase):

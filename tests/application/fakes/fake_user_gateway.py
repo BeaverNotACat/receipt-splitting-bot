@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING, Unpack
 
 from src.application.common.database.user_gateway import (
     UserFilters,
-    UserReader,
-    UserSaver,
+    UserReaderI,
+    UserSaverI,
 )
 from src.domain.models.user import RealUser, User
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from src.domain.value_objects import UserID
 
 
-class FakeUserGateway(UserReader, UserSaver):
+class FakeUserGateway(UserReaderI, UserSaverI):
     """
     Dirty user gateway
     Better version will be done when i will handle how to manage invariants

@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING, Unpack
 
 from src.application.common.database.receipt_gateway import (
     MultipleReceiptsFilters,
-    ReceiptReader,
-    ReceiptSaver,
+    ReceiptReaderI,
+    ReceiptSaverI,
     SingleReceiptFilters,
 )
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from src.domain.value_objects import ReceiptID
 
 
-class FakeReceiptGateway(ReceiptReader, ReceiptSaver):
+class FakeReceiptGateway(ReceiptReaderI, ReceiptSaverI):
     """
     Dirty receipt gateway
     Better vercion will be done when i will handle how to manage invariants

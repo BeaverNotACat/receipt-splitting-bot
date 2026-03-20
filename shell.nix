@@ -6,6 +6,7 @@ pkgs.mkShell {
   nativeBuildInputs = [
     pkgs.zlib
     pkgs.stdenv
+    pkgs.graphviz
   ];
 
   shellHook = ''

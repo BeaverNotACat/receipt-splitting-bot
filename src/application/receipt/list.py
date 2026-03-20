@@ -1,22 +1,19 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol, final
+from typing import final
 
-from src.application.common.database.receipt_gateway import ReceiptReader
+from src.application.common.database.receipt_gateway import (
+    ReceiptReaderI,
+)
 from src.application.common.interactor import Interactor
+from src.application.common.user_provider import UserProviderI
 from src.domain.models.receipt import Receipt
-
-if TYPE_CHECKING:
-    from src.application.common.user_provider import UserProvider
-
-
-class ReceiptDBGateway(ReceiptReader, Protocol): ...
 
 
 @final
 @dataclass(frozen=True)
 class ListReceipts(Interactor[None, list[Receipt]]):
-    user_provider: UserProvider
-    receipt_db_gateway: ReceiptDBGateway
+    user_provider: UserProviderI
+    receipt_db_gateway: ReceiptReaderI
 
     async def __call__(self, context: None) -> list[Receipt]:  # noqa: ARG002
         user = await self.user_provider.fetch_current_user()
