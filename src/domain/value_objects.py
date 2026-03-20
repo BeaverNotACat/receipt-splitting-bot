@@ -6,7 +6,7 @@ from uuid import UUID
 from annotated_types import Gt
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class LineItem:
     """
     Receipt line
@@ -26,7 +26,7 @@ class LineItem:
         return self.name == value.name and self.price == value.price
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Bill:
     """
     Bill to be payed by debtor user
@@ -37,6 +37,12 @@ class Bill:
     @property
     def total(self) -> Decimal:
         return Decimal(sum(item.price * item.amount for item in self.items))
+
+
+@dataclass(frozen=True, slots=True)
+class LimitOffsetPagination:
+    limit: int
+    offset: int
 
 
 ChatID = NewType("ChatID", int)

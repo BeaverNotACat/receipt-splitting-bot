@@ -17,8 +17,8 @@ from dishka.integrations.aiogram import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 
 from src.application.common.user_provider import UserProviderI
-from src.application.receipt.list import ListReceipts
-from src.domain.value_objects import ReceiptID
+from src.application.receipt.list import ListReceipts, ListReceiptsDTO
+from src.domain.value_objects import LimitOffsetPagination, ReceiptID
 
 from . import states
 
@@ -34,17 +34,18 @@ async def user_profile_getter(
 ) -> dict[str, Any]:
     scroll: ManagedScroll = cast(ManagedScroll, dialog_manager.find("scroll"))
     page = await scroll.get_page()
-    offset = page * PAGE_SIZE
-    limit = offset + PAGE_SIZE
+    pagination = LimitOffsetPagination(
+        offset=page * PAGE_SIZE,
+        limit=(page + 1) * PAGE_SIZE,
+    )
 
+    dto = await list_receipts(ListReceiptsDTO(pagination=pagination))
     user = await user_provider.fetch_current_user()
-    receipts = await list_receipts(None)
-
     return {
         "nickname": user.nickname,
-        "total": len(receipts),
-        "pages": len(receipts) // PAGE_SIZE + bool(len(receipts) % PAGE_SIZE),
-        "receipts": receipts[offset:limit],
+        "total": dto.total,
+        "pages": dto.total // PAGE_SIZE + bool(dto.total % PAGE_SIZE),
+        "receipts": dto.receipts,
     }
 
 
