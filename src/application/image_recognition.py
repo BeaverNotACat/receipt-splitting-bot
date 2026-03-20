@@ -1,6 +1,7 @@
-from typing import Protocol
+from typing import Protocol, abstractmethod
 
 
-class ImageRecognitionI(Protocol):
+class OCRRecognizerI(Protocol):
+    @abstractmethod
     async def recognize_text(self, image_url: str) -> str:
-        pass
+        raise NotImplementedError
