@@ -21,8 +21,8 @@ services:
       TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
     develop:
       watch:
-        - action: sync
-          path: src/
+        - action: sync+restart
+          path: ./src
           target: /receipt-splitting-bot/src
         - action: rebuild
           path: uv.lock

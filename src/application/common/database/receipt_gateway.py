@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Protocol, TypedDict, Unpack
 
-from src.domain.value_objects import ReceiptID, UserID
+from src.domain.value_objects import LimitOffsetPagination, ReceiptID, UserID
 
 if TYPE_CHECKING:
     from src.domain.models.receipt import Receipt
@@ -24,8 +24,16 @@ class ReceiptReaderI(Protocol):
 
     @abstractmethod
     async def fetch_receipts(
-        self, **filters: Unpack[MultipleReceiptsFilters]
+        self,
+        pagination: LimitOffsetPagination,
+        **filters: Unpack[MultipleReceiptsFilters],
     ) -> list[Receipt]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def count_receipts(
+        self, **filters: Unpack[MultipleReceiptsFilters]
+    ) -> int:
         raise NotImplementedError
 
 
