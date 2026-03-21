@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from langchain.agents import create_agent
 from langchain_openrouter import ChatOpenRouter
 from langgraph.checkpoint.memory import InMemorySaver
@@ -10,9 +12,9 @@ from src.adapters.agent.tools import (
 )
 from src.adapters.agent.tools.base import ReceiptModificationState
 from src.application.common.agent import AgentI, Response
-from src.domain.models import ReceiptItemsData
-from src.domain.models.user import User
-from src.domain.value_objects import ReceiptID
+
+if TYPE_CHECKING:
+    from src.domain.models.receipt import Receipt
 
 system_prompt = """Ты — Рожков. Агент для разделения чеков.
 
@@ -68,7 +70,7 @@ system_prompt = """Ты — Рожков. Агент для разделения
 - Если есть сомнение — не назначай.
 - Не придумывай скрытые связи между людьми и блюдами.
 - Сохраняй только те связи, которые можно обосновать текстом.
-"""
+"""  # noqa: E501
 
 
 class Agent(AgentI):
@@ -96,9 +98,7 @@ class Agent(AgentI):
     def invoke(
         self,
         user_prompt: str,
-        receipt_items_data: ReceiptItemsData,
-        users: tuple[User, ...],
-        tread_id: ReceiptID,
+        receipt: Receipt,
     ) -> Response:
         return self.agent.invoke(
             {

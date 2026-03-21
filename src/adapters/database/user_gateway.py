@@ -1,4 +1,5 @@
-from typing import Iterable, Unpack
+from collections.abc import Iterable
+from typing import Unpack
 
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
