@@ -1,7 +1,8 @@
 from .receipt import Receipt, ReceiptItemsData
-from .user import DummyUser, RealUser, User
+from .user import BaseUserData, DummyUser, RealUser, User
 
 __all__ = [
+    "BaseUserData",
     "DummyUser",
     "RealUser",
     "Receipt",

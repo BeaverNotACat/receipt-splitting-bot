@@ -1,26 +1,18 @@
-from typing import Unpack
-
-from langchain.tools import ToolRuntime, tool
+from langchain.messages import ToolMessage
+from langchain.tools import tool
 from langgraph.types import Command
-from langgraph.typing import ContextT
 
-from .base import (
-    AssignedItemActionInput,
-    EmptyGoTo,
-    ReceiptModificationState,
-    ReceiptToolActionBase,
-)
+from src.domain.exceptions import DomainError
+from src.domain.value_objects import LineItem, UserID
 
-
-class UnassignItemAction(ReceiptToolActionBase[*AssignedItemActionInput]):
-    def action(self, **kwds: Unpack[AssignedItemActionInput]) -> None:
-        return self.receipt.unassign_item(**kwds)
+from .base import EmptyGoTo, ModifyReceiptRuntime
 
 
 @tool
 def unassign_item(
-    runtime: ToolRuntime[ContextT, ReceiptModificationState],
-    **kwds: Unpack[AssignedItemActionInput],
+    runtime: ModifyReceiptRuntime,
+    item: LineItem,
+    user_id: UserID,
 ) -> Command[EmptyGoTo]:
     """
     Убрать LineItem из назначенных пользователю.
@@ -30,4 +22,21 @@ def unassign_item(
     а с кем-то то можно убрать 0.5 блюда и записать 0.5 блюда другому человеку)
     3. Цену блюда(берется из списка назначенных)
     """
-    return UnassignItemAction(runtime)(**kwds)
+    receipt_items_data = runtime.state["receipt_items_data"]
+    user = runtime.context["user_id_mapping"][user_id]
+    try:
+        receipt_items_data.unassign_item(item, user)
+        message_text = "Successfully updated receipt"
+    except (DomainError, KeyError) as err:
+        message_text = f"Failed to update receipt: {err!s}"
+    return Command(
+        update={
+            "receipt_items_data": receipt_items_data,
+            "messages": [
+                ToolMessage(
+                    message_text,
+                    tool_call_id=runtime.tool_call_id,
+                )
+            ],
+        }
+    )

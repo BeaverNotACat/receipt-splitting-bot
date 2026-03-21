@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Unpack
 
 from src.application.common.database.user_gateway import (
+    MultipleUsersFilters,
     UserFilters,
     UserReaderI,
     UserSaverI,
@@ -25,10 +26,10 @@ class FakeUserGateway(UserReaderI, UserSaverI):
         self.users_storage = {user.id: user for user in preexisting_users}
 
     async def fetch_user(self, **filters: Unpack[UserFilters]) -> User:
-        if filters.get("user_id") is not None:
+        if "user_id" in filters:
             return self.users_storage[filters["id"]]
 
-        if filters.get("chat_id") is not None:
+        if "chat_id" in filters:
             for user in self.users_storage.values():
                 if (
                     isinstance(user, RealUser)
@@ -36,6 +37,17 @@ class FakeUserGateway(UserReaderI, UserSaverI):
                 ):
                     return user
 
+        raise NotImplementedError
+
+    async def fetch_users(
+        self, **filters: Unpack[MultipleUsersFilters]
+    ) -> list[User]:
+        if "ids" in filters:
+            return [
+                user
+                for user in self.users_storage.values()
+                if user.id in filters["ids"]
+            ]
         raise NotImplementedError
 
     async def save_user(self, user: User) -> None:

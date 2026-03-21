@@ -37,7 +37,7 @@ class UserGateway(UserReaderI, UserSaverI):
         if "ids" in filters:
             query = query.filter(UserORM.id.in_(filters["ids"]))
         users_orm = await self.session.execute(query)
-        return self._bulk_map_to_domain(users_orm)
+        return self._bulk_map_to_domain(users_orm.scalars())
 
     async def save_user(self, user: User) -> None:
         user_orm = self._map_to_orm(user)

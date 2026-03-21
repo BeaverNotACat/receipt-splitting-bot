@@ -1,26 +1,16 @@
-from typing import Unpack
-
-from langchain.tools import ToolRuntime, tool
+from langchain.messages import ToolMessage
+from langchain.tools import tool
 from langgraph.types import Command
-from langgraph.typing import ContextT
 
-from .base import (
-    EmptyGoTo,
-    ReceiptModificationState,
-    ReceiptToolActionBase,
-    UnassignedItemActionInput,
-)
+from src.domain.exceptions import DomainError
+from src.domain.value_objects import LineItem
 
-
-class AppendItemAction(ReceiptToolActionBase[*UnassignedItemActionInput]):
-    def action(self, **kwds: Unpack[UnassignedItemActionInput]) -> None:
-        return self.receipt.append_item(**kwds)
+from .base import EmptyGoTo, ModifyReceiptRuntime
 
 
 @tool
 def append_item(
-    runtime: ToolRuntime[ContextT, ReceiptModificationState],
-    **kwds: Unpack[UnassignedItemActionInput],
+    runtime: ModifyReceiptRuntime, item: LineItem
 ) -> Command[EmptyGoTo]:
     """
     Добавить LineItem в неназначенные.
@@ -29,4 +19,20 @@ def append_item(
     2. количество блюда
     3. Цену блюда(берется из запроса пользователя)
     """
-    return AppendItemAction(runtime)(**kwds)
+    receipt_items_data = runtime.state["receipt_items_data"]
+    try:
+        receipt_items_data.append_item(item)
+        message_text = "Successfully updated receipt"
+    except DomainError as err:
+        message_text = f"Failed to update receipt: {err!s}"
+    return Command(
+        update={
+            "receipt_items_data": receipt_items_data,
+            "messages": [
+                ToolMessage(
+                    message_text,
+                    tool_call_id=runtime.tool_call_id,
+                )
+            ],
+        }
+    )

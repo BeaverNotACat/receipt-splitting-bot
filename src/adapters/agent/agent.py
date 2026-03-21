@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NewType
 
 from langchain.agents import create_agent
+from langchain.messages import HumanMessage
 from langchain_openrouter import ChatOpenRouter
-from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.base import BaseCheckpointSaver
 
 from src.adapters.agent.tools import (
     append_item,
@@ -10,13 +11,17 @@ from src.adapters.agent.tools import (
     remove_item,
     unassign_item,
 )
-from src.adapters.agent.tools.base import ReceiptModificationState
-from src.application.common.agent import AgentI, Response
+from src.application.common.agent import AgentI, AgentResponse
+from src.domain.services import ReceiptService, UserService
+
+from .context import ReceiptModificationContext
+from .state import InvokeState, ReceiptModificationState
 
 if TYPE_CHECKING:
-    from src.domain.models.receipt import Receipt
+    from src.domain.models import Receipt, User
 
-system_prompt = """Ты — Рожков. Агент для разделения чеков.
+system_prompt = """\
+Ты — Рожков. Агент для разделения чеков.
 
 Твоя задача:
 1) найти все блюда/еды/напитки, которые упомянуты в тексте;
@@ -72,18 +77,21 @@ system_prompt = """Ты — Рожков. Агент для разделения
 - Сохраняй только те связи, которые можно обосновать текстом.
 """  # noqa: E501
 
+AgentModelClient = NewType("AgentModelClient", ChatOpenRouter)
+
 
 class Agent(AgentI):
-    def __init__(self) -> None:
-        model = ChatOpenRouter(
-            model="nvidia/nemotron-3-super-120b-a12b:free",
-            temperature=0,
-            max_tokens=None,
-            timeout=None,
-            max_retries=2,
-        )
+    def __init__(
+        self,
+        client: AgentModelClient,
+        checkpointer: BaseCheckpointSaver[str],
+        user_service: UserService,
+        receipt_service: ReceiptService,
+    ) -> None:
+        self.user_service = user_service
+        self.receipt_service = receipt_service
         self.agent = create_agent(
-            model,
+            client,
             tools=[
                 append_item,
                 assign_item,
@@ -92,19 +100,45 @@ class Agent(AgentI):
             ],
             system_prompt=system_prompt,
             state_schema=ReceiptModificationState,
-            checkpointer=InMemorySaver(),
+            context_schema=ReceiptModificationContext,
+            checkpointer=checkpointer,
         )
 
-    def invoke(
-        self,
-        user_prompt: str,
-        receipt: Receipt,
-    ) -> Response:
-        return self.agent.invoke(
-            {
-                "messages": [{"role": "user", "content": user_prompt}],
-                "receipt_items_data": receipt_items_data,
-                "users": users,
-            },
-            {"configurable": {"thread_id": tread_id}},
+    async def invoke(
+        self, user_prompt: str, receipt: Receipt, participants: list[User]
+    ) -> AgentResponse:
+        answer = await self.agent.ainvoke(
+            input=self._construct_invoke_state(
+                user_prompt, receipt, participants
+            ),
+            config={"configurable": {"thread_id": receipt.id}},
+            context=self._construct_invoke_context(participants),
         )
+
+        updated_receipt = self.receipt_service.rewrite_receipt_item_data(
+            answer["receipt_items_data"], receipt
+        )
+        return AgentResponse(
+            answer=answer["messages"][-1].content,
+            receipt=updated_receipt,
+        )
+
+    def _construct_invoke_state(
+        self, user_prompt: str, receipt: Receipt, participants: list[User]
+    ) -> InvokeState:
+        receipt_items_data = self.receipt_service.narrow_to_items_data(receipt)
+        users_data = tuple(
+            self.user_service.narrow_to_basic_user_data(user)
+            for user in participants
+        )
+        return {
+            "messages": [HumanMessage(user_prompt)],
+            "receipt_items_data": receipt_items_data,
+            "users": users_data,
+        }
+
+    @staticmethod
+    def _construct_invoke_context(
+        participants: list[User],
+    ) -> ReceiptModificationContext:
+        return {"user_id_mapping": {user.id: user for user in participants}}

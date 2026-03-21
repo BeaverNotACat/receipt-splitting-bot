@@ -1,26 +1,17 @@
-from typing import Unpack
-
-from langchain.tools import ToolRuntime, tool
+from langchain.messages import ToolMessage
+from langchain.tools import tool
 from langgraph.types import Command
-from langgraph.typing import ContextT
 
-from .base import (
-    EmptyGoTo,
-    ReceiptModificationState,
-    ReceiptToolActionBase,
-    UnassignedItemActionInput,
-)
+from src.domain.exceptions import DomainError
+from src.domain.value_objects import LineItem
 
-
-class RemoveItemAction(ReceiptToolActionBase[*UnassignedItemActionInput]):
-    def action(self, **kwds: Unpack[UnassignedItemActionInput]) -> None:
-        return self.receipt.remove_item(**kwds)
+from .base import EmptyGoTo, ModifyReceiptRuntime
 
 
 @tool
 def remove_item(
-    runtime: ToolRuntime[ContextT, ReceiptModificationState],
-    **kwds: Unpack[UnassignedItemActionInput],
+    runtime: ModifyReceiptRuntime,
+    item: LineItem,
 ) -> Command[EmptyGoTo]:
     """
     Убрать LineItem из неназначенных.
@@ -33,4 +24,20 @@ def remove_item(
     2. количество блюда
     3. Цену блюда(берется из списка неназначенных)
     """
-    return RemoveItemAction(runtime)(**kwds)
+    receipt_items_data = runtime.state["receipt_items_data"]
+    try:
+        receipt_items_data.remove_item(item)
+        message_text = "Successfully updated receipt"
+    except DomainError as err:
+        message_text = f"Failed to update receipt: {err!s}"
+    return Command(
+        update={
+            "receipt_items_data": receipt_items_data,
+            "messages": [
+                ToolMessage(
+                    message_text,
+                    tool_call_id=runtime.tool_call_id,
+                )
+            ],
+        }
+    )
