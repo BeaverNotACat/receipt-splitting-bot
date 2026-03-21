@@ -94,12 +94,17 @@ class Agent(AgentI):
         )
 
     def invoke(
-        self, user_prompt: str, receipt_items_data: ReceiptItemsData,
-        users: tuple[User, ...], tread_id: ReceiptID
+        self,
+        user_prompt: str,
+        receipt_items_data: ReceiptItemsData,
+        users: tuple[User, ...],
+        tread_id: ReceiptID,
     ) -> Response:
         return self.agent.invoke(
-            {"messages": [{"role": "user", "content": user_prompt}],
-             "receipt_items_data": receipt_items_data,
-             "users": users},
+            {
+                "messages": [{"role": "user", "content": user_prompt}],
+                "receipt_items_data": receipt_items_data,
+                "users": users,
+            },
             {"configurable": {"thread_id": tread_id}},
         )

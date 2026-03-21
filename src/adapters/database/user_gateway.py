@@ -1,10 +1,11 @@
-from typing import Unpack
+from typing import Iterable, Unpack
 
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.user_gateway import (
+    MultipleUsersFilters,
     UserFilters,
     UserNotFoundError,
     UserReaderI,
@@ -28,6 +29,15 @@ class UserGateway(UserReaderI, UserSaverI):
         except NoResultFound:
             raise UserNotFoundError from NoResultFound
 
+    async def fetch_users(
+        self, **filters: Unpack[MultipleUsersFilters]
+    ) -> list[User]:
+        query = select(UserORM)
+        if "ids" in filters:
+            query = query.filter(UserORM.id.in_(filters["ids"]))
+        users_orm = await self.session.execute(query)
+        return self._bulk_map_to_domain(users_orm)
+
     async def save_user(self, user: User) -> None:
         user_orm = self._map_to_orm(user)
         await self.session.merge(user_orm)
@@ -44,6 +54,10 @@ class UserGateway(UserReaderI, UserSaverI):
             nickname=(UserNickname(orm.nickname)),
             chat_id=ChatID(orm.chat_id),
         )
+
+    @classmethod
+    def _bulk_map_to_domain(cls, models: Iterable[UserORM]) -> list[User]:
+        return [cls._map_to_domain(model) for model in models]
 
     @staticmethod
     def _map_to_orm(model: User) -> UserORM:
