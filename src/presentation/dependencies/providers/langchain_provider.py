@@ -29,7 +29,7 @@ class LangChainProvider(Provider):
     @provide
     @staticmethod
     def get_agent_model_client(settings: Settings) -> AgentModelClient:
-        return OCRModelClient(
+        return AgentModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model="nvidia/nemotron-3-super-120b-a12b:free",
                 temperature=0,

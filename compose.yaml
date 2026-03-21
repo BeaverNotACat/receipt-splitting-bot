@@ -19,6 +19,7 @@ services:
     environment:
       DATABASE_DSN: ${DATABASE_DSN?}
       TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
     develop:
       watch:
         - action: sync+restart
