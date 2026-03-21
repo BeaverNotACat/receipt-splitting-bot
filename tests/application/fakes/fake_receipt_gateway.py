@@ -6,6 +6,7 @@ from src.application.common.database.receipt_gateway import (
     ReceiptSaverI,
     SingleReceiptFilters,
 )
+from src.domain.value_objects import LimitOffsetPagination
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -34,14 +35,28 @@ class FakeReceiptGateway(ReceiptReaderI, ReceiptSaverI):
         raise NotImplementedError
 
     async def fetch_receipts(
-        self, **filters: Unpack[MultipleReceiptsFilters]
+        self,
+        pagination: LimitOffsetPagination,
+        **filters: Unpack[MultipleReceiptsFilters],
     ) -> list[Receipt]:
         participant_id = filters.get("participant_id")
         return [
             receipt
             for receipt in self.receipts_storage.values()
             if participant_id in receipt.participants_ids
-        ]
+        ][pagination.offset : pagination.limit]
+
+    async def count_receipts(
+        self, **filters: Unpack[MultipleReceiptsFilters]
+    ) -> int:
+        participant_id = filters.get("participant_id")
+        return len(
+            [
+                receipt
+                for receipt in self.receipts_storage.values()
+                if participant_id in receipt.participants_ids
+            ]
+        )
 
     async def save_receipt(self, receipt: Receipt) -> None:
         self.receipts_storage[receipt.id] = receipt

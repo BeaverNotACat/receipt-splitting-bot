@@ -46,7 +46,7 @@ class ReceiptItemsData:
             self.assignees.get(user.id, []), item
         )
 
-    def disassign_item(self, item: LineItem, user: User) -> None:
+    def unassign_item(self, item: LineItem, user: User) -> None:
         self._ensure_participant(user)
 
         self.assignees[user.id] = self._remove_from_collection(

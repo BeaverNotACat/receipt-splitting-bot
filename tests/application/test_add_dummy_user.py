@@ -56,7 +56,6 @@ def add_dummy_user_interactor(
     )
 
 
-@pytest.mark.asyncio
 async def test_add_dummy_user(
     add_dummy_user_dto: AddDummyUserDTO,
     add_dummy_user_interactor: AddDummyUser,

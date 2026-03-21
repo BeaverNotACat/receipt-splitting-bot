@@ -11,22 +11,25 @@ dependencies = [
     "annotated-types>=0.7.0",
     "dishka>=1.7.2",
     "langchain>=1.1.0",
-    "langchain-google-genai>=4.2.1",
     "psycopg[binary]>=3.3.2",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
+    "langchain-openrouter>=0.1.0",
 ]
 [dependency-groups]
 dev = [
     "aiogram-dialog[tools]>=2.4.0",
-    "bandit>=1.9.2",
     "mypy>=1.18.2",
     "polyfactory>=2.22.2",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.2.0",
     "pytest-cov>=7.0.0",
+    "pytest-randomly>=4.0.1",
     "ruff>=0.13.1",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.mypy]
 strict = true
@@ -91,9 +94,9 @@ select = [
 ]
 ignore = [
     "COM812", # ruff warn on it
-    "S101", # triggers on asserts in tests, bandit hadles assers in src anyway 
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "src/presentation/telegram/*" = ["RUF"] # Commands containsRussian text and emojis causing false positive
 "src/adapters/agent/*" = ["RUF"] # Prompts may contain russian text causing false positive
+"tests/*" = ["S101"] # Do not trigger on asserts in tests

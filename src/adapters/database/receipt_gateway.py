@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING, Unpack
 
-from sqlalchemy import or_, select
+from sqlalchemy import Select, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.common.database.receipt_gateway import (
@@ -11,7 +11,13 @@ from src.application.common.database.receipt_gateway import (
     SingleReceiptFilters,
 )
 from src.domain.models.receipt import Receipt
-from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
+from src.domain.value_objects import (
+    LimitOffsetPagination,
+    LineItem,
+    ReceiptID,
+    ReceiptTitle,
+    UserID,
+)
 
 from .orm import LineItemORM, ReceiptORM, UserORM
 
@@ -31,9 +37,36 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
         return self._map_to_domain(receipt_orm.scalar_one())
 
     async def fetch_receipts(
-        self, **filters: Unpack[MultipleReceiptsFilters]
+        self,
+        pagination: LimitOffsetPagination,
+        **filters: Unpack[MultipleReceiptsFilters],
     ) -> list[Receipt]:
-        query = select(ReceiptORM)
+        query = (
+            select(ReceiptORM)
+            .order_by(ReceiptORM.id)
+            .limit(pagination.limit)
+            .offset(pagination.offset)
+        )
+        query = self._apply_multiple_filters(query, **filters)
+        receipt_orm = await self.session.execute(query)
+        return self._bulk_map_to_domain(receipt_orm.scalars())
+
+    async def count_receipts(
+        self, **filters: Unpack[MultipleReceiptsFilters]
+    ) -> int:
+        query = select(func.count(ReceiptORM.id))
+        query = self._apply_multiple_filters(query, **filters)
+        return (await self.session.execute(query)).scalar_one()
+
+    async def save_receipt(self, receipt: Receipt) -> None:
+        receipt_orm = await self._map_to_orm(receipt)
+        await self.session.merge(receipt_orm)
+
+    @staticmethod
+    def _apply_multiple_filters[T: ReceiptORM | int](
+        query: Select[tuple[T]],
+        **filters: Unpack[MultipleReceiptsFilters],
+    ) -> Select[tuple[T]]:
         if "participant_id" in filters:
             query = query.filter(
                 or_(
@@ -41,12 +74,7 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
                     ReceiptORM.debtors.any(id=filters["participant_id"]),
                 )
             )
-        receipt_orm = await self.session.execute(query)
-        return self._bulk_map_to_domain(receipt_orm.scalars())
-
-    async def save_receipt(self, receipt: Receipt) -> None:
-        receipt_orm = await self._map_to_orm(receipt)
-        await self.session.merge(receipt_orm)
+        return query
 
     async def _map_to_orm(self, receipt: Receipt) -> ReceiptORM:
         return ReceiptORM(
@@ -98,6 +126,8 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
                 unassigned_items.append(item)
             else:
                 assignees[UserID(item_orm.assigned_to)].append(item)
+        for debtor in orm.debtors:
+            assignees[UserID(debtor.id)]
 
         return Receipt(
             id=ReceiptID(orm.id),
@@ -105,7 +135,7 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
             title=ReceiptTitle(orm.title),
             creditor_id=UserID(orm.creditor_id),
             unassigned_items=unassigned_items,
-            assignees=assignees,
+            assignees=dict(assignees),
         )
 
     @classmethod
