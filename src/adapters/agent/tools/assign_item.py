@@ -22,4 +22,12 @@ def assign_item(
     runtime: ToolRuntime[ContextT, ReceiptModificationState],
     **kwds: Unpack[AssignedItemActionInput],
 ) -> Command[EmptyGoTo]:
+    """
+    Назначить LineItem из неназначенных, пользователю.
+    Через LineItem тебе необходимо указать:
+    1. Название блюда
+    2. количество блюда(Например, если 2 человека ели одно блюдо
+    ты можешь назначить каждому по 0.5 этого блюда)
+    3. Цену блюда(берется из списка неназначенных)
+    """
     return AssignItemAction(runtime)(**kwds)

@@ -22,4 +22,15 @@ def remove_item(
     runtime: ToolRuntime[ContextT, ReceiptModificationState],
     **kwds: Unpack[UnassignedItemActionInput],
 ) -> Command[EmptyGoTo]:
+    """
+    Убрать LineItem из неназначенных.
+
+    Пример использования: пользователь говорит
+    что они впринципе не заказывали такое блюдо
+
+    Через LineItem тебе необходимо указать:
+    1. Название блюда
+    2. количество блюда
+    3. Цену блюда(берется из списка неназначенных)
+    """
     return RemoveItemAction(runtime)(**kwds)
