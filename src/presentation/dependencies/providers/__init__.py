@@ -1,5 +1,5 @@
 from .alchemy_provider import AlchemyProvider
-from .auth_provider import AuthProvider
+from .identifications_provider import AuthProvider
 from .interactors_provider import interactors_provider
 from .langchain_provider import LangChainProvider
 from .repositories_provider import repositories_provider

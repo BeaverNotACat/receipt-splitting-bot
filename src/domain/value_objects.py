@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Annotated, NewType
+from typing import Annotated, BinaryIO, NewType
 from uuid import UUID
 
 from annotated_types import Gt
@@ -50,3 +50,7 @@ UserID = NewType("UserID", UUID)
 ReceiptID = NewType("ReceiptID", UUID)
 UserNickname = NewType("UserNickname", str)
 ReceiptTitle = NewType("ReceiptTitle", str)
+MessageText = NewType("MessageText", str)
+Photo = NewType("Photo", BinaryIO)
+Audio = NewType("Audio", BinaryIO)
+AgentMessage = NewType("AgentMessage", str)

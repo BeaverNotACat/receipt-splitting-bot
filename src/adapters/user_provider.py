@@ -5,7 +5,7 @@ from src.application.common.database.user_gateway import (
     UserReaderI,
 )
 from src.application.common.user_provider import (
-    UserIsNotRegisteredError,
+    NoActiveUserError,
     UserProviderI,
 )
 from src.domain.models.user import RealUser
@@ -21,11 +21,11 @@ class UserProvider(UserProviderI):
 
     async def fetch_current_user(self) -> RealUser:
         if self.chat_id is None:
-            raise UserIsNotRegisteredError
+            raise NoActiveUserError
         try:
             return cast(
                 "RealUser",
                 await self.user_reader.fetch_user(chat_id=self.chat_id),
             )
         except UserNotFoundError:
-            raise UserIsNotRegisteredError from UserNotFoundError
+            raise NoActiveUserError from UserNotFoundError
