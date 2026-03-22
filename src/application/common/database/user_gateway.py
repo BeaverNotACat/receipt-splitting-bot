@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from collections.abc import Sequence
 from typing import (
     TYPE_CHECKING,
     Protocol,
@@ -17,12 +18,22 @@ class UserFilters(TypedDict, total=False):
     chat_id: ChatID
 
 
+class MultipleUsersFilters(TypedDict, total=False):
+    ids: Sequence[UserID]
+
+
 class UserNotFoundError(Exception): ...
 
 
 class UserReaderI(Protocol):
     @abstractmethod
     async def fetch_user(self, **filters: Unpack[UserFilters]) -> User:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def fetch_users(
+        self, **filters: Unpack[MultipleUsersFilters]
+    ) -> list[User]:
         raise NotImplementedError
 
 

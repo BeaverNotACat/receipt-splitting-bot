@@ -14,12 +14,10 @@ from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
 
 
 @dataclass
-class Receipt:
-    id: ReceiptID
-    created_at: AwareDatetime
-    title: ReceiptTitle
-
-    creditor_id: UserID
+class ReceiptItemsData:
+    """
+    Mixin with narrow item management logic for Agent manipulations
+    """
 
     unassigned_items: list[LineItem]
     assignees: dict[UserID, list[LineItem]]
@@ -114,3 +112,12 @@ class Receipt:
     def _ensure_debtor(self, user: User) -> None:
         if user.id not in self.participants_ids:
             raise NotDebtorError
+
+
+@dataclass
+class Receipt(ReceiptItemsData):
+    id: ReceiptID
+    created_at: AwareDatetime
+    title: ReceiptTitle
+
+    creditor_id: UserID

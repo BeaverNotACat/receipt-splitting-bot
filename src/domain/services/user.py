@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
 from uuid import uuid7
 
-from src.domain.models.user import DummyUser, RealUser
+from src.domain.models.user import BaseUserData, DummyUser, RealUser
 from src.domain.value_objects import ChatID, UserID, UserNickname
+
+if TYPE_CHECKING:
+    from src.domain.models.user import User
 
 
 class UserService:
@@ -19,3 +23,7 @@ class UserService:
             id=UserID(uuid7()),
             nickname=nickname,
         )
+
+    @staticmethod
+    def narrow_to_basic_user_data(user: User) -> BaseUserData:
+        return BaseUserData(user.id, user.nickname)
