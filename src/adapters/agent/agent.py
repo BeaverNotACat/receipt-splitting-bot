@@ -138,6 +138,8 @@ class Agent(AgentI):
 
     @staticmethod
     def _contruct_human_message(request: HumanRequest) -> HumanMessage:
+        # TODO(beavernotacat): Enchance HumanMessage prompt
+        # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/45
         message_text = "\n".join(
             request.users_input,
             *request.transcribed_photos,
