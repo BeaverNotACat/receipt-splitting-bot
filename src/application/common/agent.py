@@ -12,7 +12,7 @@ from src.domain.value_objects import AgentMessage, MessageText
 
 @dataclass(slots=True, frozen=True)
 class HumanRequest:
-    users_input: MessageText
+    users_input: MessageText | None
     transcribed_audios: Sequence[RecognizedSpeechText]
     transcribed_photos: Sequence[RecognizedImageText]
 

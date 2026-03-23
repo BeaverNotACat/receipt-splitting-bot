@@ -141,7 +141,7 @@ class Agent(AgentI):
         # TODO(beavernotacat): Enchance HumanMessage prompt
         # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/45
         message_text = "\n".join(
-            request.users_input,
+            request.users_input if request.users_input is not None else "",
             *request.transcribed_photos,
             *request.transcribed_audios,
         )

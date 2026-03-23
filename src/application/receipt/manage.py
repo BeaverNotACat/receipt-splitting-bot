@@ -20,7 +20,7 @@ from src.domain.value_objects import AgentMessage, Audio, MessageText, Photo
 
 @dataclass
 class ManageReceiptDTO:
-    text: MessageText
+    text: MessageText | None
     photos: tuple[Photo]
     audios: tuple[Audio]
 
