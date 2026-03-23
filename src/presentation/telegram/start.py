@@ -7,7 +7,7 @@ from aiogram_dialog import DialogManager, StartMode
 from dishka.integrations.aiogram import FromDishka, inject
 
 from src.application.common.user_provider import (
-    UserIsNotRegisteredError,
+    NoActiveUserError,
     UserProviderI,
 )
 from src.domain.value_objects import ReceiptID
@@ -28,7 +28,7 @@ async def deeplink_start(
     try:
         initial_state = states.JoinReceiptSG.preview
         await user_provider.fetch_current_user()
-    except UserIsNotRegisteredError:
+    except NoActiveUserError:
         initial_state = states.RegisterSG.nickname
 
     await dialog_manager.start(
@@ -48,7 +48,7 @@ async def start(
     try:
         initial_state = states.ProfileSG.view
         await user_provider.fetch_current_user()
-    except UserIsNotRegisteredError:
+    except NoActiveUserError:
         initial_state = states.RegisterSG.nickname
 
     await dialog_manager.start(initial_state, mode=StartMode.RESET_STACK)

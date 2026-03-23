@@ -11,8 +11,9 @@ from src.adapters.agent.tools import (
     remove_item,
     unassign_item,
 )
-from src.application.common.agent import AgentI, AgentResponse
+from src.application.common.agent import AgentI, AgentResponse, HumanRequest
 from src.domain.services import ReceiptService, UserService
+from src.domain.value_objects import AgentMessage
 
 from .context import ReceiptModificationContext
 from .state import InvokeState, ReceiptModificationState
@@ -105,12 +106,10 @@ class Agent(AgentI):
         )
 
     async def invoke(
-        self, user_prompt: str, receipt: Receipt, participants: list[User]
+        self, request: HumanRequest, receipt: Receipt, participants: list[User]
     ) -> AgentResponse:
         answer = await self.agent.ainvoke(
-            input=self._construct_invoke_state(
-                user_prompt, receipt, participants
-            ),
+            input=self._construct_invoke_state(request, receipt, participants),
             config={"configurable": {"thread_id": receipt.id}},
             context=self._construct_invoke_context(participants),
         )
@@ -119,12 +118,12 @@ class Agent(AgentI):
             answer["receipt_items_data"], receipt
         )
         return AgentResponse(
-            answer=answer["messages"][-1].content,
-            receipt=updated_receipt,
+            answer=AgentMessage(answer["messages"][-1].content),
+            updated_receipt=updated_receipt,
         )
 
     def _construct_invoke_state(
-        self, user_prompt: str, receipt: Receipt, participants: list[User]
+        self, request: HumanRequest, receipt: Receipt, participants: list[User]
     ) -> InvokeState:
         receipt_items_data = self.receipt_service.narrow_to_items_data(receipt)
         users_data = tuple(
@@ -132,10 +131,21 @@ class Agent(AgentI):
             for user in participants
         )
         return {
-            "messages": [HumanMessage(user_prompt)],
+            "messages": [self._contruct_human_message(request)],
             "receipt_items_data": receipt_items_data,
             "users": users_data,
         }
+
+    @staticmethod
+    def _contruct_human_message(request: HumanRequest) -> HumanMessage:
+        # TODO(beavernotacat): Enchance HumanMessage prompt
+        # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/45
+        message_text = "\n".join(
+            request.users_input if request.users_input is not None else "",
+            *request.transcribed_photos,
+            *request.transcribed_audios,
+        )
+        return HumanMessage(message_text)
 
     @staticmethod
     def _construct_invoke_context(
