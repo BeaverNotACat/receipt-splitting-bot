@@ -2,15 +2,16 @@ import asyncio
 from typing import Any, cast
 
 from aiogram import Bot
-from aiogram.types import Message, PhotoSize, Voice
+from aiogram.types import CallbackQuery, Message, PhotoSize, Voice
 from aiogram.utils.deep_linking import create_start_link
 from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Start
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.kbd import Button, Start
+from aiogram_dialog.widgets.text import Const, Format, Jinja
 from dishka.integrations.aiogram import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 
+from src.application.receipt.form_bills import FormBills, FormBillsDTO
 from src.application.receipt.manage import ManageReceipt, ManageReceiptDTO
 from src.domain.value_objects import Audio, MessageText, Photo, ReceiptID
 
@@ -28,8 +29,27 @@ async def receipt_dialog_greeting_getter(
 ) -> dict[str, Any]:
     receipt_id = get_receipt_id(dialog_manager)
     invite_link = await create_start_link(bot, str(receipt_id))
-    await dialog_manager.next()
     return {"invite_link": invite_link}
+
+
+async def on_show_bill(
+    _event: CallbackQuery,
+    _button: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    await dialog_manager.switch_to(states.ReceiptChatSG.bills)
+
+
+@inject
+async def bills_getter(
+    dialog_manager: DialogManager,
+    form_bill: FromDishka[FormBills],
+    **_kwargs: dict[str, Any],
+) -> dict[str, Any]:
+    dto = FormBillsDTO(receipt_id=get_receipt_id(dialog_manager))
+    bills_mapping = await form_bill(dto)
+    await dialog_manager.switch_to(states.ReceiptChatSG.chat)
+    return {"bills": bills_mapping}
 
 
 async def download_photos(
@@ -72,21 +92,56 @@ async def natural_language_handler(
     )
     answer = await manage_receipt(dto)
     dialog_manager.dialog_data["agent_answer"] = answer
+    await dialog_manager.switch_to(states.ReceiptChatSG.chat)
+
+
+return_to_profile_button = Start(
+    Const("↩️ К профилю"), id="profile", state=states.ProfileSG.view
+)
+show_receipt_button = Button(
+    Const("📋 Показать чек"), id="show_bill", on_click=on_show_bill
+)
+user_prompt_input = MessageInput(natural_language_handler)
+bills_text = Jinja("""
+<b>Счета:</b>
+{% for nickname, bill in bills %}
+{% if nickname is none %}
+Не назначеные товары:
+{% else %}
+{{nickname}}:
+{% endif %}
+    {% for item in bill.items %}
+    {{item.name}} : {{item.amount}} : {{item.price}} у.е.
+    {% endfor %}
+Итого: {{bill.total}} у.е.
+{% endfor %}
+""")
 
 
 manage_receipt_dialog = Dialog(
     Window(
-        Const("{Рассказ про гента, что он умеет}"),
+        Const("Рассказ про aгента, что он умеет"),
         Format("Ваша ссылка на приглашение:\n{invite_link}"),
-        Start(Const("↩️ К профилю"), id="profile", state=states.ProfileSG.view),
-        MessageInput(natural_language_handler),
+        show_receipt_button,
+        return_to_profile_button,
+        user_prompt_input,
         state=states.ReceiptChatSG.greeting,
         getter=receipt_dialog_greeting_getter,
     ),
     Window(
         Format("{dialog_data[agent_answer]}"),
-        Start(Const("↩️ К профилю"), id="profile", state=states.ProfileSG.view),
-        MessageInput(natural_language_handler),
+        show_receipt_button,
+        return_to_profile_button,
+        user_prompt_input,
         state=states.ReceiptChatSG.chat,
+    ),
+    Window(
+        bills_text,
+        show_receipt_button,
+        return_to_profile_button,
+        user_prompt_input,
+        parse_mode="HTML",
+        state=states.ReceiptChatSG.bills,
+        getter=bills_getter,
     ),
 )

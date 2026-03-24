@@ -10,7 +10,13 @@ from src.domain.exceptions import (
     RemovedMoreThanExistError,
 )
 from src.domain.models.user import User
-from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
+from src.domain.value_objects import (
+    Bill,
+    LineItem,
+    ReceiptID,
+    ReceiptTitle,
+    UserID,
+)
 
 
 @dataclass
@@ -121,3 +127,8 @@ class Receipt(ReceiptItemsData):
     title: ReceiptTitle
 
     creditor_id: UserID
+
+    def form_bill(self, user_id: UserID | None) -> Bill:
+        if user_id is None:
+            return Bill(tuple(self.unassigned_items))
+        return Bill(tuple(self.assignees[user_id]))
