@@ -1,3 +1,5 @@
+from typing import BinaryIO
+
 from dishka import Provider, Scope, provide
 from langchain_openrouter import ChatOpenRouter
 from langgraph.checkpoint.base import BaseCheckpointSaver
@@ -6,6 +8,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from src.adapters.agent.agent import Agent, AgentModelClient
 from src.adapters.ocr import OCRModelClient, OpticalCharacterRecognizer
 from src.application.common.agent import AgentI
+from src.application.common.asr import RecognizedSpeechText, SpeechRecognizerI
 from src.application.common.ocr import OpticalCharacterRecognizerI
 from src.domain.services.receipt import ReceiptService
 from src.domain.services.user import UserService
@@ -46,6 +49,17 @@ class LangChainProvider(Provider):
     @staticmethod
     def get_ocr(client: OCRModelClient) -> OpticalCharacterRecognizerI:
         return OpticalCharacterRecognizer(client)
+
+    @provide
+    @staticmethod
+    def get_asr() -> SpeechRecognizerI:
+        class SpeechRecognizer(SpeechRecognizerI):
+            async def recognize_text(
+                self, audio: BinaryIO
+            ) -> RecognizedSpeechText:
+                raise NotImplementedError
+
+        return SpeechRecognizer()
 
     @provide
     @staticmethod
