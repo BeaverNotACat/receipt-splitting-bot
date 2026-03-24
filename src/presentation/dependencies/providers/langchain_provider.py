@@ -53,6 +53,8 @@ class LangChainProvider(Provider):
     @provide
     @staticmethod
     def get_asr() -> SpeechRecognizerI:
+        # TODO(beavernotacat): Add speech to text adapter
+        # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/38
         class SpeechRecognizer(SpeechRecognizerI):
             async def recognize_text(
                 self, audio: BinaryIO
