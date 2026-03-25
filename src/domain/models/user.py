@@ -8,17 +8,17 @@ from src.domain.value_objects import (
 
 
 @dataclass
-class BaseUserData:
+class _BaseUser:
     id: UserID
     nickname: UserNickname
 
 
 @dataclass
-class DummyUser(BaseUserData): ...
+class DummyUser(_BaseUser): ...
 
 
 @dataclass
-class RealUser(BaseUserData):
+class RealUser(_BaseUser):
     chat_id: ChatID
 
 

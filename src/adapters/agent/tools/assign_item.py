@@ -22,16 +22,16 @@ def assign_item(
     ты можешь назначить каждому по 0.5 этого блюда)
     3. Цену блюда(берется из списка неназначенных)
     """
-    receipt_items_data = runtime.state["receipt_items_data"]
+    receipt = runtime.state["receipt"]
     try:
         user = runtime.context["user_id_mapping"][user_id]
-        receipt_items_data.assign_item(item, user)
+        receipt.assign_item(item, user)
         message_text = "Successfully updated receipt"
     except (DomainError, KeyError) as err:
         message_text = f"Failed to update receipt: {err!s}"
     return Command(
         update={
-            "receipt_items_data": receipt_items_data,
+            "receipt": receipt,
             "messages": [
                 ToolMessage(
                     message_text,

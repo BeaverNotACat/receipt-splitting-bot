@@ -24,15 +24,15 @@ def remove_item(
     2. количество блюда
     3. Цену блюда(берется из списка неназначенных)
     """
-    receipt_items_data = runtime.state["receipt_items_data"]
+    receipt = runtime.state["receipt"]
     try:
-        receipt_items_data.remove_item(item)
+        receipt.remove_item(item)
         message_text = "Successfully updated receipt"
     except DomainError as err:
         message_text = f"Failed to update receipt: {err!s}"
     return Command(
         update={
-            "receipt_items_data": receipt_items_data,
+            "receipt": receipt,
             "messages": [
                 ToolMessage(
                     message_text,
