@@ -4,7 +4,7 @@ from typing import Any, cast
 from aiogram import Bot
 from aiogram.types import CallbackQuery, Message, PhotoSize, Voice
 from aiogram.utils.deep_linking import create_start_link
-from aiogram_dialog import Dialog, DialogManager, Window
+from aiogram_dialog import Dialog, DialogManager, ShowMode, Window
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button, Start
 from aiogram_dialog.widgets.text import Const, Format, Jinja
@@ -37,7 +37,9 @@ async def on_show_bill(
     _button: Button,
     dialog_manager: DialogManager,
 ) -> None:
-    await dialog_manager.switch_to(states.ReceiptChatSG.bills)
+    await dialog_manager.switch_to(
+        states.ReceiptChatSG.bills, show_mode=ShowMode.SEND
+    )
 
 
 @inject
@@ -48,7 +50,9 @@ async def bills_getter(
 ) -> dict[str, Any]:
     dto = FormBillsDTO(receipt_id=get_receipt_id(dialog_manager))
     bills_mapping = await form_bill(dto)
-    await dialog_manager.switch_to(states.ReceiptChatSG.chat)
+    await dialog_manager.switch_to(
+        states.ReceiptChatSG.chat, show_mode=ShowMode.SEND
+    )
     return {"bills": bills_mapping}
 
 
@@ -92,7 +96,9 @@ async def natural_language_handler(
     )
     answer = await manage_receipt(dto)
     dialog_manager.dialog_data["agent_answer"] = answer
-    await dialog_manager.switch_to(states.ReceiptChatSG.chat)
+    await dialog_manager.switch_to(
+        states.ReceiptChatSG.chat, show_mode=ShowMode.SEND
+    )
 
 
 return_to_profile_button = Start(
@@ -103,17 +109,17 @@ show_receipt_button = Button(
 )
 user_prompt_input = MessageInput(natural_language_handler)
 bills_text = Jinja("""
-<b>Счета:</b>
+<b>СЧЕТА:</b>
 {% for nickname, bill in bills %}
 {% if nickname is none %}
-Не назначеные товары:
+<b>Не назначеные товары:</b>
 {% else %}
-{{nickname}}:
+<b>{{nickname}}:</b>
 {% endif %}
     {% for item in bill.items %}
-    {{item.name}} : {{item.amount}} : {{item.price}} у.е.
+    {{item.name}}\t|\t{{item.amount}}\t|\t{{item.price|round(2)}} руб.
     {% endfor %}
-Итого: {{bill.total}} у.е.
+Итого: {{bill.total|round(2)}} у.е.
 {% endfor %}
 """)
 

@@ -14,6 +14,7 @@ from src.application.common.ocr import (
     OpticalCharacterRecognizerI,
     RecognizedImageText,
 )
+from src.application.common.user_provider import UserProviderI
 from src.domain.value_objects import (
     AgentMessage,
     Audio,
@@ -40,6 +41,7 @@ class ManageReceipt(Interactor[ManageReceiptDTO, ManageReceiptResultDTO]):
     agent: AgentI
     ocr: OpticalCharacterRecognizerI
     asr: SpeechRecognizerI
+    user_provider: UserProviderI
     receipt_db_gateway: ReceiptGatewayI
     user_db_gateway: UserReaderI
     transaction_manager: TransactionManagerI
@@ -65,11 +67,15 @@ class ManageReceipt(Interactor[ManageReceiptDTO, ManageReceiptResultDTO]):
     async def construct_human_request(
         self, context: ManageReceiptDTO
     ) -> HumanRequest:
+        current_user = await self.user_provider.fetch_current_user()
         transcribed_audios, transcribed_photos = await self.transcribe_texts(
             context.audios, context.photos
         )
         return HumanRequest(
-            context.text, transcribed_audios, transcribed_photos
+            current_user.id,
+            context.text,
+            transcribed_audios,
+            transcribed_photos,
         )
 
     async def transcribe_texts(

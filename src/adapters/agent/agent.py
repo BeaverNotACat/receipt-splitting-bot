@@ -21,6 +21,10 @@ from .state import InvokeState, ReceiptModificationState
 if TYPE_CHECKING:
     from src.domain.models import Receipt, User
 
+from langchain_core.globals import set_debug
+
+set_debug(True)
+
 system_prompt = """\
 Ты — Рожков. Агент для разделения чеков.
 
@@ -132,6 +136,7 @@ class Agent(AgentI):
         )
         return {
             "messages": [self._contruct_human_message(request)],
+            "current_user_id": request.user_id,
             "receipt_items_data": receipt_items_data,
             "users": users_data,
         }
@@ -140,10 +145,12 @@ class Agent(AgentI):
     def _contruct_human_message(request: HumanRequest) -> HumanMessage:
         # TODO(beavernotacat): Enchance HumanMessage prompt
         # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/45
-        message_text = "\n".join(
-            request.users_input if request.users_input is not None else "",
-            *request.transcribed_photos,
-            *request.transcribed_audios,
+        message_text = (
+            str(request.users_input)
+            if request.users_input is not None
+            else ""
+            + "\n".join(request.transcribed_photos)
+            + "\n".join(request.transcribed_audios)
         )
         return HumanMessage(message_text)
 
