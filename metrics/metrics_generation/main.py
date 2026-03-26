@@ -3,6 +3,7 @@ import json
 import os
 import time
 from pathlib import Path
+from typing import cast
 
 from pydantic import TypeAdapter
 
@@ -55,7 +56,7 @@ def load_last_test_id(path: Path) -> int:
         except OSError:
             f.seek(0)
         last_line = f.readline().decode()
-        return json.loads(last_line)["id"]
+        return cast(json.loads(last_line)["id"])
 
 
 def is_rate_limit_error(exc: Exception) -> bool:
