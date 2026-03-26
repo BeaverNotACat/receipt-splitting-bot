@@ -118,11 +118,11 @@ bills_text = Jinja("""
 {% endif %}
 Название \t К-во \t Цена \t Сумма
 {% for item in bill.items %}
-{{item.name}} \t {{item.amount}} \t {{item.price|round(2)}} \t {{item.price*item.amount|round(2)}}
+{{item.name}}\t{{item.amount}}\t{{item.price|round(2)}}\t{{item.price*item.amount|round(2)}}
 {% endfor %}
 Итого: {{bill.total|round(2)}}\n
 {% endfor %}
-""")  # noqa: E501
+""")
 
 
 manage_receipt_dialog = Dialog(
