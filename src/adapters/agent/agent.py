@@ -13,7 +13,7 @@ from src.adapters.agent.tools import (
 )
 from src.application.common.agent import AgentI, AgentResponse, HumanRequest
 from src.domain.services import ReceiptService, UserService
-from src.domain.value_objects import AgentMessage
+from src.domain.value_objects import AgentMessage, UserID
 
 from .context import ReceiptModificationContext
 from .state import InvokeState, ReceiptModificationState
@@ -69,7 +69,9 @@ class Agent(AgentI):
     ) -> InvokeState:
         return {
             "messages": [
-                self._construct_receipt_state_message(receipt, participants),
+                self._construct_receipt_state_message(
+                    receipt, participants, request.user_id
+                ),
                 self._construct_human_message(request),
             ],
             "current_user_id": request.user_id,
@@ -79,11 +81,12 @@ class Agent(AgentI):
 
     @staticmethod
     def _construct_receipt_state_message(
-        receipt: Receipt, participants: list[User]
+        receipt: Receipt, participants: list[User], current_user_id: UserID
     ) -> SystemMessage:
         # TODO(beavernotacat): Switch from receipt data spamming
         # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/50
         message_text = (
+            f"ID текущего пользователя: {current_user_id}"
             "Состояние чека:\n"
             f"{receipt!s}\n"
             "Список участников чека\n"
