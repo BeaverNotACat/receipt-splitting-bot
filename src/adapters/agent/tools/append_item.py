@@ -21,12 +21,6 @@ def append_item(
     """
     receipt = runtime.state["receipt"]
 
-    all_items = [*receipt.unassigned_items]
-    (
-        all_items.extend(receipt.assignees[user_id])
-        for user_id in receipt.assignees
-    )
-
     try:
         receipt.append_item(item)
         message_text = "Successfully updated receipt"
