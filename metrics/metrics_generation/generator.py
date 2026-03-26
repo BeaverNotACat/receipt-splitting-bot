@@ -12,7 +12,7 @@ from pydantic.dataclasses import dataclass
 from metrics.metrics_generation.texts import prompt_template
 from src.domain.models import ReceiptItemsData
 from src.domain.models.user import DummyUser, User
-from src.domain.value_objects import LineItem, UserID
+from src.domain.value_objects import LineItem, UserID, UserNickname
 
 MetricsModelClient = NewType("MetricsModelClient", ChatOpenRouter)
 
@@ -91,7 +91,9 @@ class TestCreator:
         for _ in range(users_count):
             user_name = choice(self.variant_target_names)
             user_id = uuid.uuid4()
-            users.append(DummyUser(id=UserID(user_id), nickname=user_name))
+            users.append(
+                DummyUser(id=UserID(user_id), nickname=UserNickname(user_name))
+                )
         return users
 
     @staticmethod
