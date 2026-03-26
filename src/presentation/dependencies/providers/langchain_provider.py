@@ -3,6 +3,7 @@ from langchain_openrouter import ChatOpenRouter
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
 
+from metrics.metrics_generation.generator import MetricsModelClient
 from src.adapters.agent.agent import Agent, AgentModelClient
 from src.adapters.ocr import OCRModelClient, OpticalCharacterRecognizer
 from src.application.common.agent import AgentI
@@ -30,6 +31,17 @@ class LangChainProvider(Provider):
     @staticmethod
     def get_agent_model_client(settings: Settings) -> AgentModelClient:
         return AgentModelClient(
+            ChatOpenRouter(  # type: ignore[call-arg]
+                model="nvidia/nemotron-3-super-120b-a12b:free",
+                temperature=0,
+                api_key=settings.OPENROUTER_API_KEY,
+            )
+        )
+
+    @provide
+    @staticmethod
+    def get_metrics_model_client(settings: Settings) -> MetricsModelClient:
+        return MetricsModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model="nvidia/nemotron-3-super-120b-a12b:free",
                 temperature=0,
