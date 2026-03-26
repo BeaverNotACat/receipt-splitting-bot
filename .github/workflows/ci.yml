@@ -38,6 +38,7 @@ jobs:
     needs: [ruff, mypy]
     runs-on: ubuntu-latest
     env:
+        DEBUG: true
         DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
         TELEGRAM_TOKEN: ...
         OPENROUTER_API_KEY: ...

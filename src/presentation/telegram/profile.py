@@ -36,7 +36,7 @@ async def user_profile_getter(
     page = await scroll.get_page()
     pagination = LimitOffsetPagination(
         offset=page * PAGE_SIZE,
-        limit=(page + 1) * PAGE_SIZE,
+        limit=PAGE_SIZE,
     )
 
     dto = await list_receipts(ListReceiptsDTO(pagination=pagination))

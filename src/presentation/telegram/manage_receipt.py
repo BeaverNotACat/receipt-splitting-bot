@@ -139,6 +139,7 @@ manage_receipt_dialog = Dialog(
         show_receipt_button,
         return_to_profile_button,
         user_prompt_input,
+        parse_mode="MarkdownV2",
         state=states.ReceiptChatSG.chat,
     ),
     Window(

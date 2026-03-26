@@ -22,10 +22,6 @@ from .templating import system_prompt_template
 if TYPE_CHECKING:
     from src.domain.models import Receipt, User
 
-from langchain_core.globals import set_debug
-
-set_debug(True)  # Delete this
-
 
 AgentModelClient = NewType("AgentModelClient", ChatOpenRouter)
 
