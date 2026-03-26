@@ -16,15 +16,6 @@ We tried to format bills like tables for telegram:
 ├──────────┼─────────────┼──────┤
 │          │             │ 0.00 │
 └──────────┴─────────────┴──────┘
-               Бебе               
-┏━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━┓
-┃ Название  ┃ Колличест… ┃ Цена  ┃
-┡━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━┩
-│ сосиска в │ 1.00       │ 80.00 │
-│ тесте     │            │       │
-├───────────┼────────────┼───────┤
-│           │            │ 80.00 │
-└───────────┴────────────┴───────┘
             Неназначеные    
 ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┓
 ┃ Название  ┃ Колличес… ┃ Цена   ┃
@@ -36,6 +27,18 @@ We tried to format bills like tables for telegram:
 ```
 But encountered troubles:
 Mobile device cat hold ONLY about 30 symbols with monospaced font, so long dish names should be trimmed.
-Most important monospased font in telegram mobile app is not monospaced, so such gliches apeared:
-![[Pasted image 20260327005337.png]]
+Most important monospased font in telegram mobile app is not monospaced, so gliches with teared right table borders appeared
 
+We have stopped at such formatting:
+```
+СЧЕТА:
+Иван:
+Название   К-во   Цена   Сумма
+карбонара   2.00   250.00   500.0000
+ризттоно   1.00   700.00   700.0000
+цезарь   1.00   500.00   500.0000
+додо пицца с большим количеством мяса   1.00   1500.00   1500.0000
+Итого: 3200.00
+...
+```
+Not cute, but totally readable
