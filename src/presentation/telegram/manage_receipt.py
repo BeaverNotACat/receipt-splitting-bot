@@ -108,6 +108,13 @@ show_receipt_button = Button(
     Const("📋 Показать чек"), id="show_bill", on_click=on_show_bill
 )
 user_prompt_input = MessageInput(natural_language_handler)
+greetings = Const("""
+Привет!
+Я - Рожков, ваш персональный помощник в разделении чеков!
+Отправьте мне фотогорафии ваших чеков, расскажите текстом\
+или голосовым сообщением кто что купил и я посчитаю кому\
+сколько нужно заплатить
+""")
 bills_text = Jinja("""
 <b>СЧЕТА:</b>
 {% for nickname, bill in bills %}
@@ -127,7 +134,7 @@ bills_text = Jinja("""
 
 manage_receipt_dialog = Dialog(
     Window(
-        Const("Рассказ про aгента, что он умеет"),
+        greetings,
         Format("Ваша ссылка на приглашение:\n{invite_link}"),
         show_receipt_button,
         return_to_profile_button,
