@@ -19,15 +19,16 @@ def append_item(
     2. количество блюда
     3. Цену блюда(берется из запроса пользователя)
     """
-    receipt_items_data = runtime.state["receipt_items_data"]
+    receipt = runtime.state["receipt"]
+
     try:
-        receipt_items_data.append_item(item)
+        receipt.append_item(item)
         message_text = "Successfully updated receipt"
     except DomainError as err:
         message_text = f"Failed to update receipt: {err!s}"
     return Command(
         update={
-            "receipt_items_data": receipt_items_data,
+            "receipt": receipt,
             "messages": [
                 ToolMessage(
                     message_text,

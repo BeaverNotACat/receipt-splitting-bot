@@ -10,17 +10,30 @@ from src.domain.exceptions import (
     RemovedMoreThanExistError,
 )
 from src.domain.models.user import User
-from src.domain.value_objects import LineItem, ReceiptID, ReceiptTitle, UserID
+from src.domain.value_objects import (
+    Bill,
+    LineItem,
+    ReceiptID,
+    ReceiptTitle,
+    UserID,
+)
 
 
 @dataclass
-class ReceiptItemsData:
-    """
-    Mixin with narrow item management logic for Agent manipulations
-    """
+class Receipt:
+    id: ReceiptID
+    created_at: AwareDatetime
+    title: ReceiptTitle
+
+    creditor_id: UserID
 
     unassigned_items: list[LineItem]
     assignees: dict[UserID, list[LineItem]]
+
+    def form_bill(self, user_id: UserID | None) -> Bill:
+        if user_id is None:
+            return Bill(tuple(self.unassigned_items))
+        return Bill(tuple(self.assignees[user_id]))
 
     @property
     def participants_ids(self) -> list[UserID]:
@@ -112,12 +125,3 @@ class ReceiptItemsData:
     def _ensure_debtor(self, user: User) -> None:
         if user.id not in self.participants_ids:
             raise NotDebtorError
-
-
-@dataclass
-class Receipt(ReceiptItemsData):
-    id: ReceiptID
-    created_at: AwareDatetime
-    title: ReceiptTitle
-
-    creditor_id: UserID

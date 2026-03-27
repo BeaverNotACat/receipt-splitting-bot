@@ -17,6 +17,6 @@ class AuthProvider(Provider):
         middleware_data: AiogramMiddlewareData,
     ) -> UserProviderI:
         chat_id = None
-        if user := middleware_data.get("event_from_user"):
+        if user := middleware_data["event_from_user"]:
             chat_id = ChatID(user.id)
         return UserProvider(user_reader, chat_id)

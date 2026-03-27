@@ -22,16 +22,16 @@ def unassign_item(
     а с кем-то то можно убрать 0.5 блюда и записать 0.5 блюда другому человеку)
     3. Цену блюда(берется из списка назначенных)
     """
-    receipt_items_data = runtime.state["receipt_items_data"]
+    receipt = runtime.state["receipt"]
     user = runtime.context["user_id_mapping"][user_id]
     try:
-        receipt_items_data.unassign_item(item, user)
+        receipt.unassign_item(item, user)
         message_text = "Successfully updated receipt"
     except (DomainError, KeyError) as err:
         message_text = f"Failed to update receipt: {err!s}"
     return Command(
         update={
-            "receipt_items_data": receipt_items_data,
+            "receipt": receipt,
             "messages": [
                 ToolMessage(
                     message_text,

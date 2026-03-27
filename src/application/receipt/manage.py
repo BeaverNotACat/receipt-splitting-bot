@@ -6,23 +6,30 @@ from src.application.common import Interactor
 from src.application.common.agent import AgentI, AgentResponse, HumanRequest
 from src.application.common.asr import RecognizedSpeechText, SpeechRecognizerI
 from src.application.common.database import (
-    ReceiptSaverI,
     TransactionManagerI,
     UserReaderI,
 )
+from src.application.common.database.receipt_gateway import ReceiptGatewayI
 from src.application.common.ocr import (
     OpticalCharacterRecognizerI,
     RecognizedImageText,
 )
-from src.application.common.receipt_provider import ReceiptProviderI
-from src.domain.value_objects import AgentMessage, Audio, MessageText, Photo
+from src.application.common.user_provider import UserProviderI
+from src.domain.value_objects import (
+    AgentMessage,
+    Audio,
+    MessageText,
+    Photo,
+    ReceiptID,
+)
 
 
 @dataclass
 class ManageReceiptDTO:
+    receipt_id: ReceiptID
     text: MessageText | None
-    photos: tuple[Photo]
-    audios: tuple[Audio]
+    photos: tuple[Photo, ...]
+    audios: tuple[Audio, ...]
 
 
 ManageReceiptResultDTO = AgentMessage
@@ -34,8 +41,8 @@ class ManageReceipt(Interactor[ManageReceiptDTO, ManageReceiptResultDTO]):
     agent: AgentI
     ocr: OpticalCharacterRecognizerI
     asr: SpeechRecognizerI
-    receipt_provider: ReceiptProviderI
-    receipt_db_gateway: ReceiptSaverI
+    user_provider: UserProviderI
+    receipt_db_gateway: ReceiptGatewayI
     user_db_gateway: UserReaderI
     transaction_manager: TransactionManagerI
 
@@ -48,7 +55,9 @@ class ManageReceipt(Interactor[ManageReceiptDTO, ManageReceiptResultDTO]):
         return response.answer
 
     async def invoke_agent(self, context: ManageReceiptDTO) -> AgentResponse:
-        receipt = await self.receipt_provider.fetch_current_receipt()
+        receipt = await self.receipt_db_gateway.fetch_receipt(
+            id=context.receipt_id
+        )
         participants = await self.user_db_gateway.fetch_users(
             ids=receipt.participants_ids
         )
@@ -58,15 +67,19 @@ class ManageReceipt(Interactor[ManageReceiptDTO, ManageReceiptResultDTO]):
     async def construct_human_request(
         self, context: ManageReceiptDTO
     ) -> HumanRequest:
+        current_user = await self.user_provider.fetch_current_user()
         transcribed_audios, transcribed_photos = await self.transcribe_texts(
             context.audios, context.photos
         )
         return HumanRequest(
-            context.text, transcribed_audios, transcribed_photos
+            current_user.id,
+            context.text,
+            transcribed_audios,
+            transcribed_photos,
         )
 
     async def transcribe_texts(
-        self, audios: tuple[Audio], photos: tuple[Photo]
+        self, audios: tuple[Audio, ...], photos: tuple[Photo, ...]
     ) -> tuple[list[RecognizedSpeechText], list[RecognizedImageText]]:
         audio_future = asyncio.gather(
             *(self.asr.recognize_text(audio) for audio in audios)

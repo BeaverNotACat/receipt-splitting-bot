@@ -32,7 +32,7 @@ class Bill:
     Bill to be payed by debtor user
     """
 
-    items: tuple[LineItem]
+    items: tuple[LineItem, ...]
 
     @property
     def total(self) -> Decimal:
