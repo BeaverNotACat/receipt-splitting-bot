@@ -1,20 +1,18 @@
 import json
-import uuid
 from decimal import Decimal
 from pathlib import Path
 
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
 
-from src.adapters.agent.agent import Agent
-from src.application.common.agent import HumanRequest
+from metrics.metrics_generation.generator import TestItem
+from src.application.common.agent import AgentI, HumanRequest
 from src.domain.models.receipt import Receipt
 from src.domain.value_objects import (
     MessageText,
-    ReceiptID,
-    ReceiptTitle,
     UserID,
 )
+from src.presentation.dependencies.container import container
 
 
 @dataclass
@@ -45,10 +43,12 @@ class PersonalStats:
     price_mae: Decimal
 
 
-agent = Agent()  # Параметры?
 test_item_adapter = TypeAdapter(TestItem)
 
-def calculate_metrics(tests_path: Path) -> Metrics:  # noqa: PLR0914
+
+async def calculate_metrics(tests_path: Path, tests_count: int) -> Metrics:  # noqa: PLR0914
+    agent = await container.get(AgentI)
+
     with tests_path.open(encoding="utf-8") as f:
         line_metrics: list[ItemMetrics] = []
 
@@ -63,27 +63,30 @@ def calculate_metrics(tests_path: Path) -> Metrics:  # noqa: PLR0914
         global_meals_common = 0
         global_meals_missing = 0
         global_meals_extra = 0
-        for line in f:
-            sample = json.loads(line)
-            actual = agent.invoke(
+
+        count = 0
+        while count < tests_count:
+            count += 1
+            line = json.loads(f.readline())
+            test_item = test_item_adapter.validate_python(line)
+            target = test_item.target
+
+            actual = (await agent.invoke(
                 request=HumanRequest(
-                    users_input=MessageText(sample["user_message"]),
-                    transcribed_photos=[str(sample["bill"])],
+                    users_input=MessageText(test_item.user_message),
+                    transcribed_photos=[str(test_item.bill)],
                     transcribed_audios=[],
                 ),
                 receipt=Receipt(
                     unassigned_items=[],
                     assignees={},
-                    id=ReceiptID(sample["target"]["id"]),
-                    created_at=sample["target"]["created_at"],
-                    title=ReceiptTitle(sample["target"]["title"]),
-                    creditor_id=UserID(
-                        uuid.UUID(sample["target"]["creditor_id"])
-                    ),  # ююид пупупу
+                    id=target.id,
+                    created_at=target.created_at,
+                    title=target.title,
+                    creditor_id=target.creditor_id
                 ),
-            ).updated_receipt
-
-            target = Receipt(**sample["target"])  # Он разберется?
+                participants=test_item.participants
+            )).updated_receipt
 
             target_people = set(target.assignees.keys())
             actual_people = set(actual.assignees.keys())
@@ -149,7 +152,7 @@ def calculate_metrics(tests_path: Path) -> Metrics:  # noqa: PLR0914
             )
             line_metrics.append(
                 ItemMetrics(
-                    id=sample[0][id],
+                    id=test_item.id,
                     price_mae=absolute_error / samples,
                     people_f1=2
                     * (people_precision * people_recall)
@@ -157,28 +160,20 @@ def calculate_metrics(tests_path: Path) -> Metrics:  # noqa: PLR0914
                     personal_stats=personal_stats,
                 )
             )
-    global_people_precision = global_people_common / (
-        global_people_common + global_people_extra
-    )
-    global_people_recall = global_people_common / (
-        global_people_common + global_people_missing
-    )
-
-    global_meals_precision = global_meals_common / (
-        global_meals_common + global_meals_extra
-    )
-    global_meals_recall = global_meals_common / (
-        global_meals_common + global_meals_missing
-    )
-
     return Metrics(
         item_metrics=line_metrics,
         price_mae=global_absolute_error / gloabal_samples_count,
         price_mpe=global_percentage_error / gloabal_samples_count,
-        people_f1=2
-        * (global_people_precision * global_people_recall)
-        / (global_people_precision + global_people_recall),
-        meals_f1=2
-        * (global_meals_precision * global_meals_recall)
-        / (global_meals_precision + global_meals_recall),
+        people_f1=calculate_f1(
+            global_people_common, global_people_extra, global_people_missing
+            ),
+        meals_f1=calculate_f1(
+            global_meals_common, global_meals_missing, global_meals_extra
+        ),
     )
+
+
+def calculate_f1(tp: Decimal, fp: Decimal, fn: Decimal) -> Decimal:
+    precision = tp / (tp + fn)
+    recall = tp / (tp + fp)
+    return (2 * precision * recall) / (precision + recall)

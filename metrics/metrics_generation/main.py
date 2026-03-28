@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import time
 from pathlib import Path
@@ -15,6 +16,9 @@ from metrics.metrics_generation.texts import (
     VARIANT_TARGET_MEALS,
     VARIANT_TARGET_NAMES,
 )
+
+logger = logging.getLogger(__name__)
+
 
 BASE_DIR = Path(__file__).parent
 STATE_FILE = BASE_DIR / "data" / "tests.jsonl"
@@ -69,7 +73,8 @@ def main() -> None:
             test = test_creator.generate_test_item(test_id=test_id)
             append_jsonl(STATE_FILE, test, test_item_adapter)
 
-        except NotImplementedError:
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(exc)
             wait_seconds = 3600
             time.sleep(wait_seconds)
             continue
