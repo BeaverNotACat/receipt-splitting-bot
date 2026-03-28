@@ -22,6 +22,7 @@ class CreateReceiptSG(StatesGroup):
 
 class ReceiptChatSG(StatesGroup):
     greeting = State()
+    bills = State()
     chat = State()
 
 

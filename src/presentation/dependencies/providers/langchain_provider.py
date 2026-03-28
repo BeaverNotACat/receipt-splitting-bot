@@ -1,4 +1,7 @@
+from typing import BinaryIO
+
 from dishka import Provider, Scope, provide
+from langchain_core.globals import set_debug
 from langchain_openrouter import ChatOpenRouter
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
@@ -6,6 +9,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from src.adapters.agent.agent import Agent, AgentModelClient
 from src.adapters.ocr import OCRModelClient, OpticalCharacterRecognizer
 from src.application.common.agent import AgentI
+from src.application.common.asr import RecognizedSpeechText, SpeechRecognizerI
 from src.application.common.ocr import OpticalCharacterRecognizerI
 from src.domain.services.receipt import ReceiptService
 from src.domain.services.user import UserService
@@ -18,6 +22,7 @@ class LangChainProvider(Provider):
     @provide
     @staticmethod
     def get_ocr_model_client(settings: Settings) -> OCRModelClient:
+        set_debug(settings.DEBUG)
         return OCRModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model="nvidia/nemotron-nano-12b-v2-vl:free",
@@ -29,6 +34,7 @@ class LangChainProvider(Provider):
     @provide
     @staticmethod
     def get_agent_model_client(settings: Settings) -> AgentModelClient:
+        set_debug(settings.DEBUG)
         return AgentModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model="nvidia/nemotron-3-super-120b-a12b:free",
@@ -46,6 +52,19 @@ class LangChainProvider(Provider):
     @staticmethod
     def get_ocr(client: OCRModelClient) -> OpticalCharacterRecognizerI:
         return OpticalCharacterRecognizer(client)
+
+    @provide
+    @staticmethod
+    def get_asr() -> SpeechRecognizerI:
+        # TODO(beavernotacat): Add speech to text adapter
+        # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/38
+        class SpeechRecognizer(SpeechRecognizerI):
+            async def recognize_text(
+                self, audio: BinaryIO
+            ) -> RecognizedSpeechText:
+                raise NotImplementedError
+
+        return SpeechRecognizer()
 
     @provide
     @staticmethod

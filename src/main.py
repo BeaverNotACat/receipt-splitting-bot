@@ -7,9 +7,9 @@ from dishka.integrations.aiogram import setup_dishka
 
 from src.presentation.dependencies import container
 from src.presentation.telegram import (
-    adjust_receipt_dialog,
     create_receipt_dialog,
     join_dialog,
+    manage_receipt_dialog,
     register_dialog,
     show_profile_dialog,
     start_router,
@@ -24,7 +24,7 @@ def get_dispatcher() -> Dispatcher:
     dp.include_router(create_receipt_dialog)
     dp.include_router(join_dialog)
     dp.include_router(show_profile_dialog)
-    dp.include_router(adjust_receipt_dialog)
+    dp.include_router(manage_receipt_dialog)
     dp.include_router(register_dialog)
 
     setup_dishka(container, dp)
