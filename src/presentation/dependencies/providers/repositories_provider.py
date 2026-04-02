@@ -20,9 +20,12 @@ from src.application.common.database.user_gateway import (
 repositories_provider = Provider(Scope.REQUEST)
 repositories_provider.provide(TransactionManager, provides=TransactionManagerI)
 repositories_provider.provide(
-    UserGateway, provides=AnyOf[UserReaderI, UserSaverI, UserGatewayI]
+    UserGateway,
+    provides=AnyOf[UserReaderI, UserSaverI, UserGatewayI, UserGateway],
 )
 repositories_provider.provide(
     ReceiptGateway,
-    provides=AnyOf[ReceiptReaderI, ReceiptSaverI, ReceiptGatewayI],
+    provides=AnyOf[
+        ReceiptReaderI, ReceiptSaverI, ReceiptGatewayI, ReceiptGateway
+    ],
 )
