@@ -1,19 +1,22 @@
-from collections.abc import Callable, Coroutine, Iterable
 from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from src.domain.models.receipt import Receipt
 from src.domain.value_objects import LimitOffsetPagination
 from tests.adapters.asserts import assert_receipt
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Coroutine, Iterable
+
     from src.adapters.database.receipt_gateway import ReceiptGateway
     from src.adapters.database.user_gateway import UserGateway
+    from src.domain.models.receipt import Receipt
     from tests.mocks.domain import RealUserFactory, ReceiptFactory
 
-
-SetupUsersService = Callable[[Iterable[Receipt]], Coroutine[Any, Any, None]]
+    SetupReceiptsService = Callable[[], Coroutine[Any, Any, list[Receipt]]]
+    SetupUsersService = Callable[
+        [Iterable[Receipt]], Coroutine[Any, Any, None]
+    ]
 
 
 @pytest.fixture
@@ -35,7 +38,6 @@ def setup_users(
 
 
 RECEIPT_BATCH_SIZE = 10
-SetupReceiptsService = Callable[[], Coroutine[Any, Any, list[Receipt]]]
 
 
 @pytest.fixture
