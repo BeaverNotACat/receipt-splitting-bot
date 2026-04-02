@@ -19,6 +19,9 @@ wheels/
 .pytest_cache
 .coverage
 
+# Tooling non global files
+coverage.md
+
 # Venv
 .venv
 

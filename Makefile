@@ -9,6 +9,9 @@ lint:
 test:
 	uv run pytest
 
+coverage:
+	uv run pytest --cov=src
+
 make-migrations:
 	uv run alchemy --config src.adapters.database.cli_config.config make-migrations
 
