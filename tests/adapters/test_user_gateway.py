@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from src.application.common.database.user_gateway import UserNotFoundError
+from tests.adapters.asserts import assert_user
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine
@@ -37,9 +38,8 @@ async def test_user_saving(
     await user_gateway.save_user(real_user)
 
     saved_user = await user_gateway.fetch_user(id=real_user.id)
-    assert saved_user.id == real_user.id
-    assert saved_user.nickname == real_user.nickname
-    assert getattr(saved_user, "chat_id") == real_user.chat_id  # noqa: B009 DummyUser doesn't have chat_id
+
+    assert_user(saved_user, real_user)
 
 
 async def test_user_updating(
@@ -52,9 +52,7 @@ async def test_user_updating(
     await user_gateway.save_user(updated_user)
 
     saved_user = await user_gateway.fetch_user(id=updated_user.id)
-    assert saved_user.id == updated_user.id
-    assert saved_user.nickname == updated_user.nickname
-    assert getattr(saved_user, "chat_id") == updated_user.chat_id  # noqa: B009 DummyUser doesn't have chat_id
+    assert_user(saved_user, updated_user)
 
 
 async def test_fetching_nonexisting_user(
@@ -70,8 +68,7 @@ async def test_fetching_dummy_user(
     await user_gateway.save_user(dummy_user)
 
     saved_user = await user_gateway.fetch_user(id=dummy_user.id)
-    assert saved_user.id == dummy_user.id
-    assert saved_user.nickname == dummy_user.nickname
+    assert_user(saved_user, dummy_user)
 
 
 async def test_user_filtering(

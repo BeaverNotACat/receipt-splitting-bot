@@ -1,12 +1,18 @@
 from typing import TYPE_CHECKING
 
+import pytest
 import pytest_asyncio
 
-from src.adapters.database.receipt_gateway import ReceiptGateway
-from src.adapters.database.user_gateway import UserGateway
+from src.adapters.database import ReceiptGateway, UserGateway
+from src.adapters.user_provider import UserProvider
 
 if TYPE_CHECKING:
     from dishka import AsyncContainer
+
+
+@pytest.fixture
+def user_provider_class() -> type[UserProvider]:
+    return UserProvider
 
 
 @pytest_asyncio.fixture
