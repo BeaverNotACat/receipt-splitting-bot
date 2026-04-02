@@ -46,6 +46,10 @@ def setup_receipts(
 ) -> SetupReceiptsService:
     async def setup_receipts_service() -> list[Receipt]:
         receipts = receipt_factory.batch(RECEIPT_BATCH_SIZE)
+        for receipt in receipts:
+            # TODO(beavernotat): No assignees for creditor
+            # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/33
+            receipt.assignees[receipt.creditor_id] = []
         await setup_users(receipts)
 
         for receipt in receipts:
