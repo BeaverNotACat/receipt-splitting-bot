@@ -73,6 +73,7 @@ async def calculate_metrics(tests_path: Path, tests_count: int) -> Metrics:  # n
 
             actual = (await agent.invoke(
                 request=HumanRequest(
+                    user_id=target.creditor_id,
                     users_input=MessageText(test_item.user_message),
                     transcribed_photos=[str(test_item.bill)],
                     transcribed_audios=[],
