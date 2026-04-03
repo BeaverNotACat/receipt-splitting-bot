@@ -71,23 +71,25 @@ async def calculate_metrics(tests_path: Path, tests_count: int) -> Metrics:  # n
             test_item = test_item_adapter.validate_python(line)
             target = test_item.target
 
-            actual = (await agent.invoke(
-                request=HumanRequest(
-                    user_id=target.creditor_id,
-                    users_input=MessageText(test_item.user_message),
-                    transcribed_photos=[str(test_item.bill)],
-                    transcribed_audios=[],
-                ),
-                receipt=Receipt(
-                    unassigned_items=[],
-                    assignees={},
-                    id=target.id,
-                    created_at=target.created_at,
-                    title=target.title,
-                    creditor_id=target.creditor_id
-                ),
-                participants=test_item.participants
-            )).updated_receipt
+            actual = (
+                await agent.invoke(
+                    request=HumanRequest(
+                        user_id=target.creditor_id,
+                        users_input=MessageText(test_item.user_message),
+                        transcribed_photos=[str(test_item.bill)],
+                        transcribed_audios=[],
+                    ),
+                    receipt=Receipt(
+                        unassigned_items=[],
+                        assignees={},
+                        id=target.id,
+                        created_at=target.created_at,
+                        title=target.title,
+                        creditor_id=target.creditor_id,
+                    ),
+                    participants=test_item.participants,
+                )
+            ).updated_receipt
 
             target_people = set(target.assignees.keys())
             actual_people = set(actual.assignees.keys())
@@ -167,7 +169,7 @@ async def calculate_metrics(tests_path: Path, tests_count: int) -> Metrics:  # n
         price_mpe=global_percentage_error / gloabal_samples_count,
         people_f1=calculate_f1(
             global_people_common, global_people_extra, global_people_missing
-            ),
+        ),
         meals_f1=calculate_f1(
             global_meals_common, global_meals_missing, global_meals_extra
         ),

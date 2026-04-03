@@ -78,3 +78,7 @@ def main() -> None:
             wait_seconds = 3600
             time.sleep(wait_seconds)
             continue
+
+
+if __name__ == "__main__":
+    main()
