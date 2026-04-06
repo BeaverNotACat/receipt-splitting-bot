@@ -55,7 +55,10 @@ class Agent(AgentI):
     ) -> AgentResponse:
         answer = await self.agent.ainvoke(
             input=self._construct_invoke_state(request, receipt, participants),
-            config={"configurable": {"thread_id": receipt.id}},
+            config={
+                "configurable": {"thread_id": receipt.id},
+                "max_concurrency": 1,
+            },
             context=self._construct_invoke_context(participants),
         )
 
@@ -99,12 +102,15 @@ class Agent(AgentI):
         # TODO(beavernotacat): Enchance HumanMessage prompt
         # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/45
         message_text = (
-            str(request.users_input)
-            if request.users_input is not None
-            else ""
+            (
+                str(request.users_input)
+                if request.users_input is not None
+                else ""
+            )
             + "\n".join(request.transcribed_photos)
             + "\n".join(request.transcribed_audios)
         )
+
         return HumanMessage(message_text)
 
     @staticmethod

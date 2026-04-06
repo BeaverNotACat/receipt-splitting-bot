@@ -37,7 +37,7 @@ class LangChainProvider(Provider):
         set_debug(settings.DEBUG)
         return AgentModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
-                model="nvidia/nemotron-3-super-120b-a12b:free",
+                model="qwen/qwen3.6-plus:free",
                 temperature=0,
                 api_key=settings.OPENROUTER_API_KEY,
             )

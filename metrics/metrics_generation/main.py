@@ -20,7 +20,7 @@ from metrics.metrics_generation.texts import (
 logger = logging.getLogger(__name__)
 
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 STATE_FILE = BASE_DIR / "data" / "tests.jsonl"
 if not STATE_FILE.exists():
     BASE_DIR = Path(__file__).parent

@@ -120,7 +120,7 @@ class TestCreator:
             meals = [
                 LineItem(
                     name=pos.name,
-                    amount=Decimal(randint(10, 30) / 10),
+                    amount=Decimal(randint(10, 30)) / 10,
                     price=Decimal(pos.price),
                 )
                 for pos in (
