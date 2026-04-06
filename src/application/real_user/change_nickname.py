@@ -22,10 +22,11 @@ class ChangeNicknameDTO:
 @dataclass(frozen=True)
 class ChangeNickname(Interactor[ChangeNicknameDTO, None]):
     transaction_manager: TransactionManagerI
-    user_reader_saver: UserReaderI | UserSaverI
+    user_reader: UserReaderI
+    user_saver: UserSaverI
 
     async def __call__(self, context: ChangeNicknameDTO) -> None:
-        user = await self.user_reader_saver.fetch_user(chat_id=context.chat_id)
+        user = await self.user_reader.fetch_user(chat_id=context.chat_id)
         user.nickname = context.nickname
-        await self.user_reader_saver.save_user(user)
+        await self.user_saver.save_user(user)
         await self.transaction_manager.commit()
