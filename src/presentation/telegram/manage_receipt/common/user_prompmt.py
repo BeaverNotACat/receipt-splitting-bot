@@ -18,11 +18,15 @@ if TYPE_CHECKING:
 
 
 async def download_photos(
-    bot: Bot, photos: list[PhotoSize] | None
+    bot: Bot, photo_sizes: list[PhotoSize] | None
 ) -> tuple[Photo, ...]:
-    if photos is None:
+    if photo_sizes is None:
         return ()
-    tasks = [bot.download(photo.file_id) for photo in photos]
+
+    # PhotoSize array has duplicates with different resolution
+    file_ids = {photo.file_id for photo in photo_sizes}
+    tasks = (bot.download(file_id) for file_id in file_ids)
+
     return tuple(
         Photo(photo)
         for photo in (await asyncio.gather(*tasks))
@@ -56,6 +60,7 @@ async def natural_language_handler(
         audios=await download_audios(message.bot, message.voice),
     )
     answer = await manage_receipt(dto)
+
     dialog_manager.dialog_data["agent_answer"] = answer
     await dialog_manager.switch_to(
         states.ReceiptChatSG.chat, show_mode=ShowMode.SEND
