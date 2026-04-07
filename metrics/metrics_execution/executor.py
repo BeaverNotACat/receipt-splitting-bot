@@ -73,7 +73,6 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
 
         count = 0
         while tests_count == "all" or count < tests_count:
-
             raw_line = f.readline()
             if not raw_line:
                 break
@@ -173,13 +172,15 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                     - sum(a_meal.price for a_meal in a_meals)
                 ) / max(len(common_meals), 1)
 
-                personal_stats.append(PersonalStats(
-                    id=name,
-                    meals_total_target=len(t_set),
-                    meals_missing=len(missing_meals),
-                    meals_extra=len(extra_meals),
-                    price_mae=mae,
-                ))
+                personal_stats.append(
+                    PersonalStats(
+                        id=name,
+                        meals_total_target=len(t_set),
+                        meals_missing=len(missing_meals),
+                        meals_extra=len(extra_meals),
+                        price_mae=mae,
+                    )
+                )
             item_metrics = ItemMetrics(
                 id=test_item.id,
                 price_mae=absolute_error / max(samples, 1),
