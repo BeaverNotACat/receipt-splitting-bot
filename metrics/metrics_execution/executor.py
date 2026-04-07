@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from openrouter.errors.responsevalidationerror import ResponseValidationError
 from pydantic import TypeAdapter
@@ -9,6 +9,7 @@ from pydantic.dataclasses import dataclass
 
 from metrics.metrics_generation.generator import TestItem
 from src.application.common.agent import AgentI, HumanRequest
+from src.application.common.ocr import RecognizedImageText
 from src.domain.models.receipt import Receipt
 from src.domain.value_objects import (
     MessageText,
@@ -91,7 +92,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                                 users_input=MessageText(
                                     test_item.user_message
                                 ),
-                                transcribed_photos=[str(test_item.bill)],
+                                transcribed_photos=[
+                                    RecognizedImageText(str(test_item.bill))
+                                ],
                                 transcribed_audios=[],
                             ),
                             receipt=Receipt(
@@ -193,11 +196,11 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                 item_file.write(item_metrics_adapter.dump_json(item_metrics))
 
     if global_samples_count == 0:
-        price_mae = -1
-        price_mape = -1
+        price_mae = -1.0
+        price_mape = -1.0
     else:
-        price_mae = global_absolute_error / global_samples_count
-        price_mape = global_percentage_error / global_samples_count
+        price_mae = float(global_absolute_error / global_samples_count)
+        price_mape = float(global_percentage_error / global_samples_count)
 
     metrics = MetricsSummary(
         price_mae=price_mae,
@@ -213,7 +216,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         summary_file.write(summary_adapter.dump_json(metrics))
 
 
-def compare_set(a: set, b: set) -> tuple[set, set, set]:
+def compare_set(
+    a: set[Any], b: set[Any]
+) -> tuple[set[Any], set[Any], set[Any]]:
     return a & b, a - b, b - a
 
 
