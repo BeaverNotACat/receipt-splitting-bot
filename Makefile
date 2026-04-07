@@ -17,3 +17,6 @@ migrate:
 
 generate-metrics:
 	uv run python -m metrics.metrics_generation.main
+
+execute-metrics:
+	uv run python -m metrics.metrics_execution.main
