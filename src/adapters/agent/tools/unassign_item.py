@@ -28,7 +28,7 @@ def unassign_item(
         receipt.unassign_item(item, user)
         message_text = "Successfully updated receipt"
     except (DomainError, KeyError) as err:
-        message_text = f"Failed to update receipt: {err!s}"
+        message_text = f"Failed to update receipt: {type(err)} {err!s}"
     return Command(
         update={
             "receipt": receipt,

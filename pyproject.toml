@@ -94,10 +94,11 @@ select = [
     "TRY", # tryceratops
 ]
 ignore = [
-    "COM812", # ruff warn on it
+    "COM812"# ruff warn on it
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "src/presentation/telegram/*" = ["RUF"] # Commands containsRussian text and emojis causing false positive
 "src/adapters/agent/*" = ["RUF"] # Prompts may contain russian text causing false positive
 "tests/*" = ["S101"] # Do not trigger on asserts in tests
+"metrics/*" = ["S311","RUF"]

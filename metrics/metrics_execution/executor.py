@@ -1,0 +1,230 @@
+import asyncio
+import json
+from pathlib import Path
+from typing import Any, Literal
+
+from openrouter.errors.responsevalidationerror import ResponseValidationError
+from pydantic import TypeAdapter
+from pydantic.dataclasses import dataclass
+
+from metrics.metrics_generation.generator import TestItem
+from src.application.common.agent import AgentI, HumanRequest
+from src.application.common.ocr import RecognizedImageText
+from src.domain.models.receipt import Receipt
+from src.domain.value_objects import (
+    MessageText,
+    UserID,
+)
+from src.presentation.dependencies.container import container
+
+
+@dataclass
+class MetricsSummary:
+    price_mae: float
+    price_mape: float
+    people_f1: float
+    meals_f1: float
+
+
+@dataclass
+class ItemMetrics:
+    id: float
+    price_mae: float
+    people_f1: float
+    personal_stats: list[PersonalStats]
+
+
+@dataclass
+class PersonalStats:
+    id: UserID
+    meals_total_target: float
+    meals_missing: float
+    meals_extra: float
+    price_mae: float
+
+
+TestCount = int | Literal["all"]
+
+test_item_adapter = TypeAdapter(TestItem)
+summary_adapter = TypeAdapter(MetricsSummary)
+item_metrics_adapter = TypeAdapter(ItemMetrics)
+num_retries = 8
+
+
+async def calculate_metrics(  # noqa: PLR0914, PLR0915
+    tests_path: Path,
+    summary_out_path: Path,
+    item_metrics_path: Path,
+    tests_count: TestCount = "all",
+) -> None:
+    agent = await container.get(AgentI)
+
+    with tests_path.open(encoding="utf-8") as f:
+        global_absolute_error = 0
+        global_samples_count = 0
+        global_percentage_error = 0
+
+        global_people_common = 0
+        global_people_missing = 0
+        global_people_extra = 0
+
+        global_meals_common = 0
+        global_meals_missing = 0
+        global_meals_extra = 0
+
+        count = 0
+        while tests_count == "all" or count < tests_count:
+            raw_line = f.readline()
+            if not raw_line:
+                break
+
+            count += 1
+
+            line = json.loads(raw_line)
+            test_item = test_item_adapter.validate_python(line)
+            target = test_item.target
+            for generation_try in range(num_retries):
+                try:
+                    actual = (
+                        await agent.invoke(
+                            request=HumanRequest(
+                                user_id=target.creditor_id,
+                                users_input=MessageText(
+                                    test_item.user_message
+                                ),
+                                transcribed_photos=[
+                                    RecognizedImageText(str(test_item.bill))
+                                ],
+                                transcribed_audios=[],
+                            ),
+                            receipt=Receipt(
+                                unassigned_items=[],
+                                assignees={
+                                    user_id: []
+                                    for user_id in target.participants_ids
+                                },
+                                id=target.id,
+                                created_at=target.created_at,
+                                title=target.title,
+                                creditor_id=target.creditor_id,
+                            ),
+                            participants=test_item.participants,
+                        )
+                    ).updated_receipt
+                    break
+                except ResponseValidationError:
+                    await asyncio.sleep(60 * generation_try)
+
+            if not actual.participants_ids:
+                target_people = set(target.participants_ids)
+
+                global_people_missing += len(target_people)
+
+                for person in target_people:
+                    meals = target.assignees[person]
+                    global_meals_missing += len(meals)
+
+                continue
+
+            target_people = set(target.participants_ids)
+            actual_people = set(actual.participants_ids)
+
+            people_common, people_missing, people_extra = compare_set(
+                target_people, actual_people
+            )
+
+            global_people_common += len(people_common)
+            global_people_missing += len(people_missing)
+            global_people_extra += len(people_extra)
+
+            absolute_error = 0
+            samples = 0
+
+            personal_stats: list[PersonalStats] = []
+            for name in people_common:
+                t_meals = target.assignees[name]
+                a_meals = actual.assignees[name]
+
+                t_set = set(t_meals)
+                a_set = set(a_meals)
+
+                common_meals, missing_meals, extra_meals = compare_set(
+                    t_set, a_set
+                )
+
+                global_meals_common += len(common_meals)
+                global_meals_missing += len(missing_meals)
+                global_meals_extra += len(extra_meals)
+
+                global_percentage_error += abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                ) / sum(t_meal.price for t_meal in t_meals)
+                global_absolute_error += abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                )
+                absolute_error += abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                )
+                samples += len(common_meals)
+                global_samples_count += len(common_meals)
+                mae = abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                ) / max(len(common_meals), 1)
+
+                personal_stats.append(
+                    PersonalStats(
+                        id=name,
+                        meals_total_target=len(t_set),
+                        meals_missing=len(missing_meals),
+                        meals_extra=len(extra_meals),
+                        price_mae=mae,
+                    )
+                )
+            item_metrics = ItemMetrics(
+                id=test_item.id,
+                price_mae=absolute_error / max(samples, 1),
+                people_f1=calculate_f1(
+                    len(people_common), len(people_extra), len(people_missing)
+                ),
+                personal_stats=personal_stats,
+            )
+            with item_metrics_path.open("ab") as item_file:
+                item_file.write(item_metrics_adapter.dump_json(item_metrics))
+
+    if global_samples_count == 0:
+        price_mae = -1.0
+        price_mape = -1.0
+    else:
+        price_mae = float(global_absolute_error / global_samples_count)
+        price_mape = float(global_percentage_error / global_samples_count)
+
+    metrics = MetricsSummary(
+        price_mae=price_mae,
+        price_mape=price_mape,
+        people_f1=calculate_f1(
+            global_people_common, global_people_extra, global_people_missing
+        ),
+        meals_f1=calculate_f1(
+            global_meals_common, global_meals_missing, global_meals_extra
+        ),
+    )
+    with summary_out_path.open("wb") as summary_file:
+        summary_file.write(summary_adapter.dump_json(metrics))
+
+
+def compare_set(
+    a: set[Any], b: set[Any]
+) -> tuple[set[Any], set[Any], set[Any]]:
+    return a & b, a - b, b - a
+
+
+def calculate_f1(tp: float, fp: float, fn: float) -> float:
+    if tp == 0:
+        return 0
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    return (2 * precision * recall) / (precision + recall)

@@ -29,7 +29,7 @@ def remove_item(
         receipt.remove_item(item)
         message_text = "Successfully updated receipt"
     except DomainError as err:
-        message_text = f"Failed to update receipt: {err!s}"
+        message_text = f"Failed to update receipt: {type(err)} {err!s}"
     return Command(
         update={
             "receipt": receipt,

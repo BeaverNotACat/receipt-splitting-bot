@@ -17,3 +17,9 @@ make-migrations:
 
 migrate:
 	uv run alchemy --config src.adapters.database.cli_config.config upgrade
+
+generate-metrics:
+	uv run python -m metrics.metrics_generation.main
+
+execute-metrics:
+	uv run python -m metrics.metrics_execution.main
