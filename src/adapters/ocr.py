@@ -40,7 +40,7 @@ class OpticalCharacterRecognizer(OpticalCharacterRecognizerI):
 
     @staticmethod
     def _construct_human_message(image: BinaryIO) -> HumanMessage:
-        image_type, _ = mimetypes.guess_type(image.name)
+        image_type, _ = mimetypes.guess_type(getattr(image, "name", ".jpg"))
         encoded_image = base64.b64encode(image.read()).decode()
         return HumanMessage(
             content=[
