@@ -1,0 +1,24 @@
+Пользователь {{user_id}} отправил сообщение
+***
+{{user_input}}
+***
+
+{% if transcribed_photos %}
+К сообщению были приложены фотографии, их декодированный текст:
+{% endif %}
+{% for photo_text in transcribed_photos %}
+***
+{{photo_text}}
+***
+{% endfor %}
+
+
+{% if transcribed_audios %}
+К сообщению были приложены записи голоса, их декодированный текст:
+{% endif %}
+{% for audio_text in transcribed_audios %}
+***
+{{audio_text}}
+***
+{% endfor %}
+
