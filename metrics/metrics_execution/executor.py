@@ -1,8 +1,9 @@
+import asyncio
 import json
-from decimal import Decimal
 from pathlib import Path
 from typing import Literal
 
+from openrouter.errors.responsevalidationerror import ResponseValidationError
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
 
@@ -18,29 +19,27 @@ from src.presentation.dependencies.container import container
 
 @dataclass
 class MetricsSummary:
-    price_mae: Decimal
-    price_mpe: Decimal
-    people_f1: Decimal
-    meals_f1: Decimal
+    price_mae: float
+    price_mape: float
+    people_f1: float
+    meals_f1: float
 
 
 @dataclass
 class ItemMetrics:
-    id: Decimal
-    price_mae: Decimal
-    people_f1: Decimal
-    meals_f1: Decimal
+    id: float
+    price_mae: float
+    people_f1: float
     personal_stats: PersonalStats
 
 
 @dataclass
 class PersonalStats:
     id: UserID
-    meals_total_target: Decimal
-    meals_common: Decimal
-    meals_missing: Decimal
-    meals_extra: Decimal
-    price_mae: Decimal
+    meals_total_target: float
+    meals_missing: float
+    meals_extra: float
+    price_mae: float
 
 
 TestCount = int | Literal["all"]
@@ -48,6 +47,7 @@ TestCount = int | Literal["all"]
 test_item_adapter = TypeAdapter(TestItem)
 summary_adapter = TypeAdapter(MetricsSummary)
 item_metrics_adapter = TypeAdapter(ItemMetrics)
+num_retries = 8
 
 
 async def calculate_metrics(  # noqa: PLR0914, PLR0915
@@ -60,7 +60,7 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
 
     with tests_path.open(encoding="utf-8") as f:
         global_absolute_error = 0
-        gloabal_samples_count = 0.00000001
+        global_samples_count = 0
         global_percentage_error = 0
 
         global_people_common = 0
@@ -85,26 +85,35 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             line = json.loads(raw_line)
             test_item = test_item_adapter.validate_python(line)
             target = test_item.target
-
-            actual = (
-                await agent.invoke(
-                    request=HumanRequest(
-                        user_id=target.creditor_id,
-                        users_input=MessageText(test_item.user_message),
-                        transcribed_photos=[str(test_item.bill)],
-                        transcribed_audios=[],
-                    ),
-                    receipt=Receipt(
-                        unassigned_items=[],
-                        assignees={},
-                        id=target.id,
-                        created_at=target.created_at,
-                        title=target.title,
-                        creditor_id=target.creditor_id,
-                    ),
-                    participants=test_item.participants,
-                )
-            ).updated_receipt
+            for generation_try in range(num_retries):
+                try:
+                    actual = (
+                        await agent.invoke(
+                            request=HumanRequest(
+                                user_id=target.creditor_id,
+                                users_input=MessageText(
+                                    test_item.user_message
+                                ),
+                                transcribed_photos=[str(test_item.bill)],
+                                transcribed_audios=[],
+                            ),
+                            receipt=Receipt(
+                                unassigned_items=[],
+                                assignees={
+                                    user_id: []
+                                    for user_id in target.participants_ids
+                                },
+                                id=target.id,
+                                created_at=target.created_at,
+                                title=target.title,
+                                creditor_id=target.creditor_id,
+                            ),
+                            participants=test_item.participants,
+                        )
+                    ).updated_receipt
+                    break
+                except ResponseValidationError:
+                    await asyncio.sleep(60 * generation_try)
 
             if not actual.participants_ids:
                 target_people = set(target.participants_ids)
@@ -145,25 +154,24 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                 global_meals_missing += len(missing_meals)
                 global_meals_extra += len(extra_meals)
 
-                global_percentage_error += [
-                    abs(t_meals[meal].price - a_meals[meal].price)
-                    / [item.price for item in t_meals]
-                    for meal in common_meals
-                ]
-                global_absolute_error += [
-                    abs(t_meals[meal].price - a_meals[meal].price)
-                    for meal in common_meals
-                ]
-                absolute_error += [
-                    abs(t_meals[meal].price - a_meals[meal].price)
-                    for meal in common_meals
-                ]
-                samples += len(common_meals)
-                gloabal_samples_count += len(common_meals)
-                mae = sum(
-                    abs(t_meals[meal] - a_meals[meal]) / len(common_meals)
-                    for meal in common_meals
+                global_percentage_error += abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                ) / sum(t_meal.price for t_meal in t_meals)
+                global_absolute_error += abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
                 )
+                absolute_error += abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                )
+                samples += len(common_meals)
+                global_samples_count += len(common_meals)
+                mae = abs(
+                    sum(t_meal.price for t_meal in t_meals)
+                    - sum(a_meal.price for a_meal in a_meals)
+                ) / max(len(common_meals), 1)
 
                 personal_stats = PersonalStats(
                     id=name,
@@ -174,18 +182,25 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                 )
             item_metrics = ItemMetrics(
                 id=test_item.id,
-                price_mae=absolute_error / samples,
+                price_mae=absolute_error / max(samples, 1),
                 people_f1=calculate_f1(
-                    people_common, people_extra, people_missing
+                    len(people_common), len(people_extra), len(people_missing)
                 ),
                 personal_stats=personal_stats,
             )
-            with item_metrics_path.open("ab"):
-                f.write(item_metrics_adapter.dump_json(item_metrics))
+            with item_metrics_path.open("ab") as item_file:
+                item_file.write(item_metrics_adapter.dump_json(item_metrics))
+
+    if global_samples_count == 0:
+        price_mae = -1
+        price_mape = -1
+    else:
+        price_mae = global_absolute_error / global_samples_count
+        price_mape = global_percentage_error / global_samples_count
 
     metrics = MetricsSummary(
-        price_mae=global_absolute_error / gloabal_samples_count,
-        price_mpe=global_percentage_error / gloabal_samples_count,
+        price_mae=price_mae,
+        price_mape=price_mape,
         people_f1=calculate_f1(
             global_people_common, global_people_extra, global_people_missing
         ),
@@ -193,8 +208,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             global_meals_common, global_meals_missing, global_meals_extra
         ),
     )
-    with summary_out_path.open("wb") as f:
-        f.write(summary_adapter.dump_json(metrics))
+    with summary_out_path.open("wb") as summary_file:
+        summary_file.write(summary_adapter.dump_json(metrics))
 
 
 def compare_set(a: set, b: set) -> list[set]:
@@ -207,6 +222,6 @@ def compare_set(a: set, b: set) -> list[set]:
 def calculate_f1(tp: float, fp: float, fn: float) -> float:
     if tp == 0:
         return 0
-    precision = tp / (tp + fn)
-    recall = tp / (tp + fp)
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
     return (2 * precision * recall) / (precision + recall)

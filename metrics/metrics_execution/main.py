@@ -10,7 +10,7 @@ ITEM_METRICS_FILE = BASE_DIR / "data" / "item_metrics.jsonl"
 
 
 async def main() -> None:
-    await calculate_metrics(STATE_FILE, SUMMARY_FILE, ITEM_METRICS_FILE, 1)
+    await calculate_metrics(STATE_FILE, SUMMARY_FILE, ITEM_METRICS_FILE, 100)
 
 
 if __name__ == "__main__":

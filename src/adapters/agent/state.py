@@ -13,10 +13,9 @@ NoStructuredResponse = type(None)
 def receipt_reducer(
     _current_receipt: Receipt, updated_receipt: Receipt
 ) -> Receipt:
-    """
-    Agent invokes with max_concurency=1 so race_condition not possible
-    But langchain's LastValue reducer invokes error to prevent races
-    """
+    # Agent invokes with max_concurency=1 so race_condition not possible
+    # But langchain's LastValue reducer invokes error to prevent races
+    # Custom reducer is a workaround
     return updated_receipt
 
 
