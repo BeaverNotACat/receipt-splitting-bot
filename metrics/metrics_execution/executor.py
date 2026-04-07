@@ -30,7 +30,7 @@ class ItemMetrics:
     id: float
     price_mae: float
     people_f1: float
-    personal_stats: PersonalStats
+    personal_stats: list[PersonalStats]
 
 
 @dataclass
@@ -72,9 +72,7 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         global_meals_extra = 0
 
         count = 0
-        while True:
-            if tests_count != "all" and count >= tests_count:
-                break
+        while tests_count == "all" or count < tests_count:
 
             raw_line = f.readline()
             if not raw_line:
@@ -139,6 +137,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
 
             absolute_error = 0
             samples = 0
+
+            personal_stats: list[PersonalStats] = []
             for name in people_common:
                 t_meals = target.assignees[name]
                 a_meals = actual.assignees[name]
@@ -173,13 +173,13 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                     - sum(a_meal.price for a_meal in a_meals)
                 ) / max(len(common_meals), 1)
 
-                personal_stats = PersonalStats(
+                personal_stats.append(PersonalStats(
                     id=name,
                     meals_total_target=len(t_set),
                     meals_missing=len(missing_meals),
                     meals_extra=len(extra_meals),
                     price_mae=mae,
-                )
+                ))
             item_metrics = ItemMetrics(
                 id=test_item.id,
                 price_mae=absolute_error / max(samples, 1),
@@ -212,11 +212,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         summary_file.write(summary_adapter.dump_json(metrics))
 
 
-def compare_set(a: set, b: set) -> list[set]:
-    sets_common = a & b
-    sets_missing = a - b
-    sets_extra = b - a
-    return sets_common, sets_missing, sets_extra
+def compare_set(a: set, b: set) -> tuple[set, set, set]:
+    return a & b, a - b, b - a
 
 
 def calculate_f1(tp: float, fp: float, fn: float) -> float:
