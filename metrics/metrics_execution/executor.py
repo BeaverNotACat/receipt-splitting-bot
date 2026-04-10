@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from openrouter.errors.responsevalidationerror import ResponseValidationError
 from pydantic import TypeAdapter
@@ -9,6 +9,7 @@ from pydantic.dataclasses import dataclass
 
 from metrics.metrics_generation.generator import TestItem
 from src.application.common.agent import AgentI, HumanRequest
+from src.application.common.ocr import RecognizedImageText
 from src.domain.models.receipt import Receipt
 from src.domain.value_objects import (
     MessageText,
@@ -76,7 +77,6 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
 
         count = 0
         while tests_count == "all" or count < tests_count:
-
             raw_line = f.readline()
             if not raw_line:
                 break
@@ -95,7 +95,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                                 users_input=MessageText(
                                     test_item.user_message
                                 ),
-                                transcribed_photos=[str(test_item.bill)],
+                                transcribed_photos=[
+                                    RecognizedImageText(str(test_item.bill))
+                                ],
                                 transcribed_audios=[],
                             ),
                             receipt=Receipt(
@@ -176,13 +178,15 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                     - sum(a_meal.price for a_meal in a_meals)
                 ) / max(len(common_meals), 1)
 
-                personal_stats.append(PersonalStats(
-                    id=name,
-                    meals_total_target=len(t_set),
-                    meals_missing=len(missing_meals),
-                    meals_extra=len(extra_meals),
-                    price_mae=mae,
-                ))
+                personal_stats.append(
+                    PersonalStats(
+                        id=name,
+                        meals_total_target=len(t_set),
+                        meals_missing=len(missing_meals),
+                        meals_extra=len(extra_meals),
+                        price_mae=mae,
+                    )
+                )
             item_metrics = ItemMetrics(
                 id=test_item.id,
                 price_mae=absolute_error / max(samples, 1),
@@ -197,11 +201,11 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                     )
 
     if global_samples_count == 0:
-        price_mae = -1
-        price_mape = -1
+        price_mae = -1.0
+        price_mape = -1.0
     else:
-        price_mae = global_absolute_error / global_samples_count
-        price_mape = global_percentage_error / global_samples_count
+        price_mae = float(global_absolute_error / global_samples_count)
+        price_mape = float(global_percentage_error / global_samples_count)
 
     metrics = MetricsSummary(
         price_mae=price_mae,
@@ -217,7 +221,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         summary_file.write(summary_adapter.dump_json(metrics))
 
 
-def compare_set(a: set, b: set) -> tuple[set, set, set]:
+def compare_set(
+    a: set[Any], b: set[Any]
+) -> tuple[set[Any], set[Any], set[Any]]:
     return a & b, a - b, b - a
 
 

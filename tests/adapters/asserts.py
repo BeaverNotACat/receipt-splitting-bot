@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.domain.models.receipt import Receipt
+    from src.domain.models import Receipt, User
 
 
 def assert_receipt(initial_receipt: Receipt, new_receipt: Receipt) -> None:
@@ -18,3 +18,11 @@ def assert_receipt(initial_receipt: Receipt, new_receipt: Receipt) -> None:
     for user_id in initial_receipt.assignees:
         for item in initial_receipt.assignees[user_id]:
             assert item in new_receipt.assignees[user_id]
+
+
+def assert_user(initial_user: User, new_user: User) -> None:
+    assert initial_user.id == new_user.id
+    assert initial_user.nickname == new_user.nickname
+    assert getattr(initial_user, "chat_id", None) == getattr(
+        new_user, "chat_id", None
+    )
