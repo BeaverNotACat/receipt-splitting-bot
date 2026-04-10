@@ -197,8 +197,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             )
             with item_metrics_path.open("ab") as item_file:
                 item_file.write(
-                    item_metrics_adapter.dump_json(item_metrics) + "\n"
-                    )
+                    item_metrics_adapter.dump_json(item_metrics) + b"\n"
+                )
 
     if global_samples_count == 0:
         price_mae = -1.0
