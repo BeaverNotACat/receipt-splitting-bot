@@ -40,11 +40,12 @@ def load_last_test_id(path: Path) -> int:
     """Возвращает test_id последнего записанного теста,
     или 0, если файл пустой."""
     with path.open("rb") as f:
-        f.seek(-2, os.SEEK_END)
-
         end = f.tell()
+
         if end == 0:
             return 0
+
+        f.seek(-2, os.SEEK_END)
 
         try:
             while f.read(1) != b"\n":
