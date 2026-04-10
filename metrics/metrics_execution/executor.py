@@ -59,6 +59,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
 ) -> None:
     agent = await container.get(AgentI)
 
+    with item_metrics_path.open("w", encoding="utf-8") as _:
+        pass  # clearing previos metrics
+
     with tests_path.open(encoding="utf-8") as f:
         global_absolute_error = 0
         global_samples_count = 0
@@ -193,7 +196,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                 personal_stats=personal_stats,
             )
             with item_metrics_path.open("ab") as item_file:
-                item_file.write(item_metrics_adapter.dump_json(item_metrics))
+                item_file.write(
+                    item_metrics_adapter.dump_json(item_metrics) + b"\n"
+                )
 
     if global_samples_count == 0:
         price_mae = -1.0
