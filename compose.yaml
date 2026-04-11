@@ -20,6 +20,9 @@ services:
       DATABASE_DSN: ${DATABASE_DSN?}
       TELEGRAM_TOKEN: ${TELEGRAM_TOKEN}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      OCR_MODEL: ${OCR_MODEL}
+      ASR_MODEL: ${ASR_MODEL}
+      AGENT_MODEL: ${AGENT_MODEL}
     develop:
       watch:
         - action: sync+restart

@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram_dialog import setup_dialogs
 from dishka.integrations.aiogram import setup_dishka
+from langchain_core.globals import set_debug
 
 from src.presentation.dependencies import container
 from src.presentation.telegram import (
@@ -15,6 +16,10 @@ from src.presentation.telegram import (
     start_router,
 )
 from src.settings import Settings
+
+
+def setup_langchain_globals(settings: Settings) -> None:
+    set_debug(settings.DEBUG)
 
 
 def get_dispatcher() -> Dispatcher:
@@ -34,6 +39,7 @@ def get_dispatcher() -> Dispatcher:
 
 async def run_bot() -> None:
     settings = await container.get(Settings)
+    setup_langchain_globals(settings)
     bot = Bot(settings.TELEGRAM_TOKEN.get_secret_value())
     await get_dispatcher().start_polling(bot)
 

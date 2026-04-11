@@ -1,7 +1,6 @@
 from typing import BinaryIO
 
 from dishka import Provider, Scope, provide
-from langchain_core.globals import set_debug
 from langchain_openrouter import ChatOpenRouter
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import InMemorySaver
@@ -22,10 +21,9 @@ class LangChainProvider(Provider):
     @provide
     @staticmethod
     def get_ocr_model_client(settings: Settings) -> OCRModelClient:
-        set_debug(settings.DEBUG)
         return OCRModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
-                model="nvidia/nemotron-nano-12b-v2-vl:free",
+                model=settings.OCR_MODEL,
                 temperature=0,
                 api_key=settings.OPENROUTER_API_KEY,
             )
@@ -34,10 +32,9 @@ class LangChainProvider(Provider):
     @provide
     @staticmethod
     def get_agent_model_client(settings: Settings) -> AgentModelClient:
-        set_debug(settings.DEBUG)
         return AgentModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
-                model="qwen/qwen3.6-plus:free",
+                model=settings.AGENT_MODEL,
                 temperature=0,
                 api_key=settings.OPENROUTER_API_KEY,
             )
