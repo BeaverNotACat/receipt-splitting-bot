@@ -42,7 +42,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo ${{ secrets.SSH_PRIVATE_KEY }} > ~/.ssh/key
-          sudo chmod 600 ../private.key
+          sudo chmod 600 ~/.ssh/key
           echo ${{ secrets.SSH_KNOWN_HOSTS }} > ~/.ssh/known_hosts
       - run: |
           ssh -T -i ~/.ssh/key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << EOF
