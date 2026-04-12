@@ -41,7 +41,7 @@ jobs:
       - shell: bash
         run: |
           mkdir -p ~/.ssh/
-          echo ${{ secrets.SSH_PRIVATE_KEY }} > ~/.ssh/key
+          echo ${{ secrets.SSH_KEY }} > ~/.ssh/key
           sudo chmod 600 ~/.ssh/key
           echo ${{ secrets.SSH_KNOWN_HOSTS }} > ~/.ssh/known_hosts
       - run: |
