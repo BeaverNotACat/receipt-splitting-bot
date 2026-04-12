@@ -37,9 +37,12 @@ jobs:
 
   deploy-staging:
     runs-on: ubuntu-latest
+    # env:
+    #   SSH_KEY: ${{ secrets.SSH_KEY }}
+    #   SSH_HOST: ${{ secrets.SSH_HOST }}
+    #   SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
     steps:
-      - shell: bash
-        run: |
+      - run: |
           mkdir -p ~/.ssh/
           echo ${{ secrets.SSH_KEY }} > ~/.ssh/key
           sudo chmod 600 ~/.ssh/key
