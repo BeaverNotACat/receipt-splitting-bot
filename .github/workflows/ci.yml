@@ -49,7 +49,7 @@ jobs:
         AGENT_MODEL: ...
     services:
       redis:
-        image: redis:alpint
+        image: redis:alpine
         ports:
           - 6379:6379
       postgres:
