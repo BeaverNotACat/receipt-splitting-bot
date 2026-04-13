@@ -43,7 +43,7 @@ class ReceiptGateway(ReceiptReaderI, ReceiptSaverI):
     ) -> list[Receipt]:
         query = (
             select(ReceiptORM)
-            .order_by(ReceiptORM.id)
+            .order_by(ReceiptORM.id.desc())
             .limit(pagination.limit)
             .offset(pagination.offset)
         )
