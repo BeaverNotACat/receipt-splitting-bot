@@ -6,7 +6,7 @@ from src.domain.value_objects import ReceiptID
 
 
 class ReceiptLockI(Protocol):
-    """Mutex-like lock for order-specifit receipt manipulations"""
+    """Mutex-like lock for concurrent-unsafe receipt manipulations"""
 
     @abstractmethod
     def __call__(
