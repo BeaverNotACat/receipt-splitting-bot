@@ -23,15 +23,13 @@ async def download_photos(
     if photo_sizes is None:
         return ()
 
-    # PhotoSize array has duplicates with different resolution
-    file_ids = {photo.file_id for photo in photo_sizes}
-    tasks = (bot.download(file_id) for file_id in file_ids)
+    # Each attached photo is actually separate message
+    # With 4 PhotoSizes from lowest to highest
+    photo = await bot.download(photo_sizes[-1])
+    if photo is None:
+        return ()
 
-    return tuple(
-        Photo(photo)
-        for photo in (await asyncio.gather(*tasks))
-        if photo is not None
-    )
+    return (Photo(photo),)
 
 
 async def download_audios(bot: Bot, voice: Voice | None) -> tuple[Audio, ...]:
