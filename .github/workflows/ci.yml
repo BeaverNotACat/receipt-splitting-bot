@@ -41,12 +41,17 @@ jobs:
     env:
         DEBUG: true
         DATABASE_DSN: postgresql+psycopg://postgres:postgres@localhost:5432/receipt-splitting-bot
+        KEY_VALUE_STORE_DSN: redis://localhost
         TELEGRAM_TOKEN: ...
         OPENROUTER_API_KEY: ...
         OCR_MODEL: ...
         ASR_MODEL: ...
         AGENT_MODEL: ...
     services:
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
       postgres:
         image: postgres:alpine
         ports:

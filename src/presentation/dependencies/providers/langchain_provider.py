@@ -10,8 +10,6 @@ from src.adapters.ocr import OCRModelClient, OpticalCharacterRecognizer
 from src.application.common.agent import AgentI
 from src.application.common.asr import RecognizedSpeechText, SpeechRecognizerI
 from src.application.common.ocr import OpticalCharacterRecognizerI
-from src.domain.services.receipt import ReceiptService
-from src.domain.services.user import UserService
 from src.settings import Settings
 
 
@@ -45,10 +43,10 @@ class LangChainProvider(Provider):
     def get_checkpointer() -> BaseCheckpointSaver[str]:
         return InMemorySaver()
 
-    @provide
-    @staticmethod
-    def get_ocr(client: OCRModelClient) -> OpticalCharacterRecognizerI:
-        return OpticalCharacterRecognizer(client)
+    agent = provide(Agent, provides=AgentI)
+    orc = provide(
+        OpticalCharacterRecognizer, provides=OpticalCharacterRecognizerI
+    )
 
     @provide
     @staticmethod
@@ -62,18 +60,3 @@ class LangChainProvider(Provider):
                 raise NotImplementedError
 
         return SpeechRecognizer()
-
-    @provide
-    @staticmethod
-    def get_agent(
-        client: AgentModelClient,
-        checkpointer: BaseCheckpointSaver[str],
-        user_service: UserService,
-        receipt_service: ReceiptService,
-    ) -> AgentI:
-        return Agent(
-            client=client,
-            checkpointer=checkpointer,
-            user_service=user_service,
-            receipt_service=receipt_service,
-        )

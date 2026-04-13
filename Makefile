@@ -23,3 +23,6 @@ generate-metrics:
 
 execute-metrics:
 	uv run python -m metrics.metrics_execution.main
+
+run:
+	uv run python -m src.main

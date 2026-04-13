@@ -13,6 +13,7 @@ from src.adapters.agent.tools import (
     unassign_item,
 )
 from src.application.common.agent import AgentI, AgentResponse, HumanRequest
+from src.application.common.locks import ReceiptLockI
 from src.domain.services import ReceiptService, UserService
 from src.domain.value_objects import AgentMessage
 
@@ -21,6 +22,8 @@ from .state import InvokeState, ReceiptModificationState
 from .templating import system_prompt_template, user_prompt_template
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from src.domain.models import Receipt, User
 
 
@@ -32,9 +35,11 @@ class Agent(AgentI):
         self,
         client: AgentModelClient,
         checkpointer: BaseCheckpointSaver[str],
+        receipt_lock: ReceiptLockI,
         user_service: UserService,
         receipt_service: ReceiptService,
     ) -> None:
+        self.receipt_lock = receipt_lock
         self.user_service = user_service
         self.receipt_service = receipt_service
         self.agent = create_agent(
@@ -55,18 +60,27 @@ class Agent(AgentI):
     async def invoke(
         self, request: HumanRequest, receipt: Receipt, participants: list[User]
     ) -> AgentResponse:
-        answer = await self.agent.ainvoke(
+        async with self.receipt_lock(receipt.id):
+            answer = await self.call_langchain(request, receipt, participants)
+
+        return AgentResponse(
+            answer=AgentMessage(answer["messages"][-1].content),
+            updated_receipt=answer["receipt"],
+        )
+
+    async def call_langchain(
+        self, request: HumanRequest, receipt: Receipt, participants: list[User]
+    ) -> dict[str, Any]:
+        """
+        Method wraps bare langchain result for benching purposes
+        """
+        return await self.agent.ainvoke(
             input=self._construct_invoke_state(request, receipt, participants),
             config={
                 "configurable": {"thread_id": receipt.id},
                 "max_concurrency": 1,
             },
             context=self._construct_invoke_context(participants),
-        )
-
-        return AgentResponse(
-            answer=AgentMessage(answer["messages"][-1].content),
-            updated_receipt=answer["receipt"],
         )
 
     @staticmethod
