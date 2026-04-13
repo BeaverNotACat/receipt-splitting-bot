@@ -18,5 +18,5 @@ class Settings(BaseSettings):
     ASR_MODEL: str
     AGENT_MODEL: str
 
-    RECEIPT_LOCK_PREFIX: str
-    RECEIPT_LOCK_LIFETIME: Annotated[int, "seconds"]
+    RECEIPT_LOCK_PREFIX: str = "receipt_lock:"
+    RECEIPT_LOCK_LIFETIME: Annotated[int, "seconds"] = 180
