@@ -18,11 +18,11 @@ class ReceiptLock(ReceiptLockI):
 
     @asynccontextmanager
     async def __call__(self, receipt_id: ReceiptID) -> AsyncIterator[None]:
-        key, token = f"{self.key_prefix}{receipt_id}", str(uuid4())
+        key, token = f"{self.key_prefix}:{receipt_id}", str(uuid4())
         channel = f"{key}:channel"
         pubsub = await self.subsribe_for_unlock(channel)
 
-        while not await self.try_set_lock(key, token):
+        while not await self._try_set_lock(key, token):
             await pubsub.get_message(
                 ignore_subscribe_messages=True, timeout=self.lock_lifetime
             )
@@ -37,7 +37,7 @@ class ReceiptLock(ReceiptLockI):
         await pubsub.subscribe(channel)
         return pubsub
 
-    async def try_set_lock(self, key: str, token: str) -> bool:
+    async def _try_set_lock(self, key: str, token: str) -> bool:
         return bool(
             await self.client.set(key, token, nx=True, ex=self.lock_lifetime)
         )
