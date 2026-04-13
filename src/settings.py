@@ -1,4 +1,6 @@
-from pydantic import PostgresDsn, SecretStr
+from typing import Annotated
+
+from pydantic import PostgresDsn, RedisDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,6 +9,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     DATABASE_DSN: PostgresDsn
+    KEY_VALUE_STORE_DSN: RedisDsn
 
     TELEGRAM_TOKEN: SecretStr
     OPENROUTER_API_KEY: SecretStr
@@ -14,3 +17,6 @@ class Settings(BaseSettings):
     OCR_MODEL: str
     ASR_MODEL: str
     AGENT_MODEL: str
+
+    RECEIPT_LOCK_PREFIX: str
+    RECEIPT_LOCK_LIFETIME: Annotated[int, "seconds"]
