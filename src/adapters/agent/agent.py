@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, NewType
 
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_openrouter import ChatOpenRouter
 from langgraph.checkpoint.base import BaseCheckpointSaver
 
@@ -69,7 +70,11 @@ class Agent(AgentI):
         )
 
     async def call_langchain(
-        self, request: HumanRequest, receipt: Receipt, participants: list[User]
+        self,
+        request: HumanRequest,
+        receipt: Receipt,
+        participants: list[User],
+        callbacks: list[BaseCallbackHandler],
     ) -> dict[str, Any]:
         """
         Method wraps bare langchain result for benching purposes
@@ -79,6 +84,7 @@ class Agent(AgentI):
             config={
                 "configurable": {"thread_id": receipt.id},
                 "max_concurrency": 1,
+                "callbacks": callbacks,
             },
             context=self._construct_invoke_context(participants),
         )

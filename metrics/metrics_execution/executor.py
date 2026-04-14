@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
+from langchain_core.callbacks import UsageMetadataCallbackHandler
 from openrouter.errors.responsevalidationerror import ResponseValidationError
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
@@ -92,6 +93,7 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             line = json.loads(raw_line)
             test_item = test_item_adapter.validate_python(line)
             target = test_item.target
+            metadata_callback = UsageMetadataCallbackHandler()
             for generation_try in range(num_retries):
                 try:
                     agent_response = await agent.call_langchain(
@@ -115,6 +117,7 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                             creditor_id=target.creditor_id,
                         ),
                         participants=test_item.participants,
+                        callbacks=[metadata_callback],
                     )
                     print(agent_response)
                     break
@@ -125,14 +128,12 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             actual = agent_response["receipt"]
             agent_message = agent_response["messages"][-1].content
 
-            global_input_tokens += sum(
-                message.usage_metadata["input_tokens"]
-                for message in agent_response["messages"]
-            )
-            global_output_tokens += sum(
-                message.usage_metadata["output_tokens"]
-                for message in agent_response["messages"]
-            )
+            global_input_tokens += metadata_callback.usage_metadata[
+                "input_tokens"
+            ]
+            global_output_tokens += metadata_callback.usage_metadata[
+                "output_tokens"
+            ]
 
             if not actual.participants_ids:
                 target_people = set(target.participants_ids)
