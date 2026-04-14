@@ -119,21 +119,16 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                         participants=test_item.participants,
                         callbacks=[metadata_callback],
                     )
-                    print(agent_response)
                     break
-                except ResponseValidationError as e:
-                    print(e)
+                except ResponseValidationError:
                     await asyncio.sleep(60 * generation_try)
 
             actual = agent_response["receipt"]
             agent_message = agent_response["messages"][-1].content
 
-            global_input_tokens += metadata_callback.usage_metadata[
-                "input_tokens"
-            ]
-            global_output_tokens += metadata_callback.usage_metadata[
-                "output_tokens"
-            ]
+            inner = next(iter(metadata_callback.usage_metadata.values()))
+            global_input_tokens += inner["input_tokens"]
+            global_output_tokens += inner["output_tokens"]
 
             if not actual.participants_ids:
                 target_people = set(target.participants_ids)
