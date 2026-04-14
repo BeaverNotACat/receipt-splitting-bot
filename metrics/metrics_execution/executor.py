@@ -125,12 +125,14 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             actual = agent_response["receipt"]
             agent_message = agent_response["messages"][-1].content
 
-            global_input_tokens += agent_response["usage_metadata"][
-                "input_tokens"
-            ]
-            global_output_tokens += agent_response["usage_metadata"][
-                "output_tokens"
-            ]
+            global_input_tokens += sum(
+                message.usage_metadata["input_tokens"]
+                for message in agent_response["messages"]
+            )
+            global_output_tokens += sum(
+                message.usage_metadata["output_tokens"]
+                for message in agent_response["messages"]
+            )
 
             if not actual.participants_ids:
                 target_people = set(target.participants_ids)
