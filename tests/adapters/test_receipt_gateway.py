@@ -103,7 +103,7 @@ async def test_receipt_fetching_order(
     )
 
     for i in range(1, len(selected_receipts)):
-        assert selected_receipts[i].id > selected_receipts[i - 1].id
+        assert selected_receipts[i].id < selected_receipts[i - 1].id
 
 
 async def test_receipt_counting(
