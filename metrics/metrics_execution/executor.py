@@ -24,6 +24,8 @@ class MetricsSummary:
     price_mape: float
     people_f1: float
     meals_f1: float
+    mean_input_tokens: float
+    mean_output_tokens: float
 
 
 @dataclass
@@ -32,6 +34,7 @@ class ItemMetrics:
     price_mae: float
     people_f1: float
     personal_stats: list[PersonalStats]
+    agent_message: str
 
 
 @dataclass
@@ -75,6 +78,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         global_meals_missing = 0
         global_meals_extra = 0
 
+        global_input_tokens = 0
+        global_output_tokens = 0
+
         count = 0
         while tests_count == "all" or count < tests_count:
             raw_line = f.readline()
@@ -88,35 +94,43 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             target = test_item.target
             for generation_try in range(num_retries):
                 try:
-                    actual = (
-                        await agent.invoke(
-                            request=HumanRequest(
-                                user_id=target.creditor_id,
-                                users_input=MessageText(
-                                    test_item.user_message
-                                ),
-                                transcribed_photos=[
-                                    RecognizedImageText(str(test_item.bill))
-                                ],
-                                transcribed_audios=[],
-                            ),
-                            receipt=Receipt(
-                                unassigned_items=[],
-                                assignees={
-                                    user_id: []
-                                    for user_id in target.participants_ids
-                                },
-                                id=target.id,
-                                created_at=target.created_at,
-                                title=target.title,
-                                creditor_id=target.creditor_id,
-                            ),
-                            participants=test_item.participants,
-                        )
-                    ).updated_receipt
+                    agent_response = await agent.call_langchain(
+                        request=HumanRequest(
+                            user_id=target.creditor_id,
+                            users_input=MessageText(test_item.user_message),
+                            transcribed_photos=[
+                                RecognizedImageText(str(test_item.bill))
+                            ],
+                            transcribed_audios=[],
+                        ),
+                        receipt=Receipt(
+                            unassigned_items=[],
+                            assignees={
+                                user_id: []
+                                for user_id in target.participants_ids
+                            },
+                            id=target.id,
+                            created_at=target.created_at,
+                            title=target.title,
+                            creditor_id=target.creditor_id,
+                        ),
+                        participants=test_item.participants,
+                    )
+                    print(agent_response)
                     break
-                except ResponseValidationError:
+                except ResponseValidationError as e:
+                    print(e)
                     await asyncio.sleep(60 * generation_try)
+
+            actual = agent_response["receipt"]
+            agent_message = agent_response["messages"][-1].content
+
+            global_input_tokens += agent_response["usage_metadata"][
+                "input_tokens"
+            ]
+            global_output_tokens += agent_response["usage_metadata"][
+                "output_tokens"
+            ]
 
             if not actual.participants_ids:
                 target_people = set(target.participants_ids)
@@ -194,11 +208,12 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                     len(people_common), len(people_extra), len(people_missing)
                 ),
                 personal_stats=personal_stats,
+                agent_message=agent_message,
             )
             with item_metrics_path.open("ab") as item_file:
                 item_file.write(
-                    item_metrics_adapter.dump_json(item_metrics) + "\n"
-                    )
+                    item_metrics_adapter.dump_json(item_metrics) + b"\n"
+                )
 
     if global_samples_count == 0:
         price_mae = -1.0
@@ -216,6 +231,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         meals_f1=calculate_f1(
             global_meals_common, global_meals_missing, global_meals_extra
         ),
+        mean_input_tokens=global_input_tokens / samples,
+        mean_output_tokens=global_output_tokens / samples,
     )
     with summary_out_path.open("wb") as summary_file:
         summary_file.write(summary_adapter.dump_json(metrics))
