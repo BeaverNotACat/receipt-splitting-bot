@@ -18,8 +18,9 @@ wheels/
 # Venv
 .venv
 
-# Tests 
+# Development code
 tests
+metrics
 
 # Secrets 
 .env*
