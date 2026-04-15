@@ -51,7 +51,7 @@ def register_user_dto(
 @pytest.fixture
 def change_nickname_dto(
     change_nickname_dto_factory: ChangeNicknameDTOFactory,
-    register_user_dto: RegisterUserDTO
+    register_user_dto: RegisterUserDTO,
 ) -> ChangeNicknameDTO:
     return change_nickname_dto_factory.build(
         nickname=register_user_dto.nickname,
