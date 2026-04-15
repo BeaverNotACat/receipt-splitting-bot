@@ -62,7 +62,9 @@ class Agent(AgentI):
         self, request: HumanRequest, receipt: Receipt, participants: list[User]
     ) -> AgentResponse:
         async with self.receipt_lock(receipt.id):
-            answer = await self.call_langchain(request, receipt, participants)
+            answer = await self.call_langchain(
+                request, receipt, participants, []
+            )
 
         return AgentResponse(
             answer=AgentMessage(answer["messages"][-1].content),
