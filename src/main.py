@@ -10,6 +10,7 @@ from redis.asyncio import Redis
 
 from src.presentation.dependencies import container
 from src.presentation.telegram import (
+    change_nickname_dialog,
     create_receipt_dialog,
     join_dialog,
     manage_receipt_dialog,
@@ -33,6 +34,7 @@ def get_dispatcher(storage_client: Redis) -> Dispatcher:
 
     dp.include_router(start_router)
 
+    dp.include_router(change_nickname_dialog)
     dp.include_router(create_receipt_dialog)
     dp.include_router(join_dialog)
     dp.include_router(show_profile_dialog)

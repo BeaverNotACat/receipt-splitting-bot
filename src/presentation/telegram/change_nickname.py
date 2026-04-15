@@ -30,7 +30,7 @@ async def on_done(
     await dialog_manager.start(states.ProfileSG.view)
 
 
-create_receipt_dialog = Dialog(
+change_nickname_dialog = Dialog(
     Window(
         Const(
             "Введите как вас называют друзья, это необходимо для опознавания"
