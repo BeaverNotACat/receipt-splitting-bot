@@ -9,6 +9,7 @@ from src.application.receipt.form_bills import FormBills, FormBillsDTO
 from src.presentation.telegram import states
 
 from .common import (
+    add_dummy_user_button,
     get_receipt_id,
     return_to_profile_button,
     show_bill_button,
@@ -48,6 +49,7 @@ async def bills_getter(
 
 bills_window = Window(
     bills_text,
+    add_dummy_user_button,
     show_bill_button,
     return_to_profile_button,
     user_prompt_input,

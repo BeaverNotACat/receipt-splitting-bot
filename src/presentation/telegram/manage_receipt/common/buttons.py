@@ -21,9 +21,24 @@ async def on_show_bill(
     )
 
 
+async def on_add_dummy_user(
+    _event: CallbackQuery,
+    _button: Button,
+    dialog_manager: DialogManager,
+) -> None:
+    await dialog_manager.switch_to(
+        states.ReceiptChatSG.add_dummy, show_mode=ShowMode.SEND
+    )
+
+
 return_to_profile_button = Start(
     Const("↩️ К профилю"), id="profile", state=states.ProfileSG.view
 )
 show_bill_button = Button(
     Const("📋 Показать чек"), id="show_bill", on_click=on_show_bill
+)
+add_dummy_user_button = Button(
+    Const("👥 Добавить виртуального участника"),
+    id="add_dummy_user",
+    on_click=on_add_dummy_user,
 )

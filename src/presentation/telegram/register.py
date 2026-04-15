@@ -38,9 +38,7 @@ async def on_done(
 
 register_dialog = Dialog(
     Window(
-        Const(
-            "Введите как вас называют друзья.\n Это необходимо для опознования"
-        ),
+        Const("Введите как вас зовут.\n Это поможет работе агента"),
         TextInput(id=NICKNAME_INPUT_ID, on_success=on_done),
         state=states.RegisterSG.nickname,
     ),

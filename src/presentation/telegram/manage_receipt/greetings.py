@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 from src.presentation.telegram import states
 
 from .common import (
+    add_dummy_user_button,
     get_receipt_id,
     return_to_profile_button,
     show_bill_button,
@@ -47,6 +48,7 @@ async def receipt_dialog_greeting_getter(
 greetings_window = Window(
     greetings,
     invite_link,
+    add_dummy_user_button,
     show_bill_button,
     return_to_profile_button,
     user_prompt_input,
