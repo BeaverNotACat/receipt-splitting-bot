@@ -36,7 +36,7 @@ async def on_done(
 
 add_dummy_user_dialog = Dialog(
     Window(
-        Const("Введите имя участника"),
+        Const("Введите имя виртуального участника"),
         TextInput(id=DUMMY_NICKNAME_INPUT_ID, on_success=on_done),
         state=states.AddDummyUserSG.nickname,
     )
