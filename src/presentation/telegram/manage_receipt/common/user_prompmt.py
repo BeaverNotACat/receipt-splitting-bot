@@ -9,7 +9,7 @@ from src.application.receipt.manage import ManageReceipt, ManageReceiptDTO
 from src.domain.value_objects import Audio, MessageText, Photo
 from src.presentation.telegram import states
 
-from .get_receipt_id import get_receipt_id
+from .get_receipt import get_receipt_id
 
 if TYPE_CHECKING:
     from aiogram import Bot

@@ -17,7 +17,7 @@ DUMMY_NICKNAME_INPUT_ID = "dummy_nickname"
 
 @inject
 async def on_done(
-    _message: Message,
+    message: Message,
     _text_input: ManagedTextInput[str],
     dialog_manager: DialogManager,
     nickname: str,
@@ -29,6 +29,7 @@ async def on_done(
     )
     await add_dummy_user(dto)
 
+    await message.answer("✅ Участник добавлен")
     await dialog_manager.back()
 
 
