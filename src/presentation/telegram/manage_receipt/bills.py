@@ -10,7 +10,6 @@ from src.presentation.telegram import states
 
 from .common import (
     add_dummy_user_button,
-    get_receipt_id,
     return_to_profile_button,
     show_bill_button,
     user_prompt_input,
@@ -39,7 +38,7 @@ async def bills_getter(
     form_bill: FromDishka[FormBills],
     **_kwargs: dict[str, Any],
 ) -> dict[str, Any]:
-    dto = FormBillsDTO(receipt_id=get_receipt_id(dialog_manager))
+    dto = FormBillsDTO(receipt_id=states.get_receipt_id(dialog_manager))
     bills_mapping = await form_bill(dto)
     await dialog_manager.switch_to(
         states.ReceiptChatSG.chat, show_mode=ShowMode.SEND

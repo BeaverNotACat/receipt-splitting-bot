@@ -9,8 +9,6 @@ from src.application.receipt.manage import ManageReceipt, ManageReceiptDTO
 from src.domain.value_objects import Audio, MessageText, Photo
 from src.presentation.telegram import states
 
-from .get_receipt import get_receipt_id
-
 if TYPE_CHECKING:
     from aiogram import Bot
     from aiogram.types import Message, PhotoSize, Voice
@@ -51,7 +49,7 @@ async def natural_language_handler(
         raise ValueError
 
     dto = ManageReceiptDTO(
-        receipt_id=get_receipt_id(dialog_manager),
+        receipt_id=states.get_receipt_id(dialog_manager),
         text=MessageText(message.text) if message.text is not None else None,
         photos=await download_photos(message.bot, message.photo),
         audios=await download_audios(message.bot, message.voice),

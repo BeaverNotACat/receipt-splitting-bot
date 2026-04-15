@@ -26,8 +26,8 @@ async def on_add_dummy_user(
     _button: Button,
     dialog_manager: DialogManager,
 ) -> None:
-    await dialog_manager.switch_to(
-        states.ReceiptChatSG.add_dummy, show_mode=ShowMode.SEND
+    await states.start_add_dummy_user(
+        dialog_manager, states.get_receipt_id(dialog_manager)
     )
 
 

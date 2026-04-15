@@ -14,7 +14,7 @@ from src.domain.value_objects import UserNickname
 
 from . import states
 
-NICKNAME_INPUT_ID = "nickname"
+NICKNAME_INPUT_ID = "new_nickname"
 
 
 @inject
