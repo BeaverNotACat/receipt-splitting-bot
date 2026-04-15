@@ -4,6 +4,9 @@ from typing import final
 from src.application.common.database.receipt_gateway import (
     ReceiptGatewayI,
 )
+from src.application.common.database.transaction_manager import (
+    TransactionManagerI,
+)
 from src.application.common.database.user_gateway import UserSaverI
 from src.application.common.interactor import Interactor
 from src.domain.value_objects import ReceiptID, UserID, UserNickname
@@ -25,6 +28,7 @@ class AddDummyUser(Interactor[AddDummyUserDTO, UserID]):
     user_service: UserService
     receipt_db_gateway: ReceiptGatewayI
     user_db_gateway: UserSaverI
+    transaction_manager: TransactionManagerI
 
     async def __call__(self, context: AddDummyUserDTO) -> UserID:
         dummy = self.user_service.create_dummy_user(context.nickname)
@@ -35,5 +39,7 @@ class AddDummyUser(Interactor[AddDummyUserDTO, UserID]):
 
         await self.user_db_gateway.save_user(dummy)
         await self.receipt_db_gateway.save_receipt(receipt)
+
+        await self.transaction_manager.commit()
 
         return dummy.id

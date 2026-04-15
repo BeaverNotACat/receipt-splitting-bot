@@ -10,6 +10,9 @@ from src.application.receipt.add_dummy_user import (
 )
 from src.domain.services.user import UserService
 from tests.application.fakes.fake_receipt_gateway import FakeReceiptGateway
+from tests.application.fakes.fake_transaction_manager import (
+    FakeTransactionManager,
+)
 from tests.application.fakes.fake_user_gateway import FakeUserGateway
 
 if TYPE_CHECKING:
@@ -53,6 +56,7 @@ def add_dummy_user_interactor(
         UserService(),
         fake_receipt_db_gateway,
         fake_user_db_gateway,
+        FakeTransactionManager(),
     )
 
 

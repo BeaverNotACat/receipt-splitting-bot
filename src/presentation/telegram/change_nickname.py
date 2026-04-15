@@ -14,7 +14,7 @@ from src.domain.value_objects import UserNickname
 
 from . import states
 
-NICKNAME_INPUT_ID = "nickname"
+NICKNAME_INPUT_ID = "new_nickname"
 
 
 @inject
@@ -32,9 +32,7 @@ async def on_done(
 
 change_nickname_dialog = Dialog(
     Window(
-        Const(
-            "Введите как вас называют друзья, это необходимо для опознавания"
-        ),
+        Const("Введите как вас зовут.\nЭто поможет работе агента"),
         TextInput(id=NICKNAME_INPUT_ID, on_success=on_done),
         Cancel(Const("↩️ Назад")),
         state=states.ChangeNicknameSG.nickname,

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 from src.presentation.telegram import states
 
 from .common import (
-    get_receipt_id,
+    add_dummy_user_button,
     return_to_profile_button,
     show_bill_button,
     user_prompt_input,
@@ -39,7 +39,7 @@ async def receipt_dialog_greeting_getter(
     bot: Bot,
     **_: dict[str, Any],
 ) -> dict[str, Any]:
-    receipt_id = get_receipt_id(dialog_manager)
+    receipt_id = states.get_receipt_id(dialog_manager)
     invite_link = await create_start_link(bot, str(receipt_id))
     return {"invite_link": invite_link}
 
@@ -47,6 +47,7 @@ async def receipt_dialog_greeting_getter(
 greetings_window = Window(
     greetings,
     invite_link,
+    add_dummy_user_button,
     show_bill_button,
     return_to_profile_button,
     user_prompt_input,
