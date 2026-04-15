@@ -18,11 +18,15 @@ from dishka.integrations.aiogram_dialog import inject
 
 from src.application.common.user_provider import UserProviderI
 from src.application.receipt.list import ListReceipts, ListReceiptsDTO
-from src.domain.value_objects import LimitOffsetPagination, ReceiptID
+from src.domain.value_objects import (
+    LimitOffsetPagination,
+    ReceiptID,
+)
 
 from . import states
 
 PAGE_SIZE = 4
+NICKNAME_INPUT_ID = "nickname"
 
 
 @inject
@@ -61,6 +65,11 @@ async def on_selected(
 show_profile_dialog = Dialog(
     Window(
         Format("Добро пожаловать, {nickname}"),
+        Start(
+            Const("📝 Изменить имя"),
+            id="change_nickname",
+            state=states.ChangeNicknameSG.nickname,
+        ),
         Format(
             "У вас есть {total} чеков, нажмите на один, чтобы открыть",
             when=F["total"],

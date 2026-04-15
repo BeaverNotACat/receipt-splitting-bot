@@ -1,3 +1,4 @@
+from .change_nickname import change_nickname_dialog
 from .create_receipt import create_receipt_dialog
 from .join_receipt import join_dialog
 from .manage_receipt import manage_receipt_dialog
@@ -6,6 +7,7 @@ from .register import register_dialog
 from .start import start_router
 
 __all__ = [
+    "change_nickname_dialog",
     "create_receipt_dialog",
     "join_dialog",
     "show_profile_dialog",
