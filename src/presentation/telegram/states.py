@@ -8,6 +8,10 @@ class RegisterSG(StatesGroup):
     nickname = State()
 
 
+class ChangeNicknameSG(StatesGroup):
+    nickname = State()
+
+
 class JoinReceiptSG(StatesGroup):
     preview = State()
 

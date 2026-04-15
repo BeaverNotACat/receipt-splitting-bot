@@ -2,10 +2,9 @@ from typing import Any, cast
 from uuid import UUID
 
 from aiogram import F
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.common import ManagedScroll
-from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
 from aiogram_dialog.widgets.kbd import (
     Column,
     NumberedPager,
@@ -18,16 +17,10 @@ from dishka.integrations.aiogram import FromDishka
 from dishka.integrations.aiogram_dialog import inject
 
 from src.application.common.user_provider import UserProviderI
-from src.application.real_user.change_nickname import (
-    ChangeNickname,
-    ChangeNicknameDTO,
-)
 from src.application.receipt.list import ListReceipts, ListReceiptsDTO
 from src.domain.value_objects import (
-    ChatID,
     LimitOffsetPagination,
     ReceiptID,
-    UserNickname,
 )
 
 from . import states
@@ -69,26 +62,13 @@ async def on_selected(
     await states.start_receipt_chat(dialog_manager, receipt_id)
 
 
-@inject
-async def on_change_nickname(
-    message: Message,
-    _text_input: ManagedTextInput[str],
-    nickname: str,
-    change_nickname: FromDishka[ChangeNickname],
-) -> None:
-    dto = ChangeNicknameDTO(
-        ChatID(message.chat.id),
-        nickname=UserNickname(nickname),
-    )
-    await change_nickname(dto)
-
-
 show_profile_dialog = Dialog(
     Window(
         Format("Добро пожаловать, {nickname}"),
-        TextInput(
-            id=NICKNAME_INPUT_ID,
-            on_success=on_change_nickname
+        Start(
+            Const("📝 Изменить имя"),
+            id="change_nickname",
+            state=states.ChangeNicknameSG.nickname,
         ),
         Format(
             "У вас есть {total} чеков, нажмите на один, чтобы открыть",

@@ -43,7 +43,6 @@ def change_nickname_dto(
     register_user_dto: RegisterUserDTO
 ) -> ChangeNicknameDTO:
     return change_nickname_dto_factory.build(
-        chat_id=register_user_dto.chat_id,
         nickname=register_user_dto.nickname,
     )
 
