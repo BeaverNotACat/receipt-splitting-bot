@@ -1,5 +1,6 @@
 from dishka import Provider, Scope
 
+from src.application.real_user.change_nickname import ChangeNickname
 from src.application.real_user.register import RegisterUser
 from src.application.receipt.add_dummy_user import AddDummyUser
 from src.application.receipt.create import CreateReceipt
@@ -10,6 +11,7 @@ from src.application.receipt.list import ListReceipts
 from src.application.receipt.manage import ManageReceipt
 
 interactors_provider = Provider(Scope.REQUEST)
+interactors_provider.provide(ChangeNickname)
 interactors_provider.provide(RegisterUser)
 interactors_provider.provide(AddDummyUser)
 interactors_provider.provide(CreateReceipt)
