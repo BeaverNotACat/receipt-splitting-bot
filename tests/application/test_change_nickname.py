@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from polyfactory.factories import DataclassFactory
 from polyfactory.pytest_plugin import register_fixture
@@ -15,6 +17,10 @@ from tests.application.fakes.fake_transaction_manager import (
     FakeTransactionManager,
 )
 from tests.application.fakes.fake_user_gateway import FakeUserGateway
+from tests.application.fakes.fake_user_provider import FakeUserProvider
+
+if TYPE_CHECKING:
+    from src.domain.models.user import RealUser
 
 
 @register_fixture
@@ -28,6 +34,11 @@ class ChangeNicknameDTOFactory(DataclassFactory[ChangeNicknameDTO]): ...
 @pytest.fixture
 def fake_user_gateway() -> FakeUserGateway:
     return FakeUserGateway()
+
+
+@pytest.fixture
+def fake_user_provider(real_user: RealUser) -> FakeUserProvider:
+    return FakeUserProvider(real_user)
 
 
 @pytest.fixture
@@ -59,10 +70,12 @@ def register_user_interactor(
 @pytest.fixture
 def change_nickname_interactor(
     fake_user_gateway: FakeUserGateway,
+    fake_user_provider: FakeUserProvider,
 ) -> ChangeNickname:
     return ChangeNickname(
         FakeTransactionManager(),
         fake_user_gateway,
+        fake_user_provider,
     )
 
 
