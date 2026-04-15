@@ -1,35 +1,74 @@
-from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from src.domain.value_objects import LimitOffsetPagination, UserID
+import pytest
+
+from src.domain.value_objects import LimitOffsetPagination
 from tests.adapters.asserts import assert_receipt
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Coroutine, Iterable
+
     from src.adapters.database.receipt_gateway import ReceiptGateway
     from src.adapters.database.user_gateway import UserGateway
     from src.domain.models.receipt import Receipt
     from tests.mocks.domain import RealUserFactory, ReceiptFactory
 
+    SetupReceiptsService = Callable[[], Coroutine[Any, Any, list[Receipt]]]
+    SetupUsersService = Callable[
+        [Iterable[Receipt]], Coroutine[Any, Any, None]
+    ]
 
-async def setup_users(
-    ids: Iterable[UserID], *, factory: RealUserFactory, gateway: UserGateway
-) -> None:
-    for obj_id in ids:
-        await gateway.save_user(factory.build(id=obj_id))
-    await gateway.session.flush()
+
+@pytest.fixture
+def setup_users(
+    real_user_factory: RealUserFactory, user_gateway: UserGateway
+) -> SetupUsersService:
+    async def setup_users_service(receipts: Iterable[Receipt]) -> None:
+        user_ids = set()
+        for receipt in receipts:
+            # TODO(beavernotat): No assignees for creditor
+            # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/33
+            user_ids.update([*receipt.participants_ids, receipt.creditor_id])
+
+        for obj_id in user_ids:
+            await user_gateway.save_user(real_user_factory.build(id=obj_id))
+        await user_gateway.session.flush()
+
+    return setup_users_service
+
+
+RECEIPT_BATCH_SIZE = 10
+
+
+@pytest.fixture
+def setup_receipts(
+    setup_users: SetupUsersService,
+    receipt_factory: ReceiptFactory,
+    receipt_gateway: ReceiptGateway,
+) -> SetupReceiptsService:
+    async def setup_receipts_service() -> list[Receipt]:
+        receipts = receipt_factory.batch(RECEIPT_BATCH_SIZE)
+        for receipt in receipts:
+            # TODO(beavernotat): No assignees for creditor
+            # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/33
+            receipt.assignees[receipt.creditor_id] = []
+        await setup_users(receipts)
+
+        for receipt in receipts:
+            await receipt_gateway.save_receipt(receipt)
+        await receipt_gateway.session.flush()
+
+        return receipts
+
+    return setup_receipts_service
 
 
 async def test_receipt_saving(
     receipt: Receipt,
-    real_user_factory: RealUserFactory,
     receipt_gateway: ReceiptGateway,
-    user_gateway: UserGateway,
+    setup_users: SetupUsersService,
 ) -> None:
-    await setup_users(
-        receipt.participants_ids,
-        factory=real_user_factory,
-        gateway=user_gateway,
-    )
+    await setup_users([receipt])
 
     await receipt_gateway.save_receipt(receipt)
 
@@ -38,24 +77,12 @@ async def test_receipt_saving(
 
 async def test_receipt_updating(
     receipt_factory: ReceiptFactory,
-    real_user_factory: RealUserFactory,
     receipt_gateway: ReceiptGateway,
-    user_gateway: UserGateway,
+    setup_users: SetupUsersService,
 ) -> None:
     initial_receipt = receipt_factory.build()
     updated_receipt = receipt_factory.build(id=initial_receipt.id)
-    await setup_users(
-        {
-            *initial_receipt.participants_ids,
-            *updated_receipt.participants_ids,
-            # TODO(beavernotat): No assignees for creditor
-            # https://github.com/BeaverNotACat/receipt-splitting-bot/issues/33
-            initial_receipt.creditor_id,
-            updated_receipt.creditor_id,
-        },
-        factory=real_user_factory,
-        gateway=user_gateway,
-    )
+    await setup_users((initial_receipt, updated_receipt))
     await receipt_gateway.save_receipt(initial_receipt)
 
     await receipt_gateway.save_receipt(updated_receipt)
@@ -66,30 +93,42 @@ async def test_receipt_updating(
     )
 
 
-RECEIPT_BATCH_SIZE = 10
-
-
 async def test_receipt_fetching_order(
-    receipt_factory: ReceiptFactory,
-    real_user_factory: RealUserFactory,
-    receipt_gateway: ReceiptGateway,
-    user_gateway: UserGateway,
+    receipt_gateway: ReceiptGateway, setup_receipts: SetupReceiptsService
 ) -> None:
-    receipts = receipt_factory.batch(RECEIPT_BATCH_SIZE)
-    user_ids = set()
-    for receipt in receipts:
-        user_ids.update([*receipt.participants_ids, receipt.creditor_id])
-    await setup_users(
-        user_ids,
-        factory=real_user_factory,
-        gateway=user_gateway,
-    )
-    for receipt in receipts:
-        await receipt_gateway.save_receipt(receipt)
-    await receipt_gateway.session.flush()
+    await setup_receipts()
 
     selected_receipts = await receipt_gateway.fetch_receipts(
         pagination=LimitOffsetPagination(RECEIPT_BATCH_SIZE, 0)
     )
+
     for i in range(1, len(selected_receipts)):
-        assert selected_receipts[i].id > selected_receipts[i - 1].id
+        assert selected_receipts[i].id < selected_receipts[i - 1].id
+
+
+async def test_receipt_counting(
+    receipt_gateway: ReceiptGateway, setup_receipts: SetupReceiptsService
+) -> None:
+    await setup_receipts()
+
+    amount = await receipt_gateway.count_receipts()
+
+    assert amount == RECEIPT_BATCH_SIZE
+
+
+async def test_receipt_many_filtering(
+    receipt_gateway: ReceiptGateway, setup_receipts: SetupReceiptsService
+) -> None:
+    user_id = (await setup_receipts())[0].creditor_id
+
+    filtered_receipts = await receipt_gateway.fetch_receipts(
+        LimitOffsetPagination(RECEIPT_BATCH_SIZE, 0),
+        participant_id=user_id,
+    )
+    receipts_count = await receipt_gateway.count_receipts(
+        participant_id=user_id,
+    )
+
+    assert receipts_count == len(filtered_receipts)
+    for receipt in filtered_receipts:
+        assert user_id in receipt.participants_ids

@@ -17,7 +17,7 @@ def append_item(
     Через LineItem тебе необходимо указать:
     1. Название блюда
     2. количество блюда
-    3. Цену блюда(берется из запроса пользователя)
+    3. Цену блюда(берется из чека)
     """
     receipt = runtime.state["receipt"]
 
@@ -25,7 +25,7 @@ def append_item(
         receipt.append_item(item)
         message_text = "Successfully updated receipt"
     except DomainError as err:
-        message_text = f"Failed to update receipt: {err!s}"
+        message_text = f"Failed to update receipt: {type(err)} {err!s}"
     return Command(
         update={
             "receipt": receipt,

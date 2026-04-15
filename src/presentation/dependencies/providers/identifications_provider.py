@@ -1,4 +1,4 @@
-from dishka import Provider, Scope, provide
+from dishka import AnyOf, Provider, Scope, provide
 from dishka.integrations.aiogram import AiogramMiddlewareData
 
 from src.adapters.user_provider import UserProvider
@@ -15,7 +15,7 @@ class AuthProvider(Provider):
     def get_user_provider(
         user_reader: UserReaderI,
         middleware_data: AiogramMiddlewareData,
-    ) -> UserProviderI:
+    ) -> AnyOf[UserProviderI, UserProvider]:
         chat_id = None
         if user := middleware_data["event_from_user"]:
             chat_id = ChatID(user.id)

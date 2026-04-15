@@ -34,5 +34,5 @@ async def start_receipt_chat(
     dialog_manager: DialogManager, receipt_id: ReceiptID
 ) -> None:
     await dialog_manager.start(
-        ReceiptChatSG.greeting, data={"receipt_id": receipt_id}
+        ReceiptChatSG.greeting, data={"receipt_id": str(receipt_id)}
     )

@@ -16,6 +16,7 @@ dependencies = [
     "pydantic-settings>=2.12.0",
     "langchain-openrouter>=0.1.0",
     "jinja2>=3.1.6",
+    "redis[hiredis]>=7.4.0",
 ]
 [dependency-groups]
 dev = [
@@ -94,10 +95,11 @@ select = [
     "TRY", # tryceratops
 ]
 ignore = [
-    "COM812", # ruff warn on it
+    "COM812"# ruff warn on it
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "src/presentation/telegram/*" = ["RUF"] # Commands containsRussian text and emojis causing false positive
 "src/adapters/agent/*" = ["RUF"] # Prompts may contain russian text causing false positive
 "tests/*" = ["S101"] # Do not trigger on asserts in tests
+"metrics/*" = ["S311","RUF"]
