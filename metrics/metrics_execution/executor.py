@@ -216,9 +216,13 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
     if global_samples_count == 0:
         price_mae = -1.0
         price_mape = -1.0
+        mean_input_tokens = 0
+        mean_output_tokens = 0
     else:
         price_mae = float(global_absolute_error / global_samples_count)
         price_mape = float(global_percentage_error / global_samples_count)
+        mean_input_tokens = global_input_tokens / global_samples_count
+        mean_output_tokens = global_output_tokens / global_samples_count
 
     metrics = MetricsSummary(
         price_mae=price_mae,
@@ -229,8 +233,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
         meals_f1=calculate_f1(
             global_meals_common, global_meals_missing, global_meals_extra
         ),
-        mean_input_tokens=global_input_tokens / samples,
-        mean_output_tokens=global_output_tokens / samples,
+        mean_input_tokens=mean_input_tokens,
+        mean_output_tokens=mean_output_tokens,
     )
     with summary_out_path.open("wb") as summary_file:
         summary_file.write(summary_adapter.dump_json(metrics))
