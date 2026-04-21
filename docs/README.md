@@ -6,7 +6,7 @@ LLM agent service for receipt splitting
 - [User flows](user%20flows.md)
 ### System design
 - [Architecture overview](architecture%20overview.md)
-- [Aiogram Dialog state schema](aiogram_states)
+- [Aiogram Dialog state schema](aiogram%20states)
 - API docs **TODO**
 ### Decisions
 - [databases comparation](databases%20comparation.md)
