@@ -4,6 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram_dialog import setup_dialogs
+from aiogram_dialog.tools import render_transitions
 from dishka.integrations.aiogram import setup_dishka
 from langchain_core.globals import set_debug
 from redis.asyncio import Redis
@@ -45,6 +46,7 @@ def get_dispatcher(storage_client: Redis) -> Dispatcher:
 
     setup_dishka(container, dp)
     setup_dialogs(dp)
+    render_transitions(dp, format="jpg")
     return dp
 
 
@@ -59,4 +61,4 @@ async def run_bot() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(run_bot())
+    asyncio.run(run_bot(), debug=True)

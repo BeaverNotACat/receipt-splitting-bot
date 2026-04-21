@@ -60,5 +60,8 @@ join_dialog = Dialog(
         Start(Const("❌"), id="cancel", state=states.ProfileSG.view),
         state=states.JoinReceiptSG.preview,
         getter=user_profile_getter,
+        preview_add_transitions=[
+            Start(Const("0"), id="0", state=states.ReceiptChatSG.greeting),
+        ],
     )
 )

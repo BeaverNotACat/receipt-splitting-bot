@@ -101,5 +101,8 @@ show_profile_dialog = Dialog(
         ),
         state=states.ProfileSG.view,
         getter=user_profile_getter,
+        preview_add_transitions=[
+            Start(Const("0"), id="0", state=states.ReceiptChatSG.greeting),
+        ],
     ),
 )

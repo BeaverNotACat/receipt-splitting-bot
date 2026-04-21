@@ -1,6 +1,7 @@
 from aiogram.types import Message
 from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
+from aiogram_dialog.widgets.kbd import Start
 from aiogram_dialog.widgets.text import Const
 from dishka.integrations.aiogram import FromDishka
 from dishka.integrations.aiogram_dialog import inject
@@ -41,5 +42,8 @@ register_dialog = Dialog(
         Const("Введите как вас зовут.\nЭто поможет работе агента"),
         TextInput(id=NICKNAME_INPUT_ID, on_success=on_done),
         state=states.RegisterSG.nickname,
+        preview_add_transitions=[
+            Start(Const("0"), id="0", state=states.ProfileSG.view),
+        ],
     ),
 )
