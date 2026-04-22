@@ -42,7 +42,3 @@ add_dummy_user_button = Button(
     id="add_dummy_user",
     on_click=on_add_dummy_user,
 )
-
-# preview_add_transitions = [
-#     Start(Const("0"), id="0", state=states.ReceiptChatSG.)
-# ]
