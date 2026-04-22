@@ -1,6 +1,6 @@
 Our mentor agitated for relational database instead of No-SQL, so lets do some 1 to 1 comparison suitable for our case.
 
-**MongoDB**
+## MongoDB
 
 | ✅   | fast and intuitive way to implement aggregates | - `Receipt` is a natural **document aggregate**<br>- `unassigned_items`, `assignees`, `debtors` map very cleanly to embedded arrays/maps<br>- single-document atomic updates match DDD aggregate rules perfectly |
 | --- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -8,7 +8,7 @@ Our mentor agitated for relational database instead of No-SQL, so lets do some 1
 | ⚠️  | No FK and constrains                           | But in DDD this is already your responsibility                                                                                                                                                                   |
 | ⚠️  | No schema                                      |                                                                                                                                                                                                                  |
 
-**PostgreSQL**
+## PostgreSQL
 
 | ❌   | unintuitive way to implement aggregates       | <br><br>                                                                      |
 | --- | --------------------------------------------- | ----------------------------------------------------------------------------- |

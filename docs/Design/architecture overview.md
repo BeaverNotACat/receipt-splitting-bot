@@ -1,47 +1,52 @@
-## Objectives
-- **System must be universal** 
-  We are testing concept at current stage. Telegram bot API to easily get chats and media files support. But in perspective our *core* must be ready for integration into any chatting platform.
-- **System must be extendable**
-  Open-closed principle is enforsed and coupling must be minimal. So we can adapt to specific requirements and be sure in our stability
-- **System must be stable**
-  Laggy, buggy or software with unintuitive limitations will push away customers and potential command to use our project. Currently there are to so many *AI startups* of any kind, so we need advante in quality
-- **Scalability should not be an issue**
-  LLM agents may cause unpreventable overhead with extra tool calls/high network usage. System should let us to scale, but also scaling may requier additional infrastructire, that we can't get now bacuse of work under business features.
 
+## Objectives
+
+- **The system must be universal**  
+  We are testing the concept at the current stage. The Telegram Bot API provides an easy way to work with chats and media files, but in the long term, our *core* must be ready for integration with any messaging platform.
+
+- **The system must be extendable**  
+  The Open-Closed Principle is enforced, and coupling must be minimal. This allows us to adapt to specific requirements while maintaining system stability.
+
+- **The system must be stable**  
+  Laggy or buggy software, or software with unintuitive limitations, will drive away users and potential teams adopting the project. There are too many *AI startups* today, so we need an advantage in quality.
+
+- **Scalability should not be an issue**  
+  LLM agents may introduce unpredictable overhead due to additional tool calls and high network usage. The system should allow us to scale, although scaling may require infrastructure that is not currently available due to a focus on business features.
 ## Key points
 ### DDD
-Both agent and backend needs to be provided with enforsed business rules.
-Operations with key entitines especially **receipts** is described into domain layer to provide consistent behavior.
-Also *strategical points* of DDD gives us profits of having same language for LLM prompting and development process.
+Both the agent and the backend must enforce business rules.  
+Operations on key entities, especially **receipts**, are defined in the domain layer to ensure consistent behavior.  
 
-You can see our entities at `src/domain` module
+Additionally, the *strategic design* aspects of DDD provide the benefit of a shared language between LLM prompting and the development process.
+
+You can find the entities in the `src/domain` module.
 ### Hexagonal architecture
-- Separate presentation layer gives us universality of the system. We can add new user *interface* in short time. REST API, GRPC or another kind of bot API's.
-- Separate adapters allows us to experiment with different agent approaches easily and gives third-party users to rewrite instrasructure intergrations to their requierements.
+- A separate presentation layer ensures system universality. We can quickly add new user *interfaces*, such as a REST API, gRPC service, or another type of bot API.
+- Separate adapters allow us to experiment with different agent approaches and enable third-party users to rewrite infrastructure integrations according to their requirements.
 
-Let's take a closer look at the project file tree
+Let's take a closer look at the project file tree:
+
 ```
 src/
-├── domain             # Fixed entities data and behavior for whole project
-│   ├── exceptions
-│   ├── models
-│   ├── services
-│   └── value_objects
+├── domain             # Core entities, data, and behavior
+│   ├── exceptions
+│   ├── models
+│   ├── services
+│   └── value_objects
 ├── application
-│   ├── common         # Infra interfaces with DTOs to lower coupling
-│   │   └── ...
-│   └── ...            # Business interactors with entities and abstract infra
-├── adapters           # Infrastructure implimentations
-│   └── ...
+│   ├── common         # Infrastructure interfaces and DTOs to reduce coupling
+│   │   └── ...
+│   └── ...            # Business use cases interacting with domain and abstract infrastructure
+├── adapters           # Infrastructure implementations
+│   └── ...
 └── presentation
-    ├── dependencies   # Providers of infra implentation to Business interactors
-    │   └── ...
-    └── telegram       # Telegram bot logic that uses Business interactors
-        └── ...
-
+    ├── dependencies   # Providers of infrastructure implementations for use cases
+    │   └── ...
+    └── telegram       # Telegram bot logic using application layer
+        └── ...
 ```
-### Dependency injections
-Some scnearios requires wide range of infrastructire adapters, for example here are approximate dependencies for agent chat
+### Dependency injection
+Some scenarios require a wide range of infrastructure adapters. For example, approximate dependencies for an agent chat:
 ```
 agent: AgentI
 ocr: OpticalCharacterRecognizerI
@@ -51,12 +56,14 @@ receipt_db_gateway: ReceiptGatewayI
 user_db_gateway: UserReaderI
 transaction_manager: TransactionManagerI
 ```
-And any of this classes will have their own dependencies.
 
-Classic dependencies management creates a decent amount of code volume that will create extra points of failure.
-Less code - less mistakes will happen. To reduce dependencies code we use DI container, especially `dishka`
+Each of these components may also have its own dependencies.
+
+Classic dependency management introduces a significant amount of boilerplate code, increasing the number of potential failure points. Less code means fewer mistakes.  
+To reduce this overhead, we use a DI container, specifically `dishka`.
 ### Rich typing
-In classical paradigma user id is UUID and receipt id is UUID. So requesting receipt with user id will be discovered only on testing stage.
-But type checking can such find logical bugs if we will provide enouth info to it.
+In a classical paradigm, both user IDs and receipt IDs may be represented as UUIDs. This means that passing a user ID instead of a receipt ID might only be detected during testing.
 
-Thats why `src/domain/value_objects.py` is focused not only on new data types, but on labeling existing one
+However, strong typing can catch such logical errors earlier if we provide enough type information.
+
+That’s why `src/domain/value_objects.py` focuses not only on defining new data types, but also on labeling existing ones.
