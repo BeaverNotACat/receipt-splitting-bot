@@ -15,7 +15,7 @@ Pull Requests can only be merged once all status checks are green
 Please do not force push to your PR's branch after you have created your PR especially when a maintainer has either performed a review or has indicated they are performing a review, as doing so makes it harder to review your commits accurately. PRs will always be squashed by us when we merge your work. Commit as many times as you need in your pull request branch.
 
 A few exceptions exist to this rule and are as follows:
-- Making adjustments to the commit message i.e. for the following reasons:
+- Making adjustments to the commit message
 - Rebasing your changes off of master or another branch
 
 ## Re-requesting a review
@@ -26,4 +26,4 @@ Instead, use the re-request review functionality.
 Sometimes the codebase can be a challenge to navigate, especially for a first-time contributor. We don't want you
 spending an hour trying to work out something that would take us only a minute to explain.
 
-If you'd like some help getting started we have [contact option](http://t.me/BeaverNotACat) avaliable
+If you'd like some help getting started we have [contact option](https://t.me/BeaverNotACat) avaliable

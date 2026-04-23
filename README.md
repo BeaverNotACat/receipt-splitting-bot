@@ -28,13 +28,13 @@ Badges go here
 > **What is the Receipt Splitting Bot?**
 
 The Receipt Splitting Bot is a tool for managing collective spending using natural language on the surface, and serves as a good example of an agent-based application under the hood.  
-It is built with a Python infrastructure and LangChain. It combines extensibility and modularity under the hood with the robustness of strict linting and thorough testing.
+It is built with a Python infrastructure and LangChain. It combines extensibility and modularity under the hood with the robustness of strict linting and thoughtfull testing.
 
-If you are speaking russian [**try us here**](https://t.me/ReceiptSplittingBot)
+If you speak russian [**try us here**](https://t.me/ReceiptSplittingBot)
 
 ## ✨ Features:
 - Integrated LLM for logic orchestration and natural language control
-- CV and ASR technologies for reading photos and listening to voice messages
+- CV and ASR technologies for understanding photos and voice messages
 - Collaborative spending management
 
 # 📚 Documentation
@@ -82,7 +82,7 @@ volumes:
 ```
 ## 💻 Developers guide
 
-If you want to contribute to this project, please read our contribution guidelines.
+If you want to contribute to this project, please read our [contribution guidelines](https://github.com/BeaverNotACat/receipt-splitting-bot?tab=contributing-ov-file).
 
 We also have articles in the `docs/` directory describing the project vision and explaining design decisions.
 
