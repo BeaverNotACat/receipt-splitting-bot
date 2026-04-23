@@ -1,6 +1,7 @@
 from aiogram.types import Message
 from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
+from aiogram_dialog.widgets.kbd import Start
 from aiogram_dialog.widgets.text import Const
 from dishka.integrations.aiogram_dialog import FromDishka, inject
 
@@ -39,5 +40,8 @@ add_dummy_user_dialog = Dialog(
         Const("Введите имя виртуального участника"),
         TextInput(id=DUMMY_NICKNAME_INPUT_ID, on_success=on_done),
         state=states.AddDummyUserSG.nickname,
+        preview_add_transitions=[
+            Start(Const("0"), id="0", state=states.ReceiptChatSG.greeting)
+        ],
     )
 )

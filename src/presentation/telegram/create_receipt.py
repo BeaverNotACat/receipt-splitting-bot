@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from aiogram_dialog import Dialog, DialogManager, Window
 from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
-from aiogram_dialog.widgets.kbd import Cancel
+from aiogram_dialog.widgets.kbd import Cancel, Start
 from aiogram_dialog.widgets.text import Const
 from dishka.integrations.aiogram import FromDishka
 from dishka.integrations.aiogram_dialog import inject
@@ -34,5 +34,8 @@ create_receipt_dialog = Dialog(
         TextInput(id=TITLE_INPUT_ID, on_success=on_done),
         Cancel(Const("↩️ Назад")),
         state=states.CreateReceiptSG.title,
+        preview_add_transitions=[
+            Start(Const("0"), id="0", state=states.ReceiptChatSG.greeting)
+        ],
     ),
 )
