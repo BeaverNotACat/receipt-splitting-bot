@@ -59,7 +59,7 @@ transaction_manager: TransactionManagerI
 
 Each of these components may also have its own dependencies.
 
-Classic dependency management introduces a significant amount of boilerplate code, increasing the number of potential failure points. Less code means fewer mistakes.  
+Classic dependency management introduces a significant amount of boilerplate code, increasing the number of potential point of failure. Less code means fewer mistakes.  
 To reduce this overhead, we use a DI container, specifically `dishka`.
 ### Rich typing
 In a classical paradigm, both user IDs and receipt IDs may be represented as UUIDs. This means that passing a user ID instead of a receipt ID might only be detected during testing.
