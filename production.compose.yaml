@@ -1,0 +1,33 @@
+name: receipt-splitting-bot-staging
+
+services:
+  database:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB?}
+      POSTGRES_USER: ${POSTGRES_USER?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?}
+    restart: unless-stopped
+    volumes:
+      - postgres_receipts_data:/var/lib/postgresql/data
+
+  key-value-store:
+    image: redis:alpine
+    command: redis-server --save 300 1
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data    
+
+  bot:
+    image: ghcr.io/beavernotacat/receipt-splitting-bot:latest
+    depends_on:
+      - database
+      - key-value-store
+    restart: unless-stopped
+    env_file:
+      - .env
+
+volumes:
+  postgres_receipts_data:
+  redis_data:
+
