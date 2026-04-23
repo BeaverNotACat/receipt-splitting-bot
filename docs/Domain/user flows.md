@@ -17,7 +17,7 @@ participant Agent #@{ "type" : "control" }
 loop On text, photo, voice message
     User -->> Application: Sends message
     Application -->> Agent: Provides the state and the user message to the agent to determine next actions
-    Agent -->> Application: Useses tools to modify state, send additional questions to user
+    Agent -->> Application: Uses tools to modify state, send additional questions to user
     Application -->> User: Formats the generated output    
 end
 ```
