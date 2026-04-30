@@ -32,7 +32,10 @@ async def on_add_dummy_user(
 
 
 return_to_profile_button = Start(
-    Const("↩️ К профилю"), id="profile", state=states.ProfileSG.view
+    Const("↩️ К профилю"),
+    id="profile",
+    state=states.ProfileSG.view,
+    show_mode=ShowMode.SEND,
 )
 show_bill_button = Button(
     Const("📋 Показать чек"), id="show_bill", on_click=on_show_bill

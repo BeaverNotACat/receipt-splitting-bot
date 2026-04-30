@@ -39,7 +39,11 @@ async def on_done(
 
 register_dialog = Dialog(
     Window(
-        Const("Введите как вас зовут.\nЭто поможет работе агента"),
+        Const(
+            "Введите как вас зовут.\n"
+            "Мы просим имя, чтобы агент мог отличить вас от"
+            "остальных участников чека в текстах сообщений"
+        ),
         TextInput(id=NICKNAME_INPUT_ID, on_success=on_done),
         state=states.RegisterSG.nickname,
         preview_add_transitions=[
