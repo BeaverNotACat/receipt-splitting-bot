@@ -1,3 +1,4 @@
+from asyncio import create_task, sleep
 from typing import TYPE_CHECKING
 
 from aiogram.types import Message
@@ -38,6 +39,9 @@ async def download_audios(bot: Bot, voice: Voice | None) -> tuple[Audio, ...]:
     return (Audio(audio),)
 
 
+CHAT_ACTION_DURATION = 4
+
+
 @inject
 async def natural_language_handler(
     message: Message,
@@ -54,9 +58,14 @@ async def natural_language_handler(
         photos=await download_photos(message.bot, message.photo),
         audios=await download_audios(message.bot, message.voice),
     )
-    answer = await manage_receipt(dto)
+    manage_receipt_task = create_task(manage_receipt(dto))
+    while not manage_receipt_task.done():
+        await message.bot.send_chat_action(
+            chat_id=message.chat.id, action="typing"
+        )
+        await sleep(CHAT_ACTION_DURATION)
 
-    dialog_manager.dialog_data["agent_answer"] = answer
+    dialog_manager.dialog_data["agent_answer"] = await manage_receipt_task
     await dialog_manager.switch_to(
         states.ReceiptChatSG.chat, show_mode=ShowMode.SEND
     )

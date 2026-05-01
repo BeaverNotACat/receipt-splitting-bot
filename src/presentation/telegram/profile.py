@@ -29,6 +29,19 @@ PAGE_SIZE = 4
 NICKNAME_INPUT_ID = "nickname"
 
 
+def get_correct_receipt_wording(total: int) -> str:
+    if 11 <= total % 100 <= 14:  # noqa: PLR2004
+        return "чеков"
+
+    last_digit = total % 10
+    if last_digit == 1:
+        return "чек"
+    if 2 <= last_digit <= 4:  # noqa: PLR2004
+        return "чека"
+
+    return "чеков"
+
+
 @inject
 async def user_profile_getter(
     dialog_manager: DialogManager,
@@ -50,6 +63,7 @@ async def user_profile_getter(
         "total": dto.total,
         "pages": dto.total // PAGE_SIZE + bool(dto.total % PAGE_SIZE),
         "receipts": dto.receipts,
+        "receipt_wording": get_correct_receipt_wording(dto.total),
     }
 
 
@@ -65,20 +79,21 @@ async def on_selected(
 show_profile_dialog = Dialog(
     Window(
         Format("Добро пожаловать, {nickname}"),
+        Format(
+            "У вас есть {total} {receipt_wording}, вы можете нажать на один,"
+            "чтобы открыть диалог с агентом",
+            when=F["total"],
+        ),
+        Const(
+            "Пока что у вас нет чеков, создайте первый",
+            when=~F["total"],
+        ),
+        StubScroll(id="scroll", pages=F["pages"]),
         Start(
             Const("📝 Изменить имя"),
             id="change_nickname",
             state=states.ChangeNicknameSG.nickname,
         ),
-        Format(
-            "У вас есть {total} чеков, нажмите на один, чтобы открыть",
-            when=F["total"],
-        ),
-        Const(
-            "Пока что у вас нет чеков, создайте первый кнопкой ниже",
-            when=~F["total"],
-        ),
-        StubScroll(id="scroll", pages=F["pages"]),
         Start(
             Const("➕ Создать чек"),
             id="create",
