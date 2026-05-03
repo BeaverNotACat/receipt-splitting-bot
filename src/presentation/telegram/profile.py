@@ -80,7 +80,7 @@ show_profile_dialog = Dialog(
     Window(
         Format("Добро пожаловать, {nickname}"),
         Format(
-            "У вас есть {total} {receipt_wording}, вы можете нажать на один,"
+            "У вас есть {total} {receipt_wording}. Вы можете нажать на один, "
             "чтобы открыть диалог с агентом",
             when=F["total"],
         ),
