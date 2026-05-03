@@ -10,7 +10,6 @@ from src.application.common.user_provider import (
     NoActiveUserError,
     UserProviderI,
 )
-from src.domain.value_objects import ReceiptID
 
 from . import states
 

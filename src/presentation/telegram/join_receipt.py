@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any
 
 from aiogram.types import CallbackQuery
 from aiogram_dialog import Dialog, DialogManager, Window
