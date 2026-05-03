@@ -30,7 +30,7 @@ async def on_done(
 
 create_receipt_dialog = Dialog(
     Window(
-        Const("Введите название чека, чтобы после вы смогли его найти"),
+        Const("Введите название чека для удобного поиска"),
         TextInput(id=TITLE_INPUT_ID, on_success=on_done),
         Cancel(Const("↩️ Назад")),
         state=states.CreateReceiptSG.title,

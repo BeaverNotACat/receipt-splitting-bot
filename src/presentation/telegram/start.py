@@ -10,7 +10,6 @@ from src.application.common.user_provider import (
     NoActiveUserError,
     UserProviderI,
 )
-from src.domain.value_objects import ReceiptID
 
 from . import states
 
@@ -34,7 +33,7 @@ async def deeplink_start(
     await dialog_manager.start(
         initial_state,
         mode=StartMode.RESET_STACK,
-        data={"receipt_id": ReceiptID(UUID(command.args))},
+        data={"receipt_id": str(UUID(command.args))},
     )
 
 
