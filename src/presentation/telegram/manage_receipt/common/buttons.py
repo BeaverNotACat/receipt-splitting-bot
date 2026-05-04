@@ -38,7 +38,7 @@ return_to_profile_button = Start(
     show_mode=ShowMode.SEND,
 )
 show_bill_button = Button(
-    Const("📋 Показать чек"), id="show_bill", on_click=on_show_bill
+    Const("📋 Показать cчета"), id="show_bill", on_click=on_show_bill
 )
 add_dummy_user_button = Button(
     Const("👥 Добавить виртуального участника"),
