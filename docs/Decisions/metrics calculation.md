@@ -2,7 +2,7 @@
 The naive metrics pipeline helps us compare different hypotheses and run sanity checks. It does not replace user feedback, but it gives us a quick way to understand which variant performs better.
 
 ## Overview
-The metrics module has two parts: generation and execution.  
+The metrics module consists of two parts: generation and execution.  
 The generation part creates synthetic test cases: it builds a menu, participants, reference assignments, a bill image mock, and a user message.  
 The execution part runs the current model on these test cases and computes metrics.
 
