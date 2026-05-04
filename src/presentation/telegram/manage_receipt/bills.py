@@ -17,17 +17,27 @@ from .common import (
 
 bills_text = Jinja("""
 <b>СЧЕТА:</b>
+Если список товаров получился длинным, вы можете нажать на список, \
+чтобы развенуть его целиком.
+<i>Название: колличество x цена = сумма</i>
+
 {% for nickname, bill in bills %}
 {% if nickname is none %}
-<b>Не назначеные товары:</b>
+<b>Неназначеные товары:</b>
 {% else %}
 <b>{{nickname}}:</b>
 {% endif %}
-Название \t К-во \t Цена \t Сумма
+<blockquote expandable>\
+{% if not bill.items %}
+Пока что тут пусто.
+Попросите Рожкова назначить товары
+{% endif %}
 {% for item in bill.items %}
-{{item.name}}\t{{item.amount}}\t{{item.price|round(2)}}\t{{item.price*item.amount|round(2)}}
+• {{item.name}}: {{item.amount|round(2)}} × {{item.price|round(2)}} \
+= {{(item.price*item.amount)|round(2)}}
 {% endfor %}
-Итого: {{bill.total|round(2)}}\n
+</blockquote>\
+<b>Итого:</b> {{bill.total|round(2)}}\n
 {% endfor %}
 """)
 
