@@ -8,7 +8,7 @@ ID текущего пользователя: {{current_user_id}}
 Товары чека:
 {% for user_id, bill in bills %}
   {% if user_id is none %}
-  Не назначеные товары:
+  Неназначеные товары:
   {% else %}
   {{user_id}}:
   {% endif %}
