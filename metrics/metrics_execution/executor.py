@@ -216,8 +216,8 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
     if global_samples_count == 0:
         price_mae = -1.0
         price_mape = -1.0
-        mean_input_tokens = 0
-        mean_output_tokens = 0
+        mean_input_tokens = 0.0
+        mean_output_tokens = 0.0
     else:
         price_mae = float(global_absolute_error / global_samples_count)
         price_mape = float(global_percentage_error / global_samples_count)
