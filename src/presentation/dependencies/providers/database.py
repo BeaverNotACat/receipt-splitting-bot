@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from src.settings import Settings
+from src.settings import DatabaseSettings
 
 
 class AlchemyProvider(Provider):
@@ -16,8 +16,8 @@ class AlchemyProvider(Provider):
 
     @provide
     @staticmethod
-    def get_alchemy_engine(settings: Settings) -> AsyncEngine:
-        return create_async_engine(str(settings.DATABASE_DSN))
+    def get_alchemy_engine(settings: DatabaseSettings) -> AsyncEngine:
+        return create_async_engine(str(settings.DSN))
 
     @provide
     @staticmethod

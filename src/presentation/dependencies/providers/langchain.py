@@ -9,7 +9,7 @@ from src.adapters.ocr import OCRModelClient, OpticalCharacterRecognizer
 from src.application.common.agent import AgentI
 from src.application.common.asr import SpeechRecognizerI
 from src.application.common.ocr import OpticalCharacterRecognizerI
-from src.settings import Settings
+from src.settings import OpenRouterSettings
 
 
 class LangChainProvider(Provider):
@@ -22,34 +22,36 @@ class LangChainProvider(Provider):
 
     @provide
     @staticmethod
-    def get_ocr_model_client(settings: Settings) -> OCRModelClient:
+    def get_ocr_model_client(settings: OpenRouterSettings) -> OCRModelClient:
         return OCRModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model=settings.OCR_MODEL,
                 temperature=0,
-                api_key=settings.OPENROUTER_API_KEY,
+                api_key=settings.API_KEY,
             )
         )
 
     @provide
     @staticmethod
-    def get_asr_model_client(settings: Settings) -> ASRModelClient:
+    def get_asr_model_client(settings: OpenRouterSettings) -> ASRModelClient:
         return ASRModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model=settings.ASR_MODEL,
                 temperature=0,
-                api_key=settings.OPENROUTER_API_KEY,
+                api_key=settings.API_KEY,
             )
         )
 
     @provide
     @staticmethod
-    def get_agent_model_client(settings: Settings) -> AgentModelClient:
+    def get_agent_model_client(
+        settings: OpenRouterSettings,
+    ) -> AgentModelClient:
         return AgentModelClient(
             ChatOpenRouter(  # type: ignore[call-arg]
                 model=settings.AGENT_MODEL,
                 temperature=0,
-                api_key=settings.OPENROUTER_API_KEY,
+                api_key=settings.API_KEY,
             )
         )
 
