@@ -1,7 +1,6 @@
 #This is development only compose!
 name: receipt-splitting-bot-dev
 
-
 services:
   database:
     image: postgres:alpine
@@ -9,9 +8,11 @@ services:
       - 5432:5432
     environment:
       POSTGRES_AUTH_METHOD: ${POSTGRES_AUTH_METHOD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_MULTIPLE_DATABASES}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./infra/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh:ro
 
   key-value-store:
     image: redis:alpine

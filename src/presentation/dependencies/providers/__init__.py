@@ -1,3 +1,4 @@
+from .checkpointer import CheckpointerProvider
 from .database import AlchemyProvider
 from .identification import AuthProvider
 from .interactors import interactors_provider
@@ -10,6 +11,7 @@ from .settings import SettingsProvider
 __all__ = [
     "AlchemyProvider",
     "AuthProvider",
+    "CheckpointerProvider",
     "KeyValueProvider",
     "LangChainProvider",
     "SettingsProvider",

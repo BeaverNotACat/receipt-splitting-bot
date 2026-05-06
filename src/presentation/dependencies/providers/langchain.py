@@ -1,7 +1,5 @@
 from dishka import Provider, Scope, provide
 from langchain_openrouter import ChatOpenRouter
-from langgraph.checkpoint.base import BaseCheckpointSaver
-from langgraph.checkpoint.memory import InMemorySaver
 
 from src.adapters.agent.agent import Agent, AgentModelClient
 from src.adapters.asr import ASRModelClient, SpeechRecognizer
@@ -14,11 +12,6 @@ from src.settings import OpenRouterSettings
 
 class LangChainProvider(Provider):
     scope = Scope.APP
-
-    @provide
-    @staticmethod
-    def get_checkpointer() -> BaseCheckpointSaver[str]:
-        return InMemorySaver()
 
     @provide
     @staticmethod

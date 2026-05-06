@@ -84,7 +84,7 @@ class Agent(AgentI):
         return await self.agent.ainvoke(
             input=self._construct_invoke_state(request, receipt, participants),
             config={
-                "configurable": {"thread_id": receipt.id},
+                "configurable": {"thread_id": str(receipt.id)},
                 "max_concurrency": 1,
                 "callbacks": callbacks,
             },
