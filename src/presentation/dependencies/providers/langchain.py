@@ -45,6 +45,7 @@ class LangChainProvider(Provider):
                 model=settings.AGENT_MODEL,
                 temperature=0,
                 api_key=settings.API_KEY,
+                reasoning={"effort": "high", "summary": "auto"},
             )
         )
 
