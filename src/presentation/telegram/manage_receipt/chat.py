@@ -17,4 +17,5 @@ chat_window = Window(
     return_to_profile_button,
     user_prompt_input,
     state=states.ReceiptChatSG.chat,
+    parse_mode="HTML",
 )

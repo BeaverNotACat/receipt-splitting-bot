@@ -212,6 +212,7 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
                 item_file.write(
                     item_metrics_adapter.dump_json(item_metrics) + b"\n"
                 )
+            await asyncio.sleep(60)
 
     if global_samples_count == 0:
         price_mae = -1.0
