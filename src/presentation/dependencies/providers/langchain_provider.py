@@ -50,6 +50,7 @@ class LangChainProvider(Provider):
                 model=settings.AGENT_MODEL,
                 temperature=0,
                 api_key=settings.OPENROUTER_API_KEY,
+                reasoning={"effort": "low", "summary": "auto"},
             )
         )
 
