@@ -7,4 +7,4 @@ from .base import Base
 class AgentCheckpointerSettings(Base):
     model_config = SettingsConfigDict(env_prefix="CHECKPOINTER_")
 
-    DSN: PostgresDsn
+    DSN: PostgresDsn | None = None
