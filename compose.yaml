@@ -1,7 +1,6 @@
 #This is development only compose!
 name: receipt-splitting-bot-dev
 
-
 services:
   database:
     image: postgres:alpine

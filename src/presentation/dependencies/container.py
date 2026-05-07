@@ -4,8 +4,9 @@ from dishka.integrations.aiogram import AiogramProvider
 from src.presentation.dependencies.providers import (
     AlchemyProvider,
     AuthProvider,
+    CheckpointerProvider,
+    KeyValueProvider,
     LangChainProvider,
-    RedisProvider,
     SettingsProvider,
     interactors_provider,
     repositories_provider,
@@ -13,11 +14,12 @@ from src.presentation.dependencies.providers import (
 )
 
 container = make_async_container(
+    CheckpointerProvider(),
     AlchemyProvider(),
     AuthProvider(),
     AiogramProvider(),
     LangChainProvider(),
-    RedisProvider(),
+    KeyValueProvider(),
     SettingsProvider(),
     interactors_provider,
     repositories_provider,

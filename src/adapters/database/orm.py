@@ -40,7 +40,9 @@ class ReceiptORM(UUIDAuditBase):
 class LineItemORM(UUIDAuditBase):
     __tablename__ = "line_items"
 
-    receipt_id: Mapped[UUID] = mapped_column(ForeignKey(ReceiptORM.id))
+    receipt_id: Mapped[UUID] = mapped_column(
+        ForeignKey(ReceiptORM.id), index=True
+    )
     name: Mapped[str]
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2))
