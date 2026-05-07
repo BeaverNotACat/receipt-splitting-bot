@@ -1,19 +1,20 @@
 ID текущего пользователя: {{current_user_id}}
 
 Все участники:
-{% for id, nickname in user_id_mapping.items() %}
-{{id}} : {{nickname}}
+{% for id, user in user_id_mapping.items() %}
+  {{id}} : {{user.nickname}}
 {% endfor %}
 
 Товары чека:
 {% for user_id, bill in bills %}
-{% if user_id is none %}
-Не назначеные товары:
-{% else %}
-{{user_id}}:
-{% endif %}
-Название \t К-во \t Цена за единицу
-{% for item in bill.items %}
-{{item.name}}\t{{item.amount}}\t{{item.price|round(2)}}
-{% endfor %}
+  {% if user_id is none %}
+  Неназначеные товары:
+  {% else %}
+  {{user_id}}:
+  {% endif %}
+  Название \t К-во \t Цена за единицу
+  {% for item in bill.items %}
+    {{item.name}}\t{{item.amount}}\t{{item.price|round(2)}}
+  {% endfor %}
+
 {% endfor %}

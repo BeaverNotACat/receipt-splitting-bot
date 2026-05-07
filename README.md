@@ -42,44 +42,10 @@ If you speak russian [**try us here**](https://t.me/ReceiptSplittingBot)
 We provide a Docker image at GHCR: `ghcr.io/beavernotacat/receipt-splitting-bot:latest`  
 For more information, you can check our releases.
 
+For proper operation, the application requires a Redis-compatible key-value store and a PostgreSQL database. A sample Compose file looks can be found in repo as `production.compose.yaml`
+
 **All environment variables are listed in the `.env.example` file**
 
-For proper operation, the application requires a Redis-compatible key-value store and a PostgreSQL database. A sample Compose file looks like this:
-
-```yaml
-name: receipt-splitting-bot-staging
-
-services:
-  database:
-    image: postgres:alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB?}
-      POSTGRES_USER: ${POSTGRES_USER?}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?}
-    restart: unless-stopped
-    volumes:
-      - postgres_receipts_data:/var/lib/postgresql/data
-
-  key-value-store:
-    image: redis:alpine
-    command: redis-server --save 300 1
-    restart: unless-stopped
-    volumes:
-      - redis_data:/data    
-
-  bot:
-    image: ghcr.io/beavernotacat/receipt-splitting-bot:latest
-    depends_on:
-      - database
-      - key-value-store
-    restart: unless-stopped
-    env_file:
-      - .env
-
-volumes:
-  postgres_receipts_data:
-  redis_data:
-```
 ## 💻 Developers guide
 
 If you want to contribute to this project, please read our [contribution guidelines](https://github.com/BeaverNotACat/receipt-splitting-bot?tab=contributing-ov-file).

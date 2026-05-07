@@ -18,15 +18,18 @@
       in
       {
         devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            graphviz
+          ];
           shellHook = ''
             export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${
-              pkgs.lib.makeLibraryPath [
-                pkgs.zlib
-                pkgs.stdenv.cc.cc.lib
-                pkgs.graphviz
+              with pkgs;
+              lib.makeLibraryPath [
+                zlib
+                stdenv.cc.cc.lib
+                graphviz
               ]
             };
-
             $SHELL
           '';
         };

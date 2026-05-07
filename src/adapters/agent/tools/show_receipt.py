@@ -17,18 +17,21 @@ def show_receipt(runtime: ModifyReceiptRuntime) -> Command[EmptyGoTo]:
     - назначения товаров
     """
     receipt = runtime.state["receipt"]
+
+    bills = [
+        (user_id, receipt.form_bill(user_id))
+        for user_id in [*receipt.participants_ids, None]
+    ]
+    text = show_receipt_tool_prompt_template.render(
+        current_user_id=runtime.state["current_user_id"],
+        user_id_mapping=runtime.context["user_id_mapping"],
+        bills=bills,
+    )
     return Command(
         update={
             "messages": [
                 ToolMessage(
-                    show_receipt_tool_prompt_template.render(
-                        current_user_id=runtime.state["current_user_id"],
-                        user_id_mapping=runtime.context["user_id_mapping"],
-                        bills=[
-                            (user_id, receipt.form_bill(user_id))
-                            for user_id in receipt.participants_ids
-                        ],
-                    ),
+                    text,
                     tool_call_id=runtime.tool_call_id,
                 )
             ],

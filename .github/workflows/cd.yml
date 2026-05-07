@@ -35,6 +35,7 @@ jobs:
           tags: ghcr.io/${{env.REGISTRY_NAMESPACE}}/${{env.REGISTRY_IMAGE_NAME}}:staging
 
   deploy-staging:
+    needs: [buildx]
     runs-on: ubuntu-latest
     steps:
       - uses: appleboy/ssh-action@v1

@@ -7,14 +7,15 @@ from redis.asyncio.client import PubSub
 
 from src.application.common.locks import ReceiptLockI
 from src.domain.value_objects import ReceiptID
-from src.settings import Settings
 
 
 class ReceiptLock(ReceiptLockI):
-    def __init__(self, client: Redis, settings: Settings) -> None:
+    def __init__(
+        self, client: Redis, key_prefix: str, lock_lifetime: int
+    ) -> None:
         self.client = client
-        self.key_prefix = settings.RECEIPT_LOCK_PREFIX
-        self.lock_lifetime = settings.RECEIPT_LOCK_LIFETIME
+        self.key_prefix = key_prefix
+        self.lock_lifetime = lock_lifetime
 
     @asynccontextmanager
     async def __call__(self, receipt_id: ReceiptID) -> AsyncIterator[None]:
