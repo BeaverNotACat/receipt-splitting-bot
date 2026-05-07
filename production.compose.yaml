@@ -2,25 +2,25 @@ name: receipt-splitting-bot-staging
 
 services:
   database:
-    image: postgres:alpine
+    image: postgres:18-alpine
     environment:
-      POSTGRES_DB: ${POSTGRES_DB?}
+      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_MULTIPLE_DATABASES}
       POSTGRES_USER: ${POSTGRES_USER?}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?}
     restart: unless-stopped
     volumes:
-      - postgres_receipts_data:/var/lib/postgresql/data
       - ./infra/create-multiple-postgresql-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgresql-databases.sh:ro
+      - postgres_data:/var/lib/postgresql
 
   key-value-store:
-    image: redis:alpine
+    image: redis:8.6-alpine
     command: redis-server --save 300 1
     restart: unless-stopped
     volumes:
       - redis_data:/data    
 
   bot:
-    image: ghcr.io/beavernotacat/receipt-splitting-bot:latest
+    image: ghcr.io/beavernotacat/receipt-splitting-bot:staging
     depends_on:
       - database
       - key-value-store
@@ -29,6 +29,6 @@ services:
       - .env
 
 volumes:
-  postgres_receipts_data:
+  postgres_data:
   redis_data:
 
