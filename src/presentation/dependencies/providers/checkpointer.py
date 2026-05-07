@@ -1,7 +1,7 @@
-from collections.abc import AsyncIterable
-
 from dishka import Provider, Scope, provide
 from langgraph.checkpoint.base import BaseCheckpointSaver
+from psycopg.rows import dict_row
+from psycopg_pool import AsyncConnectionPool
 
 from src.adapters.agent.checkpointer import (
     construct_memory_checkpointer,
@@ -17,12 +17,15 @@ class CheckpointerProvider(Provider):
     @staticmethod
     async def get_checkpointer(
         settings: AgentCheckpointerSettings,
-    ) -> AsyncIterable[BaseCheckpointSaver[str]]:
+    ) -> BaseCheckpointSaver[str]:
         if settings.DSN is None:
-            yield construct_memory_checkpointer()
-        else:
-            async with construct_postgres_checkpointer(
-                str(settings.DSN)
-            ) as checkpointer:
-                await checkpointer.setup()
-                yield checkpointer
+            return construct_memory_checkpointer()
+
+        pool = AsyncConnectionPool(
+            str(settings.DSN),
+            kwargs={"autocommit": True, "row_factory": dict_row},
+        )
+
+        checkpointer = construct_postgres_checkpointer(pool)  # type: ignore[arg-type]
+        await checkpointer.setup()
+        return checkpointer
