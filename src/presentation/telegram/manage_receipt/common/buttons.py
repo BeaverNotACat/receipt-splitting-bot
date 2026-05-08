@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from aiogram_dialog import ShowMode
+from aiogram_dialog import ShowMode, StartMode
 from aiogram_dialog.widgets.kbd import Button, Start
 from aiogram_dialog.widgets.text import Const
 
@@ -36,6 +36,7 @@ return_to_profile_button = Start(
     id="profile",
     state=states.ProfileSG.view,
     show_mode=ShowMode.SEND,
+    mode=StartMode.RESET_STACK,
 )
 show_bill_button = Button(
     Const("📋 Показать cчета"), id="show_bill", on_click=on_show_bill
