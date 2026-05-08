@@ -2,8 +2,7 @@ name: receipt-splitting-bot-staging
 
 services:
   bot:
-    # image: ghcr.io/beavernotacat/receipt-splitting-bot:staging
-    build: .
+    image: ghcr.io/beavernotacat/receipt-splitting-bot:staging
     env_file:
       - .env
     restart: unless-stopped
