@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URL: ${POOLER_DATABASE_DSN?}
       POOL_MODE: transaction
+      AUTH_TYPE: scram-sha-256
     restart: unless-stopped
     depends_on:
       - database
