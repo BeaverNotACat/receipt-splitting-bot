@@ -1,28 +1,23 @@
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Protocol, Self
-
-if TYPE_CHECKING:
-    from types import TracebackType
+from typing import Protocol
 
 
 class TransactionManagerI(Protocol):
-    @abstractmethod
-    async def __aenter__(self) -> Self:
-        raise NotImplementedError
-
-    @abstractmethod
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        raise NotImplementedError
+    """
+    DB transactions manager, transcations autostarts with query
+    Essential for external pooler connection management
+    """
 
     @abstractmethod
     async def commit(self) -> None:
+        """
+        Commit changes and return connection into pool
+        """
         raise NotImplementedError
 
     @abstractmethod
-    async def rollback(self) -> None:
+    async def release(self) -> None:
+        """
+        Rollbacks changes and return connection into pool
+        """
         raise NotImplementedError

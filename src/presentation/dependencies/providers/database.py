@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterable
 
 from dishka import Provider, Scope, provide
+from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -17,7 +18,7 @@ class AlchemyProvider(Provider):
     @provide
     @staticmethod
     def get_alchemy_engine(settings: DatabaseSettings) -> AsyncEngine:
-        return create_async_engine(str(settings.DSN))
+        return create_async_engine(str(settings.DSN), poolclass=NullPool)
 
     @provide
     @staticmethod

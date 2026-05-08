@@ -61,6 +61,7 @@ class ManageReceipt(Interactor[ManageReceiptDTO, ManageReceiptResultDTO]):
         participants = await self.user_db_gateway.fetch_users(
             ids=receipt.participants_ids
         )
+        await self.transaction_manager.release()
         request = await self.construct_human_request(context)
         return await self.agent.invoke(request, receipt, participants)
 
