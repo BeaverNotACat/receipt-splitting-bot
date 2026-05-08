@@ -51,10 +51,10 @@ async def natural_language_handler(
 ) -> None:
     if message.bot is None:
         raise ValueError
-
+    text = message.text or message.caption
     dto = ManageReceiptDTO(
         receipt_id=states.get_receipt_id(dialog_manager),
-        text=MessageText(message.text) if message.text is not None else None,
+        text=MessageText(text) if text is not None else None,
         photos=await download_photos(message.bot, message.photo),
         audios=await download_audios(message.bot, message.voice),
     )
