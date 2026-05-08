@@ -67,7 +67,9 @@ class Agent(AgentI):
             )
 
         return AgentResponse(
-            answer=AgentMessage(answer["messages"][-1].content),
+            answer=AgentMessage(
+                self._md_to_html(answer["messages"][-1].content)
+            ),
             updated_receipt=answer["receipt"],
         )
 
@@ -116,3 +118,23 @@ class Agent(AgentI):
         participants: list[User],
     ) -> ReceiptModificationContext:
         return {"user_id_mapping": {user.id: user for user in participants}}
+
+    @staticmethod
+    def _md_to_html(text: str) -> str:
+        """
+        Converts markdown tags to HTML
+        """
+        result = []
+        i = 0
+        opened = False
+
+        while i < len(text):
+            if text[i : i + 2] == "**":
+                result.append("</b>" if opened else "<b>")
+                opened = not opened
+                i += 2
+            else:
+                result.append(text[i])
+                i += 1
+
+        return "".join(result)
