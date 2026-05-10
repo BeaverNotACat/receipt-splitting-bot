@@ -33,7 +33,7 @@ bills_text = Jinja("""
 Попросите Рожкова назначить товары
 {% endif %}
 {% for item in bill.items %}
-• {{item.name}}: {{item.amount|round(2)}} × {{item.price|round(2)}} \
+• {{item.name}}: {{item.amount|float}} × {{item.price|round(2)}} \
 = {{(item.price*item.amount)|round(2)}}
 {% endfor %}
 </blockquote>\
