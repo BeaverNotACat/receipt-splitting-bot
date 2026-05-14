@@ -13,8 +13,10 @@ ID текущего пользователя: {{current_user_id}}
   {{user_id}}:
   {% endif %}
   Название \t К-во \t Цена за единицу
+  {% if not bill.items %}
+    Ничего не назначено
+  {% endif %}
   {% for item in bill.items %}
     {{item.name}}\t{{item.amount}}\t{{item.price|round(2)}}
   {% endfor %}
-
 {% endfor %}
