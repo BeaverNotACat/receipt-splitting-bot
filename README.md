@@ -8,26 +8,21 @@
     <strong>Intelligent collective spending management tool</strong>
 </p>
 
----
-Badges go here
-
----
-
 ## 📝 Table of Contents
 > **Quick Navigation** - Jump to any section below
 
-- [📖 Overview](#-overview)
-  - [✨ Features](#-features)
-- [📚 Documentation](#-documentation)
-  - [🚀 Self-host Guide](#-self-host-guide)
-  - [💻 Developers guide](#-developers-guide)
-- [🙏 Special Thanks](#-special-thanks)
+- [Overview](#-overview)
+  - [Features](#-features)
+- [Documentation](#-documentation)
+  - [Self-host Guide](#-self-host-guide)
+  - [Developers guide](#-developers-guide)
+- [Special Thanks](#-special-thanks)
 
 ---
 # 📖 Overview
 > **What is the Receipt Splitting Bot?**
 
-The Receipt Splitting Bot is a tool for managing collective spending using natural language on the surface, and serves as a good example of an agent-based application under the hood.  
+The Receipt Splitting Bot is a tool for managing collective spending using natural language on the surface, and serves as a good example of an agent-based application under the hood.
 It is built with a Python infrastructure and LangChain. It combines extensibility and modularity under the hood with the robustness of strict linting and thoughtfull testing.
 
 If you speak russian [**try us here**](https://t.me/ReceiptSplittingBot)
@@ -39,7 +34,7 @@ If you speak russian [**try us here**](https://t.me/ReceiptSplittingBot)
 
 # 📚 Documentation
 ## 🚀 Self-host Guide
-We provide a Docker image at GHCR: `ghcr.io/beavernotacat/receipt-splitting-bot:latest`  
+We provide a Docker image at GHCR: `ghcr.io/beavernotacat/receipt-splitting-bot:staging`
 For more information, you can check our releases.
 
 For proper operation, the application requires a Redis-compatible key-value store and a PostgreSQL database. A sample Compose file looks can be found in repo as `production.compose.yaml`
@@ -50,7 +45,7 @@ For proper operation, the application requires a Redis-compatible key-value stor
 
 If you want to contribute to this project, please read our [contribution guidelines](https://github.com/BeaverNotACat/receipt-splitting-bot?tab=contributing-ov-file).
 
-We also have articles in the `docs/` directory describing the project vision and explaining design decisions.
+We also have articles in the [`docs/`](https://github.com/BeaverNotACat/receipt-splitting-bot/blob/main/docs/README.md) directory describing the project vision and explaining design decisions.
 
 # 🙏 Special Thanks
 [TBank](khttps://www.tbank.ru/)
