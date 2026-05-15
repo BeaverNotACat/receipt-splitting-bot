@@ -7,7 +7,7 @@ This documentation explains the vision of the project and links to topics that m
 - [User flows](Domain/user%20flows.md)
 ### System design
 - [Architecture overview](Design/architecture%20overview.md)
-- Agent metrics overview
+- [Agent metrics overview](Design/metrics%20overview.md)
 - [Aiogram Dialog state schema](Design/aiogram%20states.md)
 ### Decisions
 - [databases comparison](Decisions/databases%20comparison.md)
