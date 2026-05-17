@@ -10,6 +10,8 @@ from src.presentation.telegram import states
 
 from .common import (
     add_dummy_user_button,
+    invite_link_getter,
+    invite_real_user_button,
     return_to_profile_button,
     show_bill_button,
     user_prompt_input,
@@ -58,11 +60,12 @@ async def bills_getter(
 
 bills_window = Window(
     bills_text,
+    invite_real_user_button,
     add_dummy_user_button,
     show_bill_button,
     return_to_profile_button,
     user_prompt_input,
     parse_mode="HTML",
     state=states.ReceiptChatSG.bills,
-    getter=bills_getter,
+    getter=[bills_getter, invite_link_getter],
 )
