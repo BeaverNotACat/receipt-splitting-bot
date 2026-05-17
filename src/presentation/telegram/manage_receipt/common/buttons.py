@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 from aiogram_dialog import ShowMode, StartMode
-from aiogram_dialog.widgets.kbd import Button, Start
-from aiogram_dialog.widgets.text import Const
+from aiogram_dialog.widgets.kbd import Button, Start, Url
+from aiogram_dialog.widgets.text import Const, Format
 
 from src.presentation.telegram import states
 
@@ -41,6 +41,12 @@ return_to_profile_button = Start(
 show_bill_button = Button(
     Const("📋 Показать cчета"), id="show_bill", on_click=on_show_bill
 )
+invite_real_user_button = Url(
+    Const("📣 Пригласить участника"),
+    url=Format("https://t.me/share/url?url={invite_link}"),
+    id="invite_real_user",
+)
+
 add_dummy_user_button = Button(
     Const("👥 Добавить виртуального участника"),
     id="add_dummy_user",

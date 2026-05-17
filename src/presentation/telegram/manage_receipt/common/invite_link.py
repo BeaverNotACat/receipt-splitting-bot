@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 from aiogram.utils.deep_linking import create_start_link
-from aiogram_dialog import Dialog
 
 from src.presentation.telegram import states
 
@@ -10,10 +9,6 @@ if TYPE_CHECKING:
 
     from aiogram import Bot
     from aiogram_dialog import DialogManager
-
-from .bills import bills_window
-from .chat import chat_window
-from .greetings import greetings_window
 
 
 async def invite_link_getter(
@@ -24,6 +19,3 @@ async def invite_link_getter(
     receipt_id = states.get_receipt_id(dialog_manager)
     invite_link = await create_start_link(bot, str(receipt_id))
     return {"invite_link": invite_link}
-
-
-manage_receipt_dialog = Dialog(greetings_window, chat_window, bills_window)
