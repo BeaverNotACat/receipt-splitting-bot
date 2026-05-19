@@ -49,15 +49,16 @@ async def calculate_metrics(
     )
 
 
-async def main() -> None:
-    base_dir = Path(__file__).resolve().parents[1]  # noqa: ASYNC240
-    audios = base_dir / "data" / "asr_metrics" / "audios"
-    references = base_dir / "data" / "asr_metrics" / "references"
-    output_file = base_dir / "data" / "asr_metrics" / "metrics.json"
+BASE_DIR = Path(__file__).resolve().parents[1]
+AUDIOS = BASE_DIR / "data" / "asr_metrics" / "audios"
+REFERENCES = BASE_DIR / "data" / "asr_metrics" / "references"
+OUTPUT_FILE = BASE_DIR / "data" / "asr_metrics" / "metrics.json"
 
-    metrics = await calculate_metrics(audios, references)
+
+async def main() -> None:
+    metrics = await calculate_metrics(AUDIOS, REFERENCES)
     metrics_adapter = TypeAdapter(Metrics)
-    with output_file.open("w+b") as metrics_file:
+    with OUTPUT_FILE.open("w+b") as metrics_file:
         metrics_file.write(metrics_adapter.dump_json(metrics))
 
 

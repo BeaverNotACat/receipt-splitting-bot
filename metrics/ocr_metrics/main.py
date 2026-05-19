@@ -49,15 +49,16 @@ async def calculate_metrics(
     )
 
 
-async def main() -> None:
-    base_dir = Path(__file__).resolve().parents[1]  # noqa: ASYNC240
-    images = base_dir / "data" / "ocr_metrics" / "images"
-    references = base_dir / "data" / "ocr_metrics" / "references"
-    output_file = base_dir / "data" / "ocr_metrics" / "metrics.json"
+BASE_DIR = Path(__file__).resolve().parents[1]
+IMAGES = BASE_DIR / "data" / "ocr_metrics" / "images"
+REFERENCES = BASE_DIR / "data" / "ocr_metrics" / "references"
+OUTPUT_FILE = BASE_DIR / "data" / "ocr_metrics" / "metrics.json"
 
-    metrics = await calculate_metrics(images, references)
+
+async def main() -> None:
+    metrics = await calculate_metrics(IMAGES, REFERENCES)
     metrics_adapter = TypeAdapter(Metrics)
-    with output_file.open("w+b") as metrics_file:
+    with OUTPUT_FILE.open("w+b") as metrics_file:
         metrics_file.write(metrics_adapter.dump_json(metrics))
 
 
