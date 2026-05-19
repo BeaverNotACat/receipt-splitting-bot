@@ -5,6 +5,8 @@ from src.presentation.telegram import states
 
 from .common import (
     add_dummy_user_button,
+    invite_link_getter,
+    invite_real_user_button,
     return_to_profile_button,
     show_bill_button,
     user_prompt_input,
@@ -12,10 +14,12 @@ from .common import (
 
 chat_window = Window(
     Format("{dialog_data[agent_answer]}"),
+    invite_real_user_button,
     add_dummy_user_button,
     show_bill_button,
     return_to_profile_button,
     user_prompt_input,
     state=states.ReceiptChatSG.chat,
     parse_mode="HTML",
+    getter=invite_link_getter,
 )
