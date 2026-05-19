@@ -63,7 +63,7 @@ class Agent(AgentI):
     ) -> AgentResponse:
         async with self.receipt_lock(receipt.id):
             answer = await self.call_langchain(
-                request, receipt, participants, []
+                request, receipt, participants, None
             )
 
         return AgentResponse(

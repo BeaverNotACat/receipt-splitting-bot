@@ -19,7 +19,7 @@ class OpticalCharacterRecognizer(OpticalCharacterRecognizerI):
         self.client = client
 
     async def recognize_text(self, image: BinaryIO) -> RecognizedImageText:
-        return self.call_langchain(image=image, callbacks=None)
+        return await self.call_langchain(image=image, callbacks=None)
 
     async def call_langchain(
         self, image: BinaryIO, callbacks: Callbacks
@@ -37,12 +37,12 @@ class OpticalCharacterRecognizer(OpticalCharacterRecognizerI):
     def _construct_system_message() -> SystemMessage:
         return SystemMessage(
             content=(
-            "Ты — OCR-модель."
-            "Считай только текст c изображения."
-            "Выводи строго в одной строке."
-            "Сохраняй порядок, как на картинке."
-            "Обязательно считай все наименования товаров, количество и цену."
-            "Никаких объяснений, комментариев или домыслов."
+                "Ты — OCR-модель."
+                "Считай только текст c изображения."
+                "Выводи строго в одной строке."
+                "Сохраняй порядок, как на картинке."
+                "Обязательно считай все наименования товаров, количество и цену."  # noqa: E501
+                "Никаких объяснений, комментариев или домыслов."
             )
         )
 

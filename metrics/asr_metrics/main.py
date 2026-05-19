@@ -28,7 +28,7 @@ async def calculate_metrics(
     output_tokens = 0
 
     for audio in audio_folder_path.iterdir():  # noqa: ASYNC240
-        reference = (recognized_audio_path / f"{audio.stem}.txt")
+        reference = recognized_audio_path / f"{audio.stem}.txt"
         with audio.open("b+r") as request:
             recognized_audio = await recognizer.call_langchain(
                 audio=request, callbacks=[metadata_callback]

@@ -19,7 +19,7 @@ class SpeechRecognizer(SpeechRecognizerI):
         self.client = client
 
     async def recognize_text(self, audio: BinaryIO) -> RecognizedSpeechText:
-        return self.call_langchain(audio=audio, callbacks=None)
+        return await self.call_langchain(audio=audio, callbacks=None)
 
     async def call_langchain(
         self, audio: BinaryIO, callbacks: Callbacks

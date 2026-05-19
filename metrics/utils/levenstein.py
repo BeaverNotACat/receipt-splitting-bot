@@ -35,6 +35,4 @@ def levenstein(
 
 def prep_text(text: str) -> str:
     chars_to_remove = string.punctuation + string.whitespace
-    return text.lower().translate(
-        str.maketrans("", "", chars_to_remove)
-    )
+    return text.lower().translate(str.maketrans("", "", chars_to_remove))

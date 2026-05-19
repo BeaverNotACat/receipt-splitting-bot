@@ -28,7 +28,7 @@ async def calculate_metrics(
     output_tokens = 0
 
     for image in image_folder_path.iterdir():  # noqa: ASYNC240
-        reference = (recognized_image_path / f"{image.stem}.txt")
+        reference = recognized_image_path / f"{image.stem}.txt"
         with image.open("b+r") as request:
             recognized_image = await recognizer.call_langchain(
                 image=request, callbacks=[metadata_callback]
