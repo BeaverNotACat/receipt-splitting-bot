@@ -10,6 +10,8 @@ from src.presentation.telegram import states
 
 from .common import (
     add_dummy_user_button,
+    invite_link_getter,
+    invite_real_user_button,
     return_to_profile_button,
     show_bill_button,
     user_prompt_input,
@@ -18,7 +20,7 @@ from .common import (
 bills_text = Jinja("""
 <b>СЧЕТА:</b>
 Если список товаров получился длинным, вы можете нажать на список, \
-чтобы развенуть его целиком.
+чтобы развернуть его целиком.
 <i>Название: колличество x цена = сумма</i>
 
 {% for nickname, bill in bills %}
@@ -33,7 +35,7 @@ bills_text = Jinja("""
 Попросите Рожкова назначить товары
 {% endif %}
 {% for item in bill.items %}
-• {{item.name}}: {{item.amount|round(2)}} × {{item.price|round(2)}} \
+• {{item.name}}: {{item.amount|float}} × {{item.price|round(2)}} \
 = {{(item.price*item.amount)|round(2)}}
 {% endfor %}
 </blockquote>\
@@ -58,11 +60,12 @@ async def bills_getter(
 
 bills_window = Window(
     bills_text,
+    invite_real_user_button,
     add_dummy_user_button,
     show_bill_button,
     return_to_profile_button,
     user_prompt_input,
     parse_mode="HTML",
     state=states.ReceiptChatSG.bills,
-    getter=bills_getter,
+    getter=[bills_getter, invite_link_getter],
 )

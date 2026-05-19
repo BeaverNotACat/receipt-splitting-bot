@@ -45,5 +45,5 @@ class LineItemORM(UUIDAuditBase):
     )
     name: Mapped[str]
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
-    amount: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    amount: Mapped[Decimal] = mapped_column(Numeric(13, 5))
     assigned_to: Mapped[UUID | None] = mapped_column(ForeignKey(UserORM.id))

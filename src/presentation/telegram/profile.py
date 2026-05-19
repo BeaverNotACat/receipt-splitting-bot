@@ -25,7 +25,7 @@ from src.domain.value_objects import (
 
 from . import states
 
-PAGE_SIZE = 4
+PAGE_SIZE = 10
 NICKNAME_INPUT_ID = "nickname"
 
 
