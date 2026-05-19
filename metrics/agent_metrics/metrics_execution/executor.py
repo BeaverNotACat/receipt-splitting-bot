@@ -8,7 +8,7 @@ from openrouter.errors.responsevalidationerror import ResponseValidationError
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
 
-from metrics.metrics_generation.generator import TestItem
+from metrics.agent_metrics.metrics_generation.generator import TestItem
 from src.application.common.agent import AgentI, HumanRequest
 from src.application.common.ocr import RecognizedImageText
 from src.domain.models.receipt import Receipt

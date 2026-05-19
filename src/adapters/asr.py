@@ -2,6 +2,7 @@ import base64
 import mimetypes
 from typing import BinaryIO, NewType, cast
 
+from langchain_core.callbacks import Callbacks
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openrouter import ChatOpenRouter
 
@@ -18,11 +19,18 @@ class SpeechRecognizer(SpeechRecognizerI):
         self.client = client
 
     async def recognize_text(self, audio: BinaryIO) -> RecognizedSpeechText:
+        return await self.call_langchain(audio=audio, callbacks=None)
+
+    async def call_langchain(
+        self, audio: BinaryIO, callbacks: Callbacks
+    ) -> RecognizedSpeechText:
         messages = [
             self._construct_system_message(),
             self._construct_human_message(audio),
         ]
-        response = await self.client.ainvoke(messages)
+        response = await self.client.ainvoke(
+            messages, config={"callbacks": callbacks}
+        )
         return cast(RecognizedSpeechText, response.content)
 
     @staticmethod

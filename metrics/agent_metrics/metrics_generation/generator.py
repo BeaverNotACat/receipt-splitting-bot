@@ -9,7 +9,7 @@ from langchain_core.messages import HumanMessage
 from langchain_openrouter import ChatOpenRouter
 from pydantic.dataclasses import dataclass
 
-from metrics.metrics_generation.texts import PROMPT_TEMPLATE
+from metrics.agent_metrics.metrics_generation.texts import PROMPT_TEMPLATE
 from src.domain.models import Receipt
 from src.domain.models.user import DummyUser, User
 from src.domain.value_objects import (

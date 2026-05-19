@@ -2,6 +2,7 @@ import base64
 import mimetypes
 from typing import BinaryIO, NewType, cast
 
+from langchain_core.callbacks import Callbacks
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openrouter import ChatOpenRouter
 
@@ -18,11 +19,18 @@ class OpticalCharacterRecognizer(OpticalCharacterRecognizerI):
         self.client = client
 
     async def recognize_text(self, image: BinaryIO) -> RecognizedImageText:
+        return await self.call_langchain(image=image, callbacks=None)
+
+    async def call_langchain(
+        self, image: BinaryIO, callbacks: Callbacks
+    ) -> RecognizedImageText:
         messages = [
             self._construct_system_message(),
             self._construct_human_message(image),
         ]
-        response = await self.client.ainvoke(messages)
+        response = await self.client.ainvoke(
+            messages, config={"callbacks": callbacks}
+        )
         return cast("RecognizedImageText", response.content)
 
     @staticmethod
@@ -33,7 +41,7 @@ class OpticalCharacterRecognizer(OpticalCharacterRecognizerI):
                 "Считай только текст c изображения."
                 "Выводи строго в одной строке."
                 "Сохраняй порядок, как на картинке."
-                "Обязательно считай все наименования товаров и цену."
+                "Обязательно считай все наименования товаров, количество и цену."  # noqa: E501
                 "Никаких объяснений, комментариев или домыслов."
             )
         )

@@ -21,6 +21,7 @@ class LangChainProvider(Provider):
                 model=settings.OCR_MODEL,
                 temperature=0,
                 api_key=settings.API_KEY,
+                reasoning={"effort": "none", "summary": "auto"},
             )
         )
 
@@ -32,6 +33,7 @@ class LangChainProvider(Provider):
                 model=settings.ASR_MODEL,
                 temperature=0,
                 api_key=settings.API_KEY,
+                reasoning={"effort": "none", "summary": "auto"},
             )
         )
 
