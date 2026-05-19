@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
 
 from metrics.utils.levenstein import levenstein
-from src.adapters.asr import SpeechRecognizerI
+from src.application.common.asr import SpeechRecognizerI
 from src.presentation.dependencies import container
 
 

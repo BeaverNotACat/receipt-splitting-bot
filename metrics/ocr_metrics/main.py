@@ -6,7 +6,7 @@ from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
 
 from metrics.utils.levenstein import levenstein
-from src.adapters.ocr import OpticalCharacterRecognizerI
+from src.application.common.ocr import OpticalCharacterRecognizerI
 from src.presentation.dependencies import container
 
 

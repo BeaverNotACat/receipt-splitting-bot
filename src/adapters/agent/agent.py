@@ -78,7 +78,7 @@ class Agent(AgentI):
         request: HumanRequest,
         receipt: Receipt,
         participants: list[User],
-        callbacks: list[BaseCallbackHandler],
+        callbacks: list[BaseCallbackHandler] | None,
     ) -> dict[str, Any]:
         """
         Method wraps bare langchain result for benching purposes
