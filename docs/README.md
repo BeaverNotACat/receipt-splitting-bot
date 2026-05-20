@@ -12,7 +12,8 @@ This documentation explains the vision of the project and links to topics that m
 ### Decisions
 - [databases comparison](Decisions/databases%20comparison.md)
 - [LLM comparation](Decisions/llm%20comparation.md)
-- [OCR and ASR comparations](Decisions/ocr%20and%20asr%20comparations.md)
+- [OCR comparation](Decisions/ocr%20comparation.md)
+- [ASR comparation](Decisions/asr%20comparation.md)
 ### Also you can check
 - [Kanban board for progress tracking](https://github.com/users/BeaverNotACat/projects/6)
 - [Issues for bugs and future ideas](https://github.com/BeaverNotACat/receipt-splitting-bot/issues)
