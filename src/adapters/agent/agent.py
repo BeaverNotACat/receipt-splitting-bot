@@ -1,3 +1,4 @@
+from re import DOTALL, sub
 from typing import TYPE_CHECKING, NewType
 
 from langchain.agents import create_agent
@@ -68,7 +69,7 @@ class Agent(AgentI):
 
         return AgentResponse(
             answer=AgentMessage(
-                self._md_to_html(answer["messages"][-1].content)
+                self._refactor_response(answer["messages"][-1].content)
             ),
             updated_receipt=answer["receipt"],
         )
@@ -118,6 +119,14 @@ class Agent(AgentI):
         participants: list[User],
     ) -> ReceiptModificationContext:
         return {"user_id_mapping": {user.id: user for user in participants}}
+
+    def _refactor_response(self, text: str) -> str:
+        return sub(
+            r"\s*<think>.*?</think>\s*",
+            "\n",
+            self._md_to_html(text),
+            flags=DOTALL,
+        ).strip()
 
     @staticmethod
     def _md_to_html(text: str) -> str:
