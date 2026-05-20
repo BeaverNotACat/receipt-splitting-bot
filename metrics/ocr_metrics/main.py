@@ -19,7 +19,7 @@ class Metrics:
     mean_token_output: float
 
 
-async def calculate_metrics(
+async def calculate_metrics(  # noqa: PLR0914
     image_folder_path: Path, references_path: Path
 ) -> Metrics:
     recognizer = await container.get(OpticalCharacterRecognizerI)
