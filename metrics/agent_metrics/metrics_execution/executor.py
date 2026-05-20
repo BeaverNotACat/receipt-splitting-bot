@@ -93,9 +93,9 @@ async def calculate_metrics(  # noqa: PLR0914, PLR0915
             line = json.loads(raw_line)
             test_item = test_item_adapter.validate_python(line)
             target = test_item.target
-            metadata_callback = UsageMetadataCallbackHandler()
             for generation_try in range(num_retries):
                 try:
+                    metadata_callback = UsageMetadataCallbackHandler()
                     agent_response = await agent.call_langchain(
                         request=HumanRequest(
                             user_id=target.creditor_id,
