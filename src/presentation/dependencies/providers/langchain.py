@@ -46,6 +46,7 @@ class LangChainProvider(Provider):
             ChatOpenRouter(  # type: ignore[call-arg]
                 model=settings.AGENT_MODEL,
                 temperature=0,
+                max_tokens=4000,
                 api_key=settings.API_KEY,
                 reasoning={"effort": "low", "summary": "auto"},
             )

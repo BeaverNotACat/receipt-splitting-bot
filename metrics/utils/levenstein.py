@@ -2,18 +2,18 @@ import string
 
 
 def levenstein(
-    a: str,
-    b: str,
+    reference: str,
+    text: str,
 ) -> int:
-    if not a:
-        return len(b)
-    if not b:
-        return len(a)
-    a = prep_text(a)
-    b = prep_text(b)
+    if not reference:
+        return len(text)
+    if not text:
+        return len(reference)
+    reference = prep_text(reference)
+    text = prep_text(text)
 
-    n = len(a)
-    m = len(b)
+    n = len(reference)
+    m = len(text)
     lev = [[0] * (m + 1) for _ in range(n + 1)]
 
     for i in range(n + 1):
@@ -26,7 +26,7 @@ def levenstein(
             insertion = lev[i - 1][j] + 1
             deletion = lev[i][j - 1] + 1
             substitution = lev[i - 1][j - 1] + (
-                1 if a[i - 1] != b[j - 1] else 0
+                1 if reference[i - 1] != text[j - 1] else 0
             )
             lev[i][j] = min(insertion, deletion, substitution)
 
